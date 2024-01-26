@@ -1,6 +1,7 @@
 from flask import Flask
 
 from .apis import v1_bp
+from .commands import register_commands
 from .config import get_config
 from .extens import cors, db
 
@@ -12,4 +13,6 @@ def create_app(environment: str | None = None) -> Flask:
     db.init_app(app)
     cors.init_app(app)
     app.register_blueprint(v1_bp)
+    register_commands(app)
+
     return app

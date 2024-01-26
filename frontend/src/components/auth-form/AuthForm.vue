@@ -3,6 +3,7 @@ import icons from '@/components/icons';
 import Input from './Input.vue';
 import SubmitBtn from './SubmitBtn.vue';
 import { ref, watchEffect, type Ref, watch } from 'vue';
+import { APIError } from "@/api/errors";
 
 
 type FormStatus = "normal" | "fail" | "success" | "loading";
@@ -162,12 +163,49 @@ function submitForm(): void {
                 }
 
                 const password2Error = password2Validator(password2.value, password.value);
-                if (password2Error) {
+                if (!password2Error) {
                     status.value = "fail";
                     return;
                 } else {
                     inputMessageNotification(password2.value, "success", "Valid password.")
                 }
+
+                const registerUrl = "http://localhost:5000/v1/account/users";
+                const formData = new URLSearchParams();
+                formData.append("username", username.value.value);
+                formData.append("password", password.value.value);
+                fetch(registerUrl, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                }).then((response) => {
+                    if (response.status === 201) {
+                        status.value = "success";
+                        inputMessageNotification(username.value, "success", "Valid username.")
+                        console.log("Register success.")
+                        return;
+                    } else {
+                        status.value = "fail";
+                        return response.json(); 
+                    }
+                }).then((resp) => {
+                    if (resp) {
+                        console.log(resp);
+                    const errorResp = resp.error;
+                    const error = (errorResp as APIError);
+                    switch (error.target) {
+                        case ("username"):
+                            status.value = "fail";
+                            inputMessageNotification(username.value, "error", error.message);
+                            return;
+                        default:
+                            status.value = "fail";
+                            return;
+                    }
+                    }
+                })
                 break;
     }
 }

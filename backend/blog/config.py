@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,7 +10,7 @@ ROOT = Path(__file__).parent.parent
 
 
 class BaseConfig:
-    ...
+    SECRET_KEY = Fernet.generate_key()
 
 
 class DevelopmentConfig(BaseConfig):

@@ -1,11 +1,32 @@
-from flask import Blueprint
+from typing import Any
 
-from .account import account
-from .author import author
-from .vistor import vistor
+from flask import Blueprint, jsonify
 
-v1 = Blueprint("v1", __name__)
+from .controller.account import account
+from .controller.author import author
+from .controller.vistor import vistor
+
+v1 = Blueprint("v1", __name__, url_prefix="/v1")
 
 v1.register_blueprint(account)
 v1.register_blueprint(author)
 v1.register_blueprint(vistor)
+
+
+@v1.errorhandler(Exception)
+def handle_error(error: Any):
+    target = getattr(error, "target", "undefined")
+    message = getattr(error, "description", "error occurred.")
+    status_code = getattr(error, "status", 500)
+
+    response = jsonify(
+        {
+            "error": {
+                "target": target,
+                "message": message,
+                "status_code": status_code,
+            }
+        }
+    )
+
+    return response, status_code
