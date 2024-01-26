@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import icons from '@/components/icons';
 import Input from './Input.vue';
 import SubmitBtn from './SubmitBtn.vue';
 import { ref, watchEffect, type Ref } from 'vue';
@@ -14,7 +15,7 @@ type InputItems = {
 }
 
 const status: Ref<FormStatus> = ref("normal");
-const action: Ref<FormAction> = ref("register");
+const action: Ref<FormAction> = ref("login");
 
 const username: Ref<InputItems> = ref({
     value: "",
@@ -136,6 +137,41 @@ function submitForm(): void {
 </script>
 
 <template>
+<div class="switch-action">
+    <button 
+    type="button"
+    :class="['sa-btn', 'login', 
+    {active: action === 'login'}, 
+    {normal: action != 'login'}]"
+    @click="action = 'login'"
+    >
+        <span 
+        class="sab-text"
+        v-if="action === 'login'">Login</span>
+        <component 
+        class="icon big"
+        :is="icons.login"
+        v-if="action != 'login'"
+        />
+    </button>
+    <button 
+    type="button"
+    :class="['sa-btn', 'register', 
+    {active: action === 'register'}, 
+    {normal: action != 'register'}]"
+    @click="action = 'register'"
+    >
+        <component 
+        class="icon big" 
+        :is="icons.register"
+        v-if="action != 'register'"
+        />
+        <span 
+        class="sab-text"
+        v-if="action === 'register'"
+        >Register</span>
+    </button>
+</div>
 <form @submit.prevent="submitForm">
     <div class="inputs-messages-submitbtn">
         <div class="im-container">
@@ -219,4 +255,52 @@ form {
     line-height: 13px;
     font-weight: lighter;
 }
+
+.switch-action {
+    width: 380px;
+    height: 80px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 10px;
+}
+
+.sa-btn {
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: none;
+
+    transition: width 0.5s ease;
+}
+
+.sa-btn.login {
+    background-color: var(--second-color);
+}
+
+.sa-btn.register {
+    background-color: var(--first-color);
+}
+
+.sa-btn.active {
+    width: 320px;
+}
+
+.sa-btn.normal {
+    width: 60px;
+}
+
+.sab-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+
 </style>
