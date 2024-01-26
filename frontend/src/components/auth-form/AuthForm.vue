@@ -2,15 +2,17 @@
 import icons from '@/components/icons';
 import Input from './Input.vue';
 import SubmitBtn from './SubmitBtn.vue';
-import { ref, watchEffect, type Ref } from 'vue';
+import { ref, watchEffect, type Ref, watch } from 'vue';
 
 
 type FormStatus = "normal" | "fail" | "success" | "loading";
 type FormAction = "register" | "login";
 
+type InputStatus = "normal" | "warning" | "error" | "success";
+
 type InputItems = {
     value: string;
-    status: "normal" | "warning" | "error" | "success";
+    status: InputStatus
     message: string;
 }
 
@@ -47,22 +49,29 @@ watchEffect(async () => {
     }
 });
 
-function emptyNotification(item: InputItems, message: string | null = null): void {
-    if (message != null) {
-        item.message = message;
-        item.status = "warning";
-    } else {
-        item.message = "This area cannot be empty.";
-        item.status = "warning";
-    }
-}
+watch(action, () => {
+    status.value = "normal";
+    
+    username.value.value = "";
+    username.value.message = "";
+    username.value.status = "normal";
+
+    password.value.value = "";
+    password.value.message = "";
+    password.value.status = "normal";
+
+    password2.value.value = "";
+    password2.value.message = "";
+    password2.value.status = "normal";
+})
+
 
 function emptyValidator(items: InputItems[]): boolean {
     const errors = [];
     items.forEach((item) => {
         if (item.value.length === 0) {
             errors.push(item);
-            emptyNotification(item)
+            inputMessageNotification(item, "warning", "This area cannot be empty.")
         }
     });
 
@@ -73,23 +82,13 @@ function emptyValidator(items: InputItems[]): boolean {
     }
 }
 
-function patternNotification(item: InputItems, message: string | null = null): void {
-    if (message) {
-        item.message = message;
-        item.status = "warning";
-    } else {
-        item.message = "Invalid pattern."
-        item.status = "warning";
-    }
-}
-
 
 function patternValidator(items: {it: InputItems, pattern: RegExp, message: string}[]): boolean {
     const errors = [];
     items.forEach((item) => {
         if (!item.pattern.test(item.it.value)) {
             errors.push(item);
-            patternNotification(item.it, item.message);
+            inputMessageNotification(item.it, "warning", item.message);
         }
     })
 
@@ -98,6 +97,21 @@ function patternValidator(items: {it: InputItems, pattern: RegExp, message: stri
     } else {
         return false;
     }
+}
+
+function password2Validator(password2: InputItems, password: InputItems): boolean {
+    if (password2.value === password.value) {
+        return true;
+    } else {
+        inputMessageNotification(password2, "warning", "The passwords are inconsistent.");
+        return false;
+    }
+}
+
+
+function inputMessageNotification(item: InputItems, status: InputStatus, message: string): void {
+    item.status = status;
+    item.message = message;
 }
 
 const inputItemPatterns = [
@@ -117,19 +131,44 @@ function submitForm(): void {
     status.value = "loading";
     username.value.message = "";
     password.value.message = "";
-    password2.value.message = "";
 
-    const requiredItems = [username.value, password.value, password2.value]
-    const emptyError = emptyValidator(requiredItems);
-    if (emptyError) {
-        status.value = "fail";
-        return;
-    }
+    switch (action.value) {
+        case ("login"):
+            const emptyErrorLogin = emptyValidator([username.value,password.value]);
+            if (emptyErrorLogin) {
+                status.value = "fail";
+                return;
+            }
 
-    const patternError = patternValidator(inputItemPatterns);
-    if (patternError) {
-        status.value = "fail";
-        return;
+            const patternErrorLogin = patternValidator(inputItemPatterns);
+            if (patternErrorLogin) {
+                status.value = "fail";
+                return;
+            }
+            break;
+        case ("register"):
+            const emptyErrorRegister = emptyValidator([username.value,password.value, password2.value]);
+                if (emptyErrorRegister) {
+                    status.value = "fail";
+                    return;
+                }
+
+                const patternErrorRegister = patternValidator(inputItemPatterns);
+                if (patternErrorRegister) {
+                    status.value = "fail";
+                    return;
+                } else {
+                    inputMessageNotification(password.value, "success", "Valid password.")
+                }
+
+                const password2Error = password2Validator(password2.value, password.value);
+                if (password2Error) {
+                    status.value = "fail";
+                    return;
+                } else {
+                    inputMessageNotification(password2.value, "success", "Valid password.")
+                }
+                break;
     }
 }
 
@@ -194,7 +233,8 @@ function submitForm(): void {
                     {{ password.message }}
                 </span>
             </div>
-            <div class="imc-items">
+            <div class="imc-items"
+            v-if="action === 'register'">
                 <Input 
                 input-type="password"
                 input-name="password2"

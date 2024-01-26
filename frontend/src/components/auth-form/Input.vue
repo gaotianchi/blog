@@ -18,6 +18,10 @@ v-model="model">
 </template>
 
 <style scoped>
+input {
+    transition: all 0.1s linear;
+}
+
 input,
 input.normal {
     width: 260px;
