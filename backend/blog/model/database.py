@@ -1,11 +1,17 @@
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from blog.extens import db
+
+post_tag_association = db.Table(
+    "post_tag_association",
+    Column("post_id", Integer, ForeignKey("post.id"), primary_key=True),
+    Column("tag_id", Integer, ForeignKey("tag.id"), primary_key=True),
+)
 
 
 class User(db.Model):
@@ -55,13 +61,13 @@ class User(db.Model):
         )
 
 
-class Category(db.Model):
+class Tag(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
     name: Mapped[str] = mapped_column(String(255))
     slug: Mapped[str] = mapped_column(String(255))
 
-    posts = relationship("Post", back_populates="category")
+    posts: Mapped[list["Post"]] = relationship(secondary=post_tag_association, back_populates="tags")
 
 
 class Series(db.Model):
@@ -71,9 +77,9 @@ class Series(db.Model):
     slug: Mapped[str] = mapped_column(String(255))
 
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
-    author = relationship("User", back_populates="series")
+    author: Mapped["User"] = relationship("User", back_populates="series")
 
-    posts = relationship("Post", back_populates="series")
+    posts: Mapped["list[Post]"] = relationship("Post", back_populates="series")
 
 
 class Post(db.Model):
@@ -90,11 +96,10 @@ class Post(db.Model):
     is_published: Mapped[bool] = mapped_column(Boolean)
     published_at: Mapped[datetime] = mapped_column(DateTime)
 
-    category_id: Mapped[int] = mapped_column(Integer, ForeignKey("category.id"))
-    category = relationship("Category", back_populates="posts")
-
     series_id: Mapped[int] = mapped_column(Integer, ForeignKey("series.id"))
     series = relationship("Series", back_populates="posts")
 
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     author = relationship("User", back_populates="posts")
+
+    tags: Mapped[list["Tag"]] = relationship(secondary=post_tag_association, back_populates="posts")

@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "md-editor-v3": "^4.11.0",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5"
   },
