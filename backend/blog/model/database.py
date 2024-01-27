@@ -1,8 +1,9 @@
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from blog.extens import db
 
@@ -14,10 +15,12 @@ class User(db.Model):
     password_hash: Mapped[str] = mapped_column(String(255))
 
     nickname: Mapped[str] = mapped_column(String(255))
-    description: Mapped[str] = mapped_column(Text, nullable=True)
+    description: Mapped[str] = mapped_column(Text, default="")
 
     registered_at: Mapped[datetime] = mapped_column(DateTime)
     last_login_at: Mapped[datetime] = mapped_column(DateTime)
+
+    token_validity_period: Mapped[int] = mapped_column(Integer, default=604800)
 
     posts = relationship("Post", back_populates="author")
     series = relationship("Series", back_populates="author")
@@ -36,6 +39,20 @@ class User(db.Model):
         db.session.commit()
 
         return User.query.get(new_user.id)  # type: ignore
+
+    def validate_password(self, password: str) -> bool:
+        return check_password_hash(self.password_hash, password)
+
+    def to_dict(self) -> dict[str, Any]:
+        return dict(
+            id=self.id,
+            username=self.username,
+            nickname=self.nickname,
+            description=self.description,
+            registered_at=self.registered_at.isoformat(),
+            last_login_at=self.last_login_at.isoformat(),
+            token_validity_period=self.token_validity_period,
+        )
 
 
 class Category(db.Model):

@@ -146,6 +146,46 @@ function submitForm(): void {
                 status.value = "fail";
                 return;
             }
+            const loginUrl = "http://localhost:5000/v1/account/token";
+            const loginFormData = new URLSearchParams();
+            loginFormData.append("grant_type", "password");
+            loginFormData.append("username", username.value.value);
+            loginFormData.append("password", password.value.value);
+            fetch(loginUrl, {
+                method: "POST",
+                body: loginFormData,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                }
+            }).then((response) => {
+                if (response.status === 200) {
+                    status.value = "success";
+                    console.log("Success get access token.");
+                } else {
+                    status.value = "fail";
+                    console.log("Fail to get access token.")
+                }
+                return response;
+            }).then(response => response.json()).then((responseData) => {
+                if (responseData.error) {
+                    const error = (responseData.error as APIError);
+                    switch (error.target) {
+                        case "username":
+                            inputMessageNotification(username.value, "error", error.message);
+                            return;
+                        case "password":
+                            inputMessageNotification(password.value, "error", error.message);
+                            return;
+                        default:
+                            return;
+                    }
+                } else {
+                    console.log(responseData);
+                    localStorage.setItem("access_token", responseData.access_token);
+                    console.log("Successfully login.");
+                    window.location.href = "/world";
+                }
+            })
             break;
         case ("register"):
             const emptyErrorRegister = emptyValidator([username.value,password.value, password2.value]);
