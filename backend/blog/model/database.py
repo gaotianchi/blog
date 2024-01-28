@@ -67,7 +67,9 @@ class Tag(db.Model):
     name: Mapped[str] = mapped_column(String(255))
     slug: Mapped[str] = mapped_column(String(255))
 
-    posts: Mapped[list["Post"]] = relationship(secondary=post_tag_association, back_populates="tags")
+    posts: Mapped[list["Post"]] = relationship(
+        secondary=post_tag_association, back_populates="tags"
+    )
 
 
 class Series(db.Model):
@@ -102,4 +104,6 @@ class Post(db.Model):
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     author = relationship("User", back_populates="posts")
 
-    tags: Mapped[list["Tag"]] = relationship(secondary=post_tag_association, back_populates="posts")
+    tags: Mapped[list["Tag"]] = relationship(
+        secondary=post_tag_association, back_populates="posts"
+    )

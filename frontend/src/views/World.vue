@@ -1,3 +1,1 @@
-<template>
-    World!
-</template>
+<template>World!</template>

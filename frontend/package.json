@@ -13,7 +13,8 @@
   "dependencies": {
     "md-editor-v3": "^4.11.0",
     "vue": "^3.3.11",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue3-datepicker": "^0.4.0"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",

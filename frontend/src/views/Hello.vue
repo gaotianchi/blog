@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import Editor from "@/components/blog/Editor.vue";
+	import Editor from "@/components/blog/Editor.vue";
 </script>
 
 <template>
-<Editor/>
+	<Editor />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
