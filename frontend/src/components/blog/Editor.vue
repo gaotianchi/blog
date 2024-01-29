@@ -4,7 +4,7 @@
 	import { MdEditor } from "md-editor-v3";
 	import "md-editor-v3/lib/style.css";
 	import Datepicker from "vue3-datepicker";
-	import { format, addDays, differenceInDays } from "date-fns";
+	import { format } from "date-fns";
 
 	const publishStatus: Ref<boolean> = ref(true);
 	const articleTitle: Ref<string> = ref("");
@@ -46,15 +46,16 @@
 			title: "Te clita et aliquyam ea feugiat at lorem ut amet elitra",
 		},
 	]);
+	const previewUrl: Ref<string | null> = ref(null);
 
 	watchEffect(() => {
 		articleSlug.value = articleSlug.value.substring(0, 8000);
-		if (articleSlug.value.length === 0) {
-			articleSlug.value = "default-article-sulg";
-		}
+
+		articleSeries.value = articleSeries.value.substring(0, 300);
 	});
 
 	const permalinkOption: Ref<boolean> = ref(false);
+	const fileInput: Ref<HTMLInputElement | null> = ref(null);
 
 	function changeMscItemStatus(item: string): void {
 		if (activeMscItems.value.includes(item)) {
@@ -81,6 +82,45 @@
 			return str.substring(0, maxLength) + " ...";
 		}
 	}
+
+	const triggerFileInput = () => {
+		fileInput?.value?.click();
+	};
+
+	const handleFileUpload = (event: Event) => {
+		const selectedFile = (event.target as HTMLInputElement).files?.[0];
+		console.log(selectedFile);
+		processFile(selectedFile);
+	};
+
+	const handleDrop = (event: DragEvent) => {
+		event.preventDefault();
+		const selectedFile = event.dataTransfer?.files?.[0];
+		processFile(selectedFile);
+	};
+
+	const processFile = (file: File | undefined) => {
+		if (file) {
+			console.log("Selected file:", file.name);
+
+			// Read the file and set the previewUrl
+			const reader = new FileReader();
+			reader.onload = () => {
+				previewUrl.value = reader.result as string;
+			};
+			reader.readAsDataURL(file);
+
+			// You can further process the file or upload it to a server
+		}
+	};
+
+	const cancelUploadSeriesCover = () => {
+		if (fileInput.value) {
+			fileInput.value.value = "";
+		}
+
+		previewUrl.value = null;
+	};
 </script>
 
 <template>
@@ -374,7 +414,12 @@
 								v-if="getMscItemStatus('series')"
 							>
 								<div class="item-Eyk5Ug15Jl title">
-									{{ limString("Current series: " + articleSeries, 80) }}
+									{{
+										limString(
+											"Current series: " + articleSeries,
+											80
+										)
+									}}
 								</div>
 								<div class="item-Eyk5Ug15Jl">
 									<div class="item-4ke2_l191x">
@@ -441,6 +486,58 @@
 										<span class="item-Nk6QEmkcke">{{
 											limString(series.title, 70)
 										}}</span>
+									</div>
+								</div>
+								<div
+									class="item-Eyk5Ug15Jl items-NkXzjMk9Jg"
+									v-if="seriesOption === 'new'"
+								>
+									<div class="item-NJN4f-gcyx">
+										<component
+											class="icon item-EkYXMMecJe"
+											:is="icons.cancel"
+											v-if="previewUrl"
+											@click="cancelUploadSeriesCover"
+										/>
+										<img
+											v-if="previewUrl"
+											:src="previewUrl"
+											alt="Preview"
+											class="item-NJrXbMgq1g"
+										/>
+										<component
+											v-else
+											:is="icons.uploadImage"
+											@click="triggerFileInput"
+											@dragover.prevent
+											@drop="handleDrop"
+										/>
+										<input
+											type="file"
+											name="upload-image"
+											id="upload-image"
+											style="display: none"
+											ref="fileInput"
+											@change="handleFileUpload"
+										/>
+									</div>
+									<div class="item-Eyk5Ug15Jl">
+										<input
+											type="text"
+											name="series-title-input"
+											id="series-title-input"
+											v-model="articleSeries"
+											class="item-EkIs0xk9ke"
+										/>
+										<div class="item-EkIs0xk9ke message">
+											<span class="item-VJUWJWJc1x">
+												{{
+													articleSeries.length.toString() +
+													"/" +
+													"300"
+												}}
+											</span>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -776,15 +873,13 @@
 	.items-NkXzjMk9Jg {
 		width: 100%;
 		max-height: 260px;
-
-		margin-bottom: 20px;
 	}
 
 	.item-EkDocfy5kx {
 		width: 100%;
 		cursor: pointer;
 	}
-	
+
 	.item-EkDocfy5kx:hover {
 		background-color: rgb(222, 222, 222);
 	}
@@ -805,5 +900,34 @@
 		margin-left: 10px;
 		font-size: small;
 		color: #6d6969;
+	}
+
+	.item-NJN4f-gcyx {
+		position: relative;
+		width: 100%;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		cursor: pointer;
+	}
+
+	.item-EkYXMMecJe {
+		position: absolute;
+		top: 0;
+		right: 0;
+
+		padding: 5px;
+		background-color: rgb(249, 249, 249);
+	}
+
+	.item-EkYXMMecJe:hover {
+		background-color: #a9a2a2;
+	}
+
+	.item-NJrXbMgq1g {
+		max-width: 100%;
+		max-height: 100px;
 	}
 </style>

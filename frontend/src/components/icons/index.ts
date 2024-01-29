@@ -11,6 +11,8 @@ import ViewVue from "./View.vue";
 import SyncVue from "./Sync.vue";
 import UnSyncVue from "./UnSync.vue";
 import SettingVue from "./Setting.vue";
+import UploadImageVue from "./UploadImage.vue";
+import CancelVue from "./Cancel.vue";
 
 
 export default {
@@ -27,4 +29,6 @@ export default {
     sync: SyncVue,
     unsync: UnSyncVue,
     setting: SettingVue,
+    uploadImage: UploadImageVue,
+    cancel: CancelVue
 }
