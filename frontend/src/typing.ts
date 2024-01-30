@@ -3,10 +3,9 @@ export type Tag = {
 	name: string;
 };
 
-
 export type Series = {
 	id?: number;
 	title: string;
 	cover?: string;
 	author?: string;
-}
+};

@@ -19,13 +19,13 @@
 			<component
 				:is="icons.down"
 				class="child-VkrD6pCK1l parent-Nyg6a7gcyg icon smallest"
-				:class="active"
+				:class="{ active: active }"
 			/>
 			<div class="child-VkrD6pCK1l parent-NJ5vAaAFke">
 				<div class="child-Ek0lyC0K1g parent-V1pmRXl5yl">
 					<slot name="title">Ttile</slot>
 				</div>
-				<div class="child-Ek0lyC0K1g parent-4JUNCmx5kg" v-if="active">
+				<div class="child-Ek0lyC0K1g parent-4JUNCmx5kg" v-if="!active">
 					<slot name="preview">Preview</slot>
 				</div>
 			</div>
@@ -72,18 +72,17 @@
 		align-items: flex-start;
 	}
 
-    .child-Ek0lyC0K1g {
-        text-align: left;
-    }
+	.child-Ek0lyC0K1g {
+		text-align: left;
+	}
 
-    .parent-V1pmRXl5yl {
-        font-size: 1rem;
+	.parent-V1pmRXl5yl {
+		font-size: 1rem;
 		font-weight: 400;
-		
-    }
+	}
 
-    .parent-4JUNCmx5kg {
-        font-size: smaller;
+	.parent-4JUNCmx5kg {
+		font-size: smaller;
 		font-style: italic;
-    }
+	}
 </style>
