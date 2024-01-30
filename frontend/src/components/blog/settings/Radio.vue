@@ -1,6 +1,6 @@
 <script setup lang="ts">
-	const model = defineModel();
-	const props = defineProps<{
+	const model = defineModel<any>();
+	defineProps<{
 		name: string;
 		id?: string;
 		value: any;
@@ -14,6 +14,7 @@
 			v-model="model"
 			:name="name"
 			:id="id ? id : name"
+			:value="value"
 		/>
 		<label class="child-N1vpq9lqkx parent-4yWJs9l9kl" :for="id ? id : name"
 			><slot></slot

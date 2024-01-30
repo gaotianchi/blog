@@ -1,6 +1,8 @@
 <script setup lang="ts">
 	import { computed, ref, watchEffect, type Ref } from "vue";
 	import { getUnixTime } from "date-fns";
+	import Radio from "./Radio.vue";
+	import Input from "./Input.vue";
 	const props = defineProps<{
 		oldSlug?: string;
 		articleTitle?: string;
@@ -58,51 +60,19 @@
 			{{ currentPermalink }}
 		</div>
 		<div class="child-4J9WMcl9Je parent-VyzXfqx9Je">
-			<div class="parent-E1x3c9x9Jg">
-				<input
-					class="child-N1vpq9lqkx parent-Ny_C5cg5kx"
-					type="radio"
-					v-model="auto"
-					name="auto-permalink"
-					id="auto-permalink"
-					:value="true"
-				/>
-				<label
-					class="child-N1vpq9lqkx parent-4yWJs9l9kl"
-					for="auto-permalink"
-					>Auto</label
-				>
-			</div>
-			<div class="parent-E1x3c9x9Jg">
-				<input
-					class="child-N1vpq9lqkx parent-Ny_C5cg5kx"
-					type="radio"
-					v-model="auto"
-					name="custom-permalink"
-					id="custom-permalink"
-					:value="false"
-				/>
-				<label
-					class="child-N1vpq9lqkx parent-4yWJs9l9kl"
-					for="custom-permalink"
-					>Custom</label
-				>
-			</div>
+			<Radio name="auto-permalink" :value="true" v-model="auto"
+				>Auto</Radio
+			>
+			<Radio name="custom-datetime" :value="false" v-model="auto"
+				>Custom</Radio
+			>
 		</div>
-		<div class="child-4J9WMcl9Je parent-VJrIoDZ5kx" v-if="!auto">
-			<input
-				type="text"
-				name="slug-input-area"
-				id="slug-input-area"
-				aria-label="slug-input-area"
-				v-model="customSlug"
-			/>
-			<div class="child- parent-41PsiPZ5Jx">
-				<span class="child-E1gknPb51g parent-V1j1nw-5Jg">{{ customSlug.length }}</span>
-				<span class="child-E1gknPb51g parent-Ey-WhwW51x">/</span>
-				<span class="child-E1gknPb51g parent-VJrb3PW9Je">8000</span>
-			</div>
-		</div>
+		<Input
+			v-if="!auto"
+			name="slug-input-area"
+			v-model="customSlug"
+			:max-length="8000"
+		/>
 	</div>
 </template>
 
@@ -114,52 +84,13 @@
 		width: 100%;
 	}
 	.parent-EJ5IqDbqkl {
-        min-height: 40px;
-        max-height: 60px;
-        overflow-y: scroll;
-        word-wrap: break-word;
-        line-height: 20px;
+		min-height: 40px;
+		max-height: 60px;
+		overflow-y: scroll;
+		word-wrap: break-word;
+		line-height: 20px;
 		text-align: left;
 		font-size: small;
 		color: grey;
 	}
-
-	.parent-E1x3c9x9Jg {
-		width: 100%;
-		height: 25px;
-		padding-left: 20px;
-		display: flex;
-		align-items: center;
-	}
-
-	.parent-Ny_C5cg5kx {
-		width: 20px;
-		height: 20px;
-	}
-
-	.parent-4yWJs9l9kl {
-		padding-left: 10px;
-		display: flex;
-		align-items: center;
-		font-size: medium;
-		line-height: 20px;
-	}
-
-	#slug-input-area {
-		width: 100%;
-		line-height: 20px;
-		padding: 0 5px;
-		border: none;
-		border-bottom: var(--second-color) solid 1px;
-	}
-
-    .parent-41PsiPZ5Jx {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-    }
-
-    .child-E1gknPb51g {
-        font-size: small;
-    }
 </style>

@@ -2,6 +2,7 @@
 	import { computed, ref, type Ref, watch, onMounted } from "vue";
 	import Datepicker from "vue3-datepicker";
 	import { format } from "date-fns";
+	import Radio from "./Radio.vue";
 	const props = defineProps<{
 		oldDatetime?: Date;
 	}>();
@@ -37,36 +38,8 @@
 <template>
 	<div class="parent-E14-f9e9ye">
 		<div class="child-4J9WMcl9Je parent-VyzXfqx9Je">
-			<div class="parent-E1x3c9x9Jg">
-				<input
-					class="child-N1vpq9lqkx parent-Ny_C5cg5kx"
-					type="radio"
-					v-model="auto"
-					name="auto-datetime"
-					id="auto-datetime"
-					:value="true"
-				/>
-				<label
-					class="child-N1vpq9lqkx parent-4yWJs9l9kl"
-					for="auto-datetime"
-					>Auto</label
-				>
-			</div>
-			<div class="parent-E1x3c9x9Jg">
-				<input
-					class="child-N1vpq9lqkx parent-Ny_C5cg5kx"
-					type="radio"
-					v-model="auto"
-					name="custom-datetime"
-					id="custom-datetime"
-					:value="false"
-				/>
-				<label
-					class="child-N1vpq9lqkx parent-4yWJs9l9kl"
-					for="custom-datetime"
-					>Custom</label
-				>
-			</div>
+			<Radio name="auto-datetime" :value="true" v-model="auto">Auto</Radio>
+			<Radio name="custom-datetime" :value="false" v-model="auto">Custom</Radio>
 		</div>
 		<div class="child-4J9WMcl9Je parent-NybiMqg51e" v-if="auto">
 			{{ format(currentDatetime, "yyyy / MM / dd HH:mm") }}
@@ -99,26 +72,5 @@
 		font-size: small;
 		letter-spacing: 3px;
 		padding-top: 1px;
-	}
-
-	.parent-E1x3c9x9Jg {
-		width: 100%;
-		height: 25px;
-		padding-left: 20px;
-		display: flex;
-		align-items: center;
-	}
-
-	.parent-Ny_C5cg5kx {
-		width: 20px;
-		height: 20px;
-	}
-
-	.parent-4yWJs9l9kl {
-		padding-left: 10px;
-		display: flex;
-		align-items: center;
-		font-size: medium;
-		line-height: 20px;
 	}
 </style>

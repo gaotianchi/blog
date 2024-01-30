@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import type { Tag } from "@/typing";
+import type { Series, Tag } from "@/typing";
 
-export function fakeTags(count: number): Tag[] {
+export function fakeTags(count: number = 200): Tag[] {
 	const tags: Tag[] = [];
 
 	for (let i = 0; i < count; i++) {
@@ -12,4 +12,19 @@ export function fakeTags(count: number): Tag[] {
 		tags.push(tag);
 	}
 	return tags;
+}
+
+export function fakeSeries(count: number = 15): Series[] {
+	const serieses: Series[] = [];
+	const author = faker.person.fullName();
+	for (let i = 0; i < count; i++) {
+		const series: Series = {
+			id: i + 1,
+			title: faker.lorem.sentence({ min: 6, max: 20 }),
+			cover: "https://picsum.photos/50",
+			author: author,
+		};
+		serieses.push(series);
+	}
+	return serieses;
 }
