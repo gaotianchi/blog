@@ -1,15 +1,7 @@
 <script setup lang="ts">
-	import {
-		computed,
-		ref,
-		type Ref,
-		watch,
-		onMounted,
-		watchEffect,
-	} from "vue";
+	import { computed, ref, type Ref, watch, onMounted } from "vue";
 	import Datepicker from "vue3-datepicker";
 	import { format } from "date-fns";
-	import Radio from "./Radio.vue";
 	const props = defineProps<{
 		oldDatetime?: Date;
 	}>();
@@ -34,9 +26,12 @@
 	watch(currentDatetime, () => {
 		emits("updateDatetime", currentDatetime.value);
 	});
-	const datePicker: Ref<HTMLElement | null> = ref(null);
 	onMounted(() => {
 		emits("updateDatetime", currentDatetime.value);
+	});
+	const datePicker: Ref<HTMLElement | null> = ref(null);
+	watch(datePicker, () => {
+		datePicker.value?.focus();
 	});
 </script>
 <template>
@@ -78,7 +73,7 @@
 		</div>
 		<div class="child-4J9WMcl9Je parent-41dvG5l91g" v-if="!auto">
 			<Datepicker
-				:style="'font-style:italic;padding:0;width: 100%;font-size:small;border:none;letter-spacing:3px;'"
+				:style="'border:none;border-bottom: var(--second-color) solid 1px;font-style:italic;padding:0;width:100%;font-size:small;letter-spacing:3px;'"
 				v-model="customDatetime"
 				minimum-view="time"
 				typeable
@@ -115,14 +110,15 @@
 	}
 
 	.parent-Ny_C5cg5kx {
-		width: 16px;
-		height: 16px;
+		width: 20px;
+		height: 20px;
 	}
 
 	.parent-4yWJs9l9kl {
 		padding-left: 10px;
 		display: flex;
 		align-items: center;
-		font-size: small;
+		font-size: medium;
+		line-height: 20px;
 	}
 </style>
