@@ -1,56 +1,40 @@
 <script setup lang="ts">
-	import { computed, ref, watchEffect, type Ref } from "vue";
-	import { getUnixTime } from "date-fns";
+	import { ref, type Ref, computed, watchEffect } from "vue";
 	import Radio from "./Radio.vue";
 	import Input from "./Input.vue";
 	const props = defineProps<{
-		oldSlug?: string;
-		articleTitle?: string;
+		permalink: string;
 	}>();
 	const emits = defineEmits<{
 		updatePermalink: [permalink: string];
 	}>();
-	function cleanSlug(str: string): string {
-		return (
-			str
-				.toLowerCase()
-				.replace(/[^a-z0-9-]/g, "-")
-				// .replace(/-+/g, "-")
-				// .replace(/^-|-$/g, "")
-				.slice(0, 8000)
-		);
-	}
+
 	const auto: Ref<boolean> = ref(true);
-	const autoPermalinkSlug = computed<string>(() => {
-		const autoSlug = cleanSlug(props.articleTitle || "");
-		const timestamp = getUnixTime(new Date()).toString();
-		if (autoSlug.length > 0) {
-			return autoSlug + timestamp;
-		} else {
-			return "blog-post-" + timestamp;
-		}
-	});
-	const customSlug: Ref<string> = ref(autoPermalinkSlug.value);
+
+	const customSlug: Ref<string> = ref("");
+	function cleanSlug(str: string): string {
+		return str
+			.toLowerCase()
+			.replace(/[^a-z0-9-]/g, "-")
+			.slice(0, 8000);
+	}
 	watchEffect(() => {
 		const cleanedSlug = cleanSlug(customSlug.value);
 		customSlug.value = cleanedSlug;
 	});
 	const currentPermalink = computed<string>(() => {
-		const rootUrl = "https://gaotianchi.com/";
+		let result: string;
 		if (auto.value) {
-			const permalink = rootUrl + autoPermalinkSlug.value;
-			emits("updatePermalink", permalink);
-			return permalink;
+			result = props.permalink;
 		} else {
-			const permalink = rootUrl + customSlug.value;
-			if (customSlug.value.length > 0) {
-				emits("updatePermalink", permalink);
-				return permalink;
+			if (customSlug.value) {
+				result = customSlug.value;
 			} else {
-				emits("updatePermalink", rootUrl + autoPermalinkSlug.value);
-				return rootUrl + autoPermalinkSlug.value;
+				result = props.permalink;
 			}
 		}
+		emits("updatePermalink", result);
+		return result;
 	});
 </script>
 
@@ -63,7 +47,7 @@
 			<Radio name="auto-permalink" :value="true" v-model="auto"
 				>Auto</Radio
 			>
-			<Radio name="custom-datetime" :value="false" v-model="auto"
+			<Radio name="custom-permalink" :value="false" v-model="auto"
 				>Custom</Radio
 			>
 		</div>

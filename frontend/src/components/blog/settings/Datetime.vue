@@ -1,33 +1,26 @@
 <script setup lang="ts">
-	import { computed, ref, type Ref, watch, onMounted } from "vue";
+	import { ref, type Ref, watch, watchEffect } from "vue";
 	import Datepicker from "vue3-datepicker";
 	import { format } from "date-fns";
 	import Radio from "./Radio.vue";
 	const props = defineProps<{
-		oldDatetime?: Date;
+		datetime?: Date;
 	}>();
 	const emits = defineEmits<{
 		updateDatetime: [newDatetime: Date];
 	}>();
 	const auto: Ref<boolean> = ref(true);
-	const customDatetime: Ref<Date> = ref(
-		props.oldDatetime ? props.oldDatetime : new Date()
-	);
-	const currentDatetime = computed<Date>(() => {
+	const autoDatetime: Ref<Date> = ref(props.datetime ?? new Date());
+	const customDatetime: Ref<Date> = ref(autoDatetime.value);
+	const currentDatetime: Ref<Date> = ref(autoDatetime.value);
+	watchEffect(() => {
 		if (auto.value) {
-			if (props.oldDatetime) {
-				return props.oldDatetime;
-			} else {
-				return new Date();
-			}
+			currentDatetime.value = autoDatetime.value;
 		} else {
-			return customDatetime.value;
+			currentDatetime.value = customDatetime.value;
 		}
 	});
 	watch(currentDatetime, () => {
-		emits("updateDatetime", currentDatetime.value);
-	});
-	onMounted(() => {
 		emits("updateDatetime", currentDatetime.value);
 	});
 	const datePicker: Ref<HTMLElement | null> = ref(null);
@@ -38,8 +31,12 @@
 <template>
 	<div class="parent-E14-f9e9ye">
 		<div class="child-4J9WMcl9Je parent-VyzXfqx9Je">
-			<Radio name="auto-datetime" :value="true" v-model="auto">Auto</Radio>
-			<Radio name="custom-datetime" :value="false" v-model="auto">Custom</Radio>
+			<Radio name="auto-datetime" :value="true" v-model="auto"
+				>Auto</Radio
+			>
+			<Radio name="custom-datetime" :value="false" v-model="auto"
+				>Custom</Radio
+			>
 		</div>
 		<div class="child-4J9WMcl9Je parent-NybiMqg51e" v-if="auto">
 			{{ format(currentDatetime, "yyyy / MM / dd HH:mm") }}

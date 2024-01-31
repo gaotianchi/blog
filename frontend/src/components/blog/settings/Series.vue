@@ -1,54 +1,40 @@
 <script setup lang="ts">
-	import { computed, ref, type Ref } from "vue";
+	import { reactive, ref, type Ref, computed, watch } from "vue";
 	import { getSeries } from "@/api";
-	import type { Series } from "@/typing";
 	import Radio from "./Radio.vue";
 	import Input from "./Input.vue";
 	import icons from "@/components/icons";
+	import type { APIError } from "@/api/errors";
 	import { getUnixTime } from "date-fns";
+	type SeriesItems = {
+		title?: string;
+		cover?: string;
+	};
 	const props = defineProps<{
-		oldSeries?: Series;
+		series: SeriesItems;
 	}>();
 	const emits = defineEmits<{
-		updateSereis: [series: Series | null];
+		updateSeries: [series: SeriesItems];
 	}>();
 	const action: Ref<"default" | "select" | "new"> = ref("default");
-	const selectedSeries: Ref<Series | null> = ref(null);
-	const newSeries = computed<Series | null>(() => {
-		if (newSeriesTitle.value) {
-			if (previewUrl.value) {
-				const rootUrl = "https://gaotianchi.com/";
-				const coverName =
-					"series-cover-" + getUnixTime(new Date()).toString();
-				const coverUrl = rootUrl + coverName;
-				const newSeries: Series = {
-					cover: coverUrl,
-					title: newSeriesTitle.value,
-				};
-				return newSeries;
-			} else {
-				return {
-					title: newSeriesTitle.value,
-				};
+	const defaultSeries: SeriesItems = props.series;
+	const selectedSeries: SeriesItems = reactive({});
+	const newSeries: SeriesItems = reactive({});
+	const previewUrl: Ref<string | undefined> = ref(undefined);
+	const currentSeries = computed<SeriesItems>(() => {
+		let result: SeriesItems = defaultSeries;
+		if (action.value === "select") {
+			if (selectedSeries.title) {
+				result = selectedSeries;
 			}
-		} else {
-			return null;
 		}
-	});
-	const newSeriesTitle: Ref<string> = ref("");
-	const previewUrl: Ref<string> = ref("");
-	const currentSeries = computed<Series | null>(() => {
-		switch (action.value) {
-			case "new":
-				emits("updateSereis", newSeries.value);
-				return newSeries.value;
-			case "select":
-				emits("updateSereis", selectedSeries.value);
-				return selectedSeries.value;
-			default:
-				emits("updateSereis", props.oldSeries || null);
-				return props.oldSeries || null;
+		if (action.value === "new") {
+			if (newSeries.title) {
+				result = newSeries;
+			}
 		}
+		emits("updateSeries", currentSeries.value);
+		return result;
 	});
 	const oldSerieses = getSeries();
 	function limString(str: string, maxLength: number): string {
@@ -58,7 +44,7 @@
 			return str.slice(0, maxLength) + " ...";
 		}
 	}
-	const uploadImageArea: Ref<HTMLInputElement | null> = ref(null);
+	const uploadImageArea: Ref<HTMLInputElement | undefined> = ref(undefined);
 	function triggerFileInput(): void {
 		uploadImageArea?.value?.click();
 	}
@@ -67,28 +53,68 @@
 		console.log(selectedFile);
 		processImage(selectedFile);
 	}
-	function processImage(image: File | undefined): void {
-		if (image) {
+	async function uploadImage(file: File): Promise<void> {
+		const url = "http://localhost:5000/v1/media/uploads";
+		const formData = new FormData();
+		formData.append("file", file);
+		fetch(url, {
+			method: "POST",
+			body: formData,
+		})
+			.then((response) => {
+				if (response.status === 201) {
+					console.log("Success.");
+				} else {
+					return response.json();
+				}
+			})
+			.then((response) => {
+				if (response) {
+					const error = response.error as APIError;
+					console.log(error.displayMessage);
+				}
+			});
+	}
+	function processImage(file: File | undefined): void {
+		if (file) {
 			const reader = new FileReader();
 			reader.onload = () => {
 				previewUrl.value = reader.result as string;
 			};
-			reader.readAsDataURL(image);
+			reader.readAsDataURL(file);
+			const nameArr = file.name.split(".");
+			const newFilename =
+				"image-" +
+				getUnixTime(new Date()) +
+				"." +
+				nameArr[nameArr.length - 1];
+			const renameFile = new File([file], newFilename, {
+				type: file.type,
+			});
+			newSeries.cover = newFilename;
+			uploadImage(renameFile);
 		}
-
-		console.log("upload image here.")
 	}
 	function resetCover(): void {
-		previewUrl.value = "";
+		previewUrl.value = undefined;
+		newSeries.cover = undefined;
 		if (uploadImageArea.value) {
 			uploadImageArea.value.value = "";
 		}
+	}
+	function selectSeries(title: string, cover: string): void {
+		selectedSeries.title = title;
+		selectedSeries.cover = cover;
 	}
 </script>
 <template>
 	<div class="parent-4JxPgYb9Jl">
 		<div class="parent-EJ5IqDbqkl child-N1IGDObcye">
-			{{ currentSeries ? limString(currentSeries?.title, 90) : "No series selected." }}
+			{{
+				currentSeries.title
+					? limString(currentSeries.title, 90)
+					: "No series selected."
+			}}
 		</div>
 		<div class="parent- child-N1IGDObcye">
 			<Radio name="default" value="default" v-model="action"
@@ -106,7 +132,7 @@
 			<div
 				class="parent- child-EJRV0dWq1e"
 				v-for="series in oldSerieses"
-				@click="selectedSeries = series"
+				@click="selectSeries(series.title, series.cover)"
 			>
 				<div class="parent-4kGYZF-qJl child-4yb5kK-9yx">
 					<img :src="series.cover" :alt="series.title" />
@@ -149,7 +175,7 @@
 			<Input
 				name="new-series-area"
 				:max-length="300"
-				v-model="newSeriesTitle"
+				v-model="newSeries.title"
 				class="child-4kK6OY-cJl"
 			/>
 		</div>

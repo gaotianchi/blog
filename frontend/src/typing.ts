@@ -4,8 +4,8 @@ export type Tag = {
 };
 
 export type Series = {
-	id?: number;
+	id: number;
 	title: string;
-	cover?: string;
-	author?: string;
+	cover: string;
+	author: string;
 };

@@ -2,14 +2,13 @@
 	import { type Ref, ref, computed, onMounted, watchEffect } from "vue";
 	import { getTags } from "@/api";
 	import { Index } from "flexsearch";
-
 	const emits = defineEmits<{
-		inputTags: [tags: string[]];
+		updateTags: [tags: string[]];
 	}>();
 	const props = defineProps<{
-		oldTags?: string[];
+		tags?: string[];
 	}>();
-	const model: Ref<string> = ref("");
+	const model: Ref<string> = ref(props.tags?.join(",") ?? "");
 	const typedTags = computed<string[]>(() => {
 		const tagArr = model.value?.split(",").map((i) => i.trim()) || [];
 		return tagArr.slice(0, tagArr.length - 1);
@@ -46,16 +45,13 @@
 	}
 	onMounted(() => {
 		tagInput.value?.focus();
-		if (props.oldTags) {
-			model.value = props.oldTags.join(",");
-		}
 	});
 	watchEffect(() => {
 		const tagArr = model.value
 			?.split(",")
 			.map((i) => i.trim())
 			.filter((i) => i.length > 0);
-		emits("inputTags", [...new Set(tagArr)]);
+		emits("updateTags", [...new Set(tagArr)]);
 	});
 </script>
 

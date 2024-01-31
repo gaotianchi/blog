@@ -11,6 +11,8 @@ ROOT = Path(__file__).parent.parent
 
 class BaseConfig:
     SECRET_KEY = Fernet.generate_key()
+    UPLOAD_FOLDER = ROOT.joinpath("data", "uploads")
+    ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
 
 class DevelopmentConfig(BaseConfig):

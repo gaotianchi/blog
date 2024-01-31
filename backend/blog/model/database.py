@@ -76,7 +76,7 @@ class Series(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
     name: Mapped[str] = mapped_column(String(255))
-    slug: Mapped[str] = mapped_column(String(255))
+    cover: Mapped[str] = mapped_column(String(255))
 
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     author: Mapped["User"] = relationship("User", back_populates="series")

@@ -23,10 +23,10 @@
 			/>
 			<div class="child-VkrD6pCK1l parent-NJ5vAaAFke">
 				<div class="child-Ek0lyC0K1g parent-V1pmRXl5yl">
-					<slot name="title">Ttile</slot>
+					<slot name="title">Title</slot>
 				</div>
 				<div class="child-Ek0lyC0K1g parent-4JUNCmx5kg" v-if="!active">
-					<slot name="preview">Preview</slot>
+						<slot name="preview">Preview</slot>
 				</div>
 			</div>
 		</button>
