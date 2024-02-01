@@ -22,8 +22,7 @@
 	const props = defineProps<{
 		settings: Settings;
 	}>();
-	const initSettings = props.settings;
-	const currentSettings: Settings = reactive(initSettings);
+	const currentSettings: Settings = reactive(props.settings);
 	watch(
 		currentSettings,
 		(newSettings) => {
@@ -44,7 +43,7 @@
 			<template #preview>{{ currentSettings.tags?.join(",") }}</template>
 			<template #detail>
 				<TagVue
-					:tags="initSettings.tags"
+					:tags="props.settings.tags"
 					@update-tags="
 						(tags) => {
 							currentSettings.tags = tags;
@@ -65,7 +64,7 @@
 			</template>
 			<template #detail>
 				<Datetime
-					:datetime="initSettings.datetime"
+					:datetime="props.settings.datetime"
 					@update-datetime="
 						(datetime) => {
 							currentSettings.datetime = datetime;
@@ -81,7 +80,7 @@
 			}}</template>
 			<template #detail>
 				<Permalink
-					:permalink="initSettings.permalink ?? getAutoSlug()"
+					:permalink="props.settings.permalink ?? getAutoSlug()"
 					@update-permalink="
 						(permalink) => {
 							currentSettings.permalink = permalink;
@@ -95,7 +94,7 @@
 			<template #preview>{{ currentSettings.series?.title }}</template>
 			<template #detail>
 				<SeriesVue
-					:series="initSettings.series ?? {}"
+					:series="props.settings.series ?? {}"
 					@update-series="
 						(series) => {
 							currentSettings.series = series;

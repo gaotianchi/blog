@@ -1,15 +1,16 @@
+import time
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, Column
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from blog.extens import db
 
-post_tag_association = db.Table(
-    "post_tag_association",
-    Column("post_id", Integer, ForeignKey("post.id"), primary_key=True),
+article_tag_association = db.Table(
+    "article_tag_association",
+    Column("article_id", Integer, ForeignKey("article.id"), primary_key=True),
     Column("tag_id", Integer, ForeignKey("tag.id"), primary_key=True),
 )
 
@@ -28,7 +29,7 @@ class User(db.Model):
 
     token_validity_period: Mapped[int] = mapped_column(Integer, default=604800)
 
-    posts = relationship("Post", back_populates="author")
+    articles = relationship("Article", back_populates="author")
     series = relationship("Series", back_populates="author")
 
     @classmethod
@@ -67,8 +68,8 @@ class Tag(db.Model):
     name: Mapped[str] = mapped_column(String(255))
     slug: Mapped[str] = mapped_column(String(255))
 
-    posts: Mapped[list["Post"]] = relationship(
-        secondary=post_tag_association, back_populates="tags"
+    articles: Mapped[list["Article"]] = relationship(
+        secondary=article_tag_association, back_populates="tags"
     )
 
 
@@ -81,29 +82,86 @@ class Series(db.Model):
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     author: Mapped["User"] = relationship("User", back_populates="series")
 
-    posts: Mapped["list[Post]"] = relationship("Post", back_populates="series")
+    articles: Mapped["list[Article]"] = relationship("Article", back_populates="series")
 
 
-class Post(db.Model):
+def get_auto_slug(prefix: str = "") -> str:
+    return prefix + str(time.time())
+
+
+class Article(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
-    title: Mapped[str] = mapped_column(String(255))
-    slug: Mapped[str] = mapped_column(String(255))
+    title: Mapped[str] = mapped_column(String(255), default="")
+    slug: Mapped[str] = mapped_column(String(255), default=get_auto_slug(), unique=True)
 
-    body: Mapped[str] = mapped_column(Text)
+    body: Mapped[str] = mapped_column(Text, default="")
 
-    created_at: Mapped[datetime] = mapped_column(DateTime)
-    updated_at: Mapped[datetime] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
 
-    is_published: Mapped[bool] = mapped_column(Boolean)
-    published_at: Mapped[datetime] = mapped_column(DateTime)
+    is_published: Mapped[bool] = mapped_column(Boolean, default=False)
+    published_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
 
-    series_id: Mapped[int] = mapped_column(Integer, ForeignKey("series.id"))
-    series = relationship("Series", back_populates="posts")
+    series_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("series.id"), nullable=True
+    )
+    series = relationship("Series", back_populates="articles")
 
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
-    author = relationship("User", back_populates="posts")
+    author = relationship("User", back_populates="articles")
 
     tags: Mapped[list["Tag"]] = relationship(
-        secondary=post_tag_association, back_populates="posts"
+        secondary=article_tag_association, back_populates="articles"
     )
+
+    @classmethod
+    def create(cls, author: User) -> "Article":
+        new_article = Article(author=author)  # type: ignore
+        db.session.add(new_article)
+        db.session.commit()
+        return Article.query.get(new_article.id)  # type: ignore
+
+    def update(
+        self,
+        title: str | None = None,
+        body: str | None = None,
+        slug: str | None = None,
+        is_published: bool = False,
+        series: Series | None = None,
+        tags: list[Tag] | None = None,
+    ) -> "Article":  # type: ignore
+        if title:
+            self.title = title
+        if body:
+            self.body = body
+        self.is_published = is_published
+        if series:
+            self.series = series
+        if slug:
+            self.slug = slug
+        if tags:
+            self.tags = self.tags
+        self.updated_at = datetime.utcnow()
+        if is_published:
+            self.published_at = datetime.utcnow()
+
+        db.session.add(self)
+        db.session.commit()
+        return Article.query.get(self.id)  # type: ignore
+
+    def to_dict(self):
+        return dict(
+            title=self.title,
+            body=self.body[0:300] + " ...",
+            slug=self.slug,
+            is_published=self.is_published,
+            published_at=self.published_at,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            series_id=self.series_id,
+            tags=self.tags,
+        )
+
+    def __repr__(self) -> str:
+        return f"Article <{self.title}>"

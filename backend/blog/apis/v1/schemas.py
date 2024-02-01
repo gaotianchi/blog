@@ -6,7 +6,7 @@ PASSWORD = {
 }
 
 
-schema_01 = {
+SCHEMA_01 = {
     "$schema": SCHEMA,
     "type": "object",
     "properties": {
@@ -16,7 +16,7 @@ schema_01 = {
     "required": ["username", "password"],
 }
 
-schema_02 = {
+SCHEMA_02 = {
     "$schema": SCHEMA,
     "type": "object",
     "properties": {
@@ -26,7 +26,7 @@ schema_02 = {
     "required": ["access_token", "token_type"],
 }
 
-schema_03 = {
+SCHEMA_03 = {
     "$schema": SCHEMA,
     "type": "object",
     "properties": {
@@ -46,4 +46,24 @@ schema_03 = {
         "token_validity_period",
         "username",
     ],
+}
+
+SCHEMA_04 = {  # type: ignore
+    "$schema": SCHEMA,
+    "type": "object",
+    "properties": {
+        "title": {"type", "string"},
+        "body": {"type", "string"},
+        "slug": {"type", "string"},
+        "is_published": {"type", "boolean"},
+        "series": {
+            "type": "object",
+            "properties": {
+                "title": {"type": "string"},
+                "cover": {"type": "string"},
+            },
+        },
+        "tags": {"type": "array", "items": "string"},
+    },
+    "required": [],
 }
