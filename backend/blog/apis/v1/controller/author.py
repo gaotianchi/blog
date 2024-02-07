@@ -29,17 +29,20 @@ def update(id: int):
         return abort(message="No article found.")
 
     data = cast(dict[str, Any], request.json)
-    request_data = dict(
-        title=data.get("title"),
-        body=data.get("body"),
-        slug=data.get("slug"),
-        is_published=data.get("is_published"),
-        series=data.get("series"),
-        tags=data.get("tags"),
-    )
-    if validator(request_data, SCHEMA_04):  # type: ignore
+    if validator(data, SCHEMA_04):  # type: ignore
         return abort()
 
-    new_article = current_article.update(**request_data)  # type: ignore
+    new_article = current_article.update(**data)  # type: ignore
 
     return jsonify(new_article.to_dict()), 200  # type: ignore
+
+
+@author.route("/article/<int:id>", methods=["GET"])
+def get_article_data(id: int):
+    current_article = cast(Article, Article.query.get(id))
+    if not current_article:
+        return abort(message="No article found.")
+    data = current_article.to_dict()
+    if validator(data, SCHEMA_04):  # type: ignore
+        return abort()
+    return jsonify(data), 200

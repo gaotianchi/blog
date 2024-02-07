@@ -92,7 +92,7 @@ def get_auto_slug(prefix: str = "") -> str:
 class Article(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
-    title: Mapped[str] = mapped_column(String(255), default="")
+    title: Mapped[str] = mapped_column(String(255), default="Untitled article")
     slug: Mapped[str] = mapped_column(String(255), default=get_auto_slug(), unique=True)
 
     body: Mapped[str] = mapped_column(Text, default="")
@@ -152,13 +152,14 @@ class Article(db.Model):
 
     def to_dict(self):
         return dict(
+            id=self.id,
             title=self.title,
             body=self.body[0:300] + " ...",
             slug=self.slug,
             is_published=self.is_published,
-            published_at=self.published_at,
-            created_at=self.created_at,
-            updated_at=self.updated_at,
+            published_at=self.published_at.isoformat(),
+            created_at=self.created_at.isoformat(),
+            updated_at=self.updated_at.isoformat(),
             series_id=self.series_id,
             tags=self.tags,
         )

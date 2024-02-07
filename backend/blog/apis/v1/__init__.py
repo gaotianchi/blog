@@ -4,8 +4,8 @@ from flask import Blueprint, jsonify
 
 from .controller.account import account
 from .controller.author import author
-from .controller.vistor import vistor
 from .controller.media import media
+from .controller.vistor import vistor
 
 v1 = Blueprint("v1", __name__, url_prefix="/v1")
 
