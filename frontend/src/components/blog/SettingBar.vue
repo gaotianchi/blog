@@ -4,19 +4,19 @@
 	import Permalink from "./settings/Permalink.vue";
 	import SeriesVue from "./settings/Series.vue";
 	import SettingItem from "./SettingItem.vue";
-	import { reactive, watch } from "vue";
+	import { reactive, watch, watchEffect } from "vue";
 	import { format, getUnixTime } from "date-fns";
 	type Settings = {
 		tags: string[];
 		datetime: Date;
 		permalink: string;
-		series_id: number | null;
+		series_id: number;
 	};
 	type Series = {
 		id: number;
 		name: string;
 		author_id: number;
-		cover: string | null;
+		cover: string;
 	};
 	const emits = defineEmits<{
 		updateSettings: [settings: Settings];
@@ -25,13 +25,9 @@
 		settings: Settings;
 	}>();
 	const currentSettings: Settings = reactive(props.settings);
-	watch(
-		currentSettings,
-		(newSettings) => {
-			emits("updateSettings", { ...newSettings });
-		},
-		{ deep: true }
-	);
+	watchEffect(() => {
+		emits("updateSettings", currentSettings);
+	});
 	async function getSeries(): Promise<Series | void> {
 		if (!props.settings.series_id) {
 			return;
@@ -49,15 +45,14 @@
 		}
 	}
 	const currentSeries: Series = reactive({
-		id: 1,
-		author_id: 1,
+		id: 0,
+		author_id: 0,
 		name: "",
 		cover: "",
 	});
 	getSeries()
 		.then((response) => {
 			Object.assign(currentSeries, response);
-			console.log(currentSeries);
 		})
 		.catch((error) => {
 			console.error(error);
@@ -69,7 +64,7 @@
 	}
 </script>
 <template>
-	<div class="parent-">
+	<div class="parent-Vk3Ihqa5kg">
 		<SettingItem>
 			<template #title>Tags</template>
 			<template #preview>{{ currentSettings.tags?.join(",") }}</template>
@@ -129,7 +124,7 @@
 					:series="currentSeries ?? {}"
 					@update-series="
 						(series) => {
-							currentSeries = series;
+							currentSettings.series_id = series.id;
 						}
 					"
 				/>
@@ -137,4 +132,9 @@
 		</SettingItem>
 	</div>
 </template>
-<style scoped></style>
+<style scoped>
+	.parent-Vk3Ihqa5kg {
+		width: 300px;
+		height: fit-content;
+	}
+</style>

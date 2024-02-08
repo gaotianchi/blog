@@ -1,24 +1,26 @@
 <script setup lang="ts">
-	import { ref, type Ref, watch, watchEffect } from "vue";
+	import { ref, type Ref, watch, watchEffect, computed } from "vue";
 	import Datepicker from "vue3-datepicker";
 	import { format } from "date-fns";
 	import Radio from "./Radio.vue";
 	const props = defineProps<{
-		datetime?: Date;
+		datetime: Date;
 	}>();
 	const emits = defineEmits<{
 		updateDatetime: [newDatetime: Date];
 	}>();
 	const auto: Ref<boolean> = ref(true);
-	const autoDatetime: Ref<Date> = ref(props.datetime ?? new Date());
-	const customDatetime: Ref<Date> = ref(autoDatetime.value);
-	const currentDatetime: Ref<Date> = ref(autoDatetime.value);
-	watchEffect(() => {
+	const customDatetime: Ref<Date> = ref(new Date());
+	const currentDatetime: Ref<Date> = ref(props.datetime);
+	watch(customDatetime, () => {
+		let result: Date = props.datetime;
 		if (auto.value) {
-			currentDatetime.value = autoDatetime.value;
+			result = props.datetime;
 		} else {
-			currentDatetime.value = customDatetime.value;
+			result = customDatetime.value;
 		}
+		console.log(result);
+		currentDatetime.value = result;
 	});
 	watch(currentDatetime, () => {
 		emits("updateDatetime", currentDatetime.value);
@@ -26,6 +28,7 @@
 	const datePicker: Ref<HTMLElement | null> = ref(null);
 	watch(datePicker, () => {
 		datePicker.value?.focus();
+		console.log(customDatetime.value);
 	});
 </script>
 <template>

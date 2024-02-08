@@ -13,14 +13,21 @@
 		updatedAt: Date;
 		isPublished: boolean;
 		publishedAt: Date;
-		seriesId: number | null;
+		seriesId: number;
 		authorId: number;
 		tags: string[];
+	};
+	type Settings = {
+		tags: string[];
+		datetime: Date;
+		permalink: string;
+		series_id: number;
 	};
 	type Status = {
 		moreButton: boolean;
 		sync: boolean;
 		update: boolean;
+		settings: boolean;
 	};
 	const props = defineProps<{
 		articleId: string;
@@ -29,7 +36,9 @@
 		moreButton: false,
 		sync: true,
 		update: false,
+		settings: false,
 	});
+
 	async function getArticleData(): Promise<ArtitleItems> {
 		const url =
 			"http://localhost:5000/v1/author/article/" + props.articleId;
@@ -55,8 +64,8 @@
 			throw errorData.error;
 		}
 	}
-	const currentArticle: ArtitleItems = reactive({
-		id: 1,
+	const originalArticle: ArtitleItems = reactive({
+		id: 0,
 		title: "",
 		body: "",
 		slug: "",
@@ -65,9 +74,10 @@
 		isPublished: false,
 		publishedAt: new Date(),
 		tags: [],
-		seriesId: null,
-		authorId: 1,
+		seriesId: 0,
+		authorId: 0,
 	});
+	const currentArticle: ArtitleItems = reactive(originalArticle);
 	const articleJson = computed<{
 		id: number;
 		title: string;
@@ -80,19 +90,20 @@
 		tags: string[];
 		series_id: number | null;
 	}>(() => {
-		const article = currentArticle;
-		return {
-			id: article.id,
-			title: article.title,
-			body: article.body,
-			slug: article.slug,
-			created_at: article.createdAt.toISOString(),
-			tags: article.tags,
-			is_published: article.isPublished,
-			published_at: article.publishedAt.toISOString(),
+		const currentJson = {
+			id: currentArticle.id,
+			title: currentArticle.title,
+			body: currentArticle.body,
+			slug: currentArticle.slug,
+			created_at: currentArticle.createdAt.toISOString(),
+			tags: currentArticle.tags,
+			is_published: currentArticle.isPublished,
+			published_at: currentArticle.publishedAt.toISOString(),
 			updated_at: new Date().toISOString(),
-			series_id: article.seriesId,
+			series_id: currentArticle.seriesId,
 		};
+		console.log(currentJson);
+		return currentJson;
 	});
 
 	async function update(): Promise<void> {
@@ -107,6 +118,7 @@
 			},
 			body: JSON.stringify(articleJson.value),
 		});
+		console.log("Update article.");
 	}
 
 	async function publishOrUpdateArticle(): Promise<void> {
@@ -123,11 +135,11 @@
 			}, 1000);
 		}
 	});
-
+	console.log(currentArticle);
 	getArticleData()
 		.then((data) => {
-			Object.assign(currentArticle, data);
-			console.log(currentArticle);
+			Object.assign(originalArticle, data);
+			console.log(originalArticle);
 		})
 		.catch((error) => {
 			console.error(error);
@@ -135,6 +147,12 @@
 	watch(currentArticle, () => {
 		status.sync = false;
 	});
+	function updateSettings(settings: Settings): void {
+		currentArticle.tags = settings.tags;
+		currentArticle.slug = settings.permalink;
+		currentArticle.seriesId = settings.series_id;
+		currentArticle.tags = settings.tags;
+	}
 </script>
 
 <template>
@@ -207,8 +225,21 @@
 				<component
 					:is="icons.setting"
 					class="icon medium parent-T1UEoQnqJx"
+					@click="status.settings = !status.settings"
 				/>
-				<!-- <SettingBar /> -->
+				<div class="parent-Vy_T35aq1x" v-if="status.settings">
+					<div class="parent-4yCs6qp9Jg">Article Settings</div>
+					<SettingBar
+						class="parent-dJnizjpqye"
+						:settings="{
+							tags: originalArticle.tags,
+							datetime: originalArticle.publishedAt,
+							permalink: originalArticle.slug,
+							series_id: originalArticle.seriesId,
+						}"
+						@update-settings="updateSettings"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -284,8 +315,8 @@
 		cursor: default;
 		z-index: 99;
 		padding: 15px 0;
-		background-color: white;
-		box-shadow: -1px 1px 1px 1px rgba(128, 128, 128, 0.103);
+		box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+		background: rgb(255, 255, 255);
 	}
 	.child-VJMNmI35yx {
 		width: 100%;
@@ -309,7 +340,6 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		border: grey solid 1px;
 		cursor: pointer;
 	}
 	.child-G1Bcjm39yl {
@@ -318,4 +348,21 @@
 	.parent-VJTd3Xn9kx {
 		min-height: calc(100vh - 50px);
 	}
+	.parent-Vy_T35aq1x {
+		position: absolute;
+		top: 50px;
+		right: 0px;
+		z-index: 99;
+		padding: 10px 10px;
+		box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+		background: rgb(255, 255, 255);
+	}
+	.parent-4yCs6qp9Jg {
+		font-size: 17px;
+		font-weight: 500;
+		padding-bottom: 10px;
+	}
+	/* .parent-dJnizjpqye{
+
+	} */
 </style>

@@ -6,11 +6,12 @@
 	import icons from "@/components/icons";
 	import type { APIError } from "@/api/errors";
 	import { getUnixTime } from "date-fns";
+	import { create } from "flexsearch";
 	type Series = {
 		id: number;
 		name: string;
 		author_id: number;
-		cover: string | null;
+		cover: string;
 	};
 	type Action = "default" | "select" | "new";
 
@@ -23,18 +24,18 @@
 	const action: Ref<Action> = ref("default");
 	const defaultSeries: Series = props.series;
 	const selectedSeries: Series = reactive({
-		id: 1,
+		id: 0,
 		name: "",
-		author_id: 1,
-		cover: null,
+		author_id: 0,
+		cover: "",
 	});
 	const newSeries: Series = reactive({
-		id: 1,
+		id: 0,
 		name: "",
-		author_id: 1,
-		cover: null,
+		author_id: 0,
+		cover: "",
 	});
-	const previewUrl: Ref<string | null> = ref(null);
+	const previewUrl: Ref<string> = ref("");
 	const currentSeries = computed<Series>(() => {
 		let result: Series = defaultSeries;
 		if (action.value === "select") {
@@ -52,18 +53,23 @@
 	});
 	const oldSerieses = getSeries();
 	async function createSeries(): Promise<void> {
+		if (newSeries.id) {
+			console.log("Series has been created.");
+			return;
+		}
 		const url = "http://localhost:5000/v1/author/series";
 		const accessToken = localStorage.getItem("access_token");
 		const response = await fetch(url, {
 			method: "POST",
 			headers: { Authorization: "Bearer " + accessToken },
 		});
-		if (response.status === 200) {
+		if (response.status === 201) {
 			const responseData = await response.json();
 			console.log(responseData);
+			Object.assign(newSeries, responseData);
 		} else {
 			const errorData = await response.json();
-			console.error(errorData);
+			throw errorData.error;
 		}
 	}
 	function limString(str: string, maxLength: number): string {
@@ -71,17 +77,6 @@
 			return str;
 		} else {
 			return str.slice(0, maxLength) + " ...";
-		}
-	}
-	function changeAction(a: Action): void {
-		switch (a) {
-			case "select":
-				action.value = "select";
-				break;
-			case "new":
-				action.value = "new";
-				createSeries();
-				break;
 		}
 	}
 	const uploadImageArea: Ref<HTMLInputElement | null> = ref(null);
@@ -136,8 +131,8 @@
 		}
 	}
 	function resetCover(): void {
-		previewUrl.value = null;
-		newSeries.cover = null;
+		previewUrl.value = "";
+		newSeries.cover = "";
 		if (uploadImageArea.value) {
 			uploadImageArea.value.value = "";
 		}
@@ -163,7 +158,9 @@
 			<Radio name="select" value="select" v-model="action"
 				>Select another</Radio
 			>
-			<Radio name="new" value="new" v-model="action">New</Radio>
+			<Radio name="new" value="new" v-model="action" @click="createSeries"
+				>New</Radio
+			>
 		</div>
 		<div
 			class="parent-EyA9lY-5Jx child-N1IGDObcye"

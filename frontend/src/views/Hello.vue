@@ -10,7 +10,6 @@
 	const currentSeries: Ref<Series | null> = ref(null);
 	function update(data: Series): void {
 		currentSeries.value = data;
-		console.log(currentSeries);
 	}
 </script>
 
@@ -18,10 +17,10 @@
 	{{ currentSeries }}
 	<Series
 		:series="{
-			id: 1,
-			name: 'hello world',
-			cover: 'hello world',
-			author_id: 1,
+			id: 0,
+			name: '',
+			cover: '',
+			author_id: 0,
 		}"
 		@update-series="update"
 	/>

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, cast
 
 from flask import Blueprint, g, jsonify, request
@@ -25,7 +26,7 @@ def new_article():
 def new_series():
     current_user = cast(User, g.current_user)
     new_series = Series.create(author=current_user)
-    return jsonify(f"Successfully create series <{new_series}>"), 201
+    return jsonify(new_series.to_dict()), 201
 
 
 @author.route("/series/<int:id>", methods=["PATCH"])
@@ -58,6 +59,9 @@ def update_article(id: int):
     data_to_update["body"] = data["body"]
     data_to_update["slug"] = data["slug"]
     data_to_update["is_published"] = data["is_published"]
+    data_to_update["published_at"] = datetime.strptime(
+        data["published_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+    )
     if data["series_id"]:
         series = Series.query.get(data["series_id"])
         data_to_update["series"] = series

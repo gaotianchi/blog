@@ -28,18 +28,13 @@ def get_auto_slug(prefix: str = "") -> str:
 
 class User(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-
     username: Mapped[str] = mapped_column(String(255), unique=True)
     password_hash: Mapped[str] = mapped_column(String(255))
-
     nickname: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text, default="")
-
     registered_at: Mapped[datetime] = mapped_column(DateTime)
     last_login_at: Mapped[datetime] = mapped_column(DateTime)
-
     token_validity_period: Mapped[int] = mapped_column(Integer, default=604800)
-
     articles = relationship("Article", back_populates="author")
     series = relationship("Series", back_populates="author")
 
@@ -52,10 +47,8 @@ class User(db.Model):
             registered_at=datetime.utcnow(),
             last_login_at=datetime.utcnow(),
         )  # type: ignore
-
         db.session.add(new_user)
         db.session.commit()
-
         return User.query.get(new_user.id)  # type: ignore
 
     def validate_password(self, password: str) -> bool:
@@ -75,9 +68,7 @@ class User(db.Model):
 
 class Tag(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-
     name: Mapped[str] = mapped_column(String(255), unique=True)
-
     articles: Mapped[Set["Article"]] = relationship(
         secondary=article_tag_association, back_populates="tags"
     )
@@ -96,13 +87,10 @@ class Tag(db.Model):
 
 class Series(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-
     name: Mapped[str] = mapped_column(String(255), default="")
     cover: Mapped[str] = mapped_column(String(255), default="")
-
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     author: Mapped["User"] = relationship("User", back_populates="series")
-
     articles: Mapped["list[Article]"] = relationship("Article", back_populates="series")
 
     @classmethod
@@ -133,26 +121,19 @@ class Series(db.Model):
 
 class Article(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-
     title: Mapped[str] = mapped_column(String(255), default="")
     slug: Mapped[str] = mapped_column(String(255), default=get_auto_slug(), unique=True)
-
     body: Mapped[str] = mapped_column(Text, default="")
-
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
-
     is_published: Mapped[bool] = mapped_column(Boolean, default=False)
     published_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
-
     series_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("series.id"), nullable=True
     )
     series = relationship("Series", back_populates="articles")
-
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     author = relationship("User", back_populates="articles")
-
     tags: Mapped[Set["Tag"]] = relationship(
         secondary=article_tag_association, back_populates="articles"
     )
@@ -169,6 +150,7 @@ class Article(db.Model):
         title: str,
         body: str,
         slug: str,
+        published_at: datetime,
         is_published: bool = False,
         series: Series | None = None,
         tags: list[Tag] | None = None,
@@ -176,15 +158,13 @@ class Article(db.Model):
         self.title = title
         self.body = body
         self.slug = slug
+        self.published_at = published_at
         self.is_published = is_published
         if series:
             self.series = series
         if tags:
-            self.tags = self.tags
+            self.tags.update(tags)
         self.updated_at = datetime.utcnow()
-        if is_published:
-            self.published_at = datetime.utcnow()
-
         db.session.add(self)
         db.session.commit()
         return Article.query.get(self.id)  # type: ignore

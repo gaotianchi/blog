@@ -1,11 +1,11 @@
 <script setup lang="ts">
-	import { reactive, ref, type Ref } from "vue";
+	import { ref, type Ref } from "vue";
 	import SettingBar from "@/components/blog/SettingBar.vue";
 	type Settings = {
 		tags: string[];
 		datetime: Date;
 		permalink: string;
-		series_id: number | null;
+		series_id: number;
 	};
 	
 	function update(s: Settings): void {
@@ -15,13 +15,13 @@
 	const props: Settings = {
 		tags: [],
 		datetime: new Date(),
-		permalink: "hello-world-hello",
-		series_id: null,
+		permalink: "",
+		series_id: 0,
 	};
 	const settings: Ref<Settings> = ref(props);
 </script>
 
 <template>
-	<SettingBar :settings="props" @update-settings="update" />
+	<SettingBar :settings="props" @update-settings="(d) => {settings = d}" />
 	{{ settings }}
 </template>
