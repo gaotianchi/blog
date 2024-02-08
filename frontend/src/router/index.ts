@@ -23,6 +23,12 @@ const router = createRouter({
 			component: () => import("@/components/blog/Editor.vue"),
 			props: true,
 		},
+		{
+			path: "/auth/:action(login|register)",
+			name: "auth",
+			component: () => import("@/components/auth-form/AuthForm.vue"),
+			props: true,
+		},
 	],
 });
 

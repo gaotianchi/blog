@@ -6,15 +6,17 @@
 	import SettingItem from "./SettingItem.vue";
 	import { reactive, watch } from "vue";
 	import { format, getUnixTime } from "date-fns";
-	type SeriesItems = {
-		title?: string;
-		cover?: string;
-	};
 	type Settings = {
-		tags?: string[];
-		datetime?: Date;
-		permalink?: string;
-		series?: SeriesItems;
+		tags: string[];
+		datetime: Date;
+		permalink: string;
+		series_id: number | null;
+	};
+	type Series = {
+		id: number;
+		name: string;
+		author_id: number;
+		cover: string | null;
 	};
 	const emits = defineEmits<{
 		updateSettings: [settings: Settings];
@@ -30,6 +32,36 @@
 		},
 		{ deep: true }
 	);
+	async function getSeries(): Promise<Series | void> {
+		if (!props.settings.series_id) {
+			return;
+		}
+		const url =
+			"http://localhost:5000/v1/author/series/" +
+			props.settings.series_id;
+		const response = await fetch(url);
+		if (response.status === 200) {
+			const seriesData = await response.json();
+			return seriesData;
+		} else {
+			const errorData = await response.json();
+			throw errorData.error;
+		}
+	}
+	const currentSeries: Series = reactive({
+		id: 1,
+		author_id: 1,
+		name: "",
+		cover: "",
+	});
+	getSeries()
+		.then((response) => {
+			Object.assign(currentSeries, response);
+			console.log(currentSeries);
+		})
+		.catch((error) => {
+			console.error(error);
+		});
 
 	function getAutoSlug(): string {
 		const timestamp = getUnixTime(new Date()).toString();
@@ -91,13 +123,13 @@
 		</SettingItem>
 		<SettingItem>
 			<template #title>Series</template>
-			<template #preview>{{ currentSettings.series?.title }}</template>
+			<template #preview>{{ currentSeries.name }}</template>
 			<template #detail>
 				<SeriesVue
-					:series="props.settings.series ?? {}"
+					:series="currentSeries ?? {}"
 					@update-series="
 						(series) => {
-							currentSettings.series = series;
+							currentSeries = series;
 						}
 					"
 				/>

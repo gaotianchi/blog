@@ -53,6 +53,7 @@ SCHEMA_04 = {  # type: ignore
     "type": "object",
     "properties": {
         "id": {"type": "integer"},
+        "author_id": {"type": "integer"},
         "body": {"type": "string"},
         "created_at": {"type": "string", "format": "date-time"},
         "is_published": {"type": "boolean"},
@@ -73,5 +74,22 @@ SCHEMA_04 = {  # type: ignore
         "tags",
         "title",
         "updated_at",
+    ],
+}
+
+SCHEMA_05 = {
+    "$schema": SCHEMA,
+    "type": "object",
+    "properties": {
+        "id": {"type": "integer"},
+        "author_id": {"type": "integer"},
+        "name": {"type": "string"},
+        "cover": {"type": ["string", "null"]},
+    },
+    "required": [
+        "id",
+        "author_id",
+        "name",
+        "cover",
     ],
 }

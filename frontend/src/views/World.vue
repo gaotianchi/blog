@@ -1,32 +1,27 @@
 <script setup lang="ts">
 	import { reactive, ref, type Ref } from "vue";
 	import SettingBar from "@/components/blog/SettingBar.vue";
-
-	type SeriesItems = {
-		title?: string;
-		cover?: string;
-	};
 	type Settings = {
-		tags?: string[];
-		datetime?: Date;
-		permalink?: string;
-		series?: SeriesItems;
+		tags: string[];
+		datetime: Date;
+		permalink: string;
+		series_id: number | null;
 	};
-	const initSettings = {
+	
+	function update(s: Settings): void {
+		settings.value = s;
+		console.log(settings);
+	}
+	const props: Settings = {
 		tags: [],
 		datetime: new Date(),
-		permalink: "hello-world",
-		series: {
-			title: "In minim aliquyam erat diam ipsum aliquyam diam",
-		},
+		permalink: "hello-world-hello",
+		series_id: null,
 	};
-	const settings: Ref<Settings> = ref(initSettings);
-	function update(set: Settings) {
-		settings.value = set;
-	}
+	const settings: Ref<Settings> = ref(props);
 </script>
 
 <template>
-	<SettingBar :settings="initSettings" @update-settings="update" />
+	<SettingBar :settings="props" @update-settings="update" />
 	{{ settings }}
 </template>

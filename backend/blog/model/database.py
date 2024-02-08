@@ -1,6 +1,7 @@
+import re
 import time
 from datetime import datetime
-from typing import Any
+from typing import Any, Set
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -13,6 +14,16 @@ article_tag_association = db.Table(
     Column("article_id", Integer, ForeignKey("article.id"), primary_key=True),
     Column("tag_id", Integer, ForeignKey("tag.id"), primary_key=True),
 )
+
+
+def filter_string(input_string: str):
+    pattern = re.compile(r"[^a-zA-Z0-9_\-]|^.{0,1}$|^.{101,}$")
+    filtered_string = re.sub(pattern, "", input_string)
+    return filtered_string
+
+
+def get_auto_slug(prefix: str = "") -> str:
+    return prefix + str(time.time())
 
 
 class User(db.Model):
@@ -65,34 +76,65 @@ class User(db.Model):
 class Tag(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
-    name: Mapped[str] = mapped_column(String(255))
-    slug: Mapped[str] = mapped_column(String(255))
+    name: Mapped[str] = mapped_column(String(255), unique=True)
 
-    articles: Mapped[list["Article"]] = relationship(
+    articles: Mapped[Set["Article"]] = relationship(
         secondary=article_tag_association, back_populates="tags"
     )
+
+    @classmethod
+    def create(cls, *names: str) -> list["Tag"]:
+        tags = set(names)
+        for tag in tags:
+            if Tag.query.filter_by(name=tag).first():
+                continue
+            new_tag = Tag(name=tag)  # type: ignore
+            db.session.add(new_tag)
+        db.session.commit()
+        return [Tag.query.filter_by(name=name).first() for name in tags]  # type: ignore
 
 
 class Series(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
-    name: Mapped[str] = mapped_column(String(255))
-    cover: Mapped[str] = mapped_column(String(255))
+    name: Mapped[str] = mapped_column(String(255), default="")
+    cover: Mapped[str] = mapped_column(String(255), default="")
 
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     author: Mapped["User"] = relationship("User", back_populates="series")
 
     articles: Mapped["list[Article]"] = relationship("Article", back_populates="series")
 
+    @classmethod
+    def create(cls, author: User) -> "Series":
+        new_series = Series(author=author)  # type:ignore
+        db.session.add(new_series)
+        db.session.commit()
+        return Series.query.get(new_series.id)  # type:ignore
 
-def get_auto_slug(prefix: str = "") -> str:
-    return prefix + str(time.time())
+    def update(self, name: str, cover: str) -> "Series":
+        self.name = name
+        self.cover = cover
+        db.session.add(self)
+        db.session.commit()
+        return Series.query.get(self.id)  # type:ignore
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            name=self.name,
+            cover=self.cover,
+            author_id=self.author_id,
+        )
+
+    def __repr__(self) -> str:
+        return f"Series <{self.name}>"
 
 
 class Article(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
-    title: Mapped[str] = mapped_column(String(255), default="Untitled article")
+    title: Mapped[str] = mapped_column(String(255), default="")
     slug: Mapped[str] = mapped_column(String(255), default=get_auto_slug(), unique=True)
 
     body: Mapped[str] = mapped_column(Text, default="")
@@ -111,7 +153,7 @@ class Article(db.Model):
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     author = relationship("User", back_populates="articles")
 
-    tags: Mapped[list["Tag"]] = relationship(
+    tags: Mapped[Set["Tag"]] = relationship(
         secondary=article_tag_association, back_populates="articles"
     )
 
@@ -124,22 +166,19 @@ class Article(db.Model):
 
     def update(
         self,
-        title: str | None = None,
-        body: str | None = None,
-        slug: str | None = None,
+        title: str,
+        body: str,
+        slug: str,
         is_published: bool = False,
         series: Series | None = None,
         tags: list[Tag] | None = None,
     ) -> "Article":  # type: ignore
-        if title:
-            self.title = title
-        if body:
-            self.body = body
+        self.title = title
+        self.body = body
+        self.slug = slug
         self.is_published = is_published
         if series:
             self.series = series
-        if slug:
-            self.slug = slug
         if tags:
             self.tags = self.tags
         self.updated_at = datetime.utcnow()
@@ -154,14 +193,15 @@ class Article(db.Model):
         return dict(
             id=self.id,
             title=self.title,
-            body=self.body[0:300] + " ...",
+            body=self.body,
             slug=self.slug,
             is_published=self.is_published,
             published_at=self.published_at.isoformat(),
             created_at=self.created_at.isoformat(),
             updated_at=self.updated_at.isoformat(),
             series_id=self.series_id,
-            tags=self.tags,
+            author_id=self.author_id,
+            tags=[tag.name for tag in self.tags],
         )
 
     def __repr__(self) -> str:

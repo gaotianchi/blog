@@ -12,76 +12,38 @@
 		author_id: number;
 		cover: string | null;
 	};
-	type Action = "default" | "select" | "new";
-
 	const props = defineProps<{
 		series: Series;
 	}>();
 	const emits = defineEmits<{
 		updateSeries: [series: Series];
 	}>();
-	const action: Ref<Action> = ref("default");
+	const action: Ref<"default" | "select" | "new"> = ref("default");
 	const defaultSeries: Series = props.series;
-	const selectedSeries: Series = reactive({
-		id: 1,
-		name: "",
-		author_id: 1,
-		cover: null,
-	});
-	const newSeries: Series = reactive({
-		id: 1,
-		name: "",
-		author_id: 1,
-		cover: null,
-	});
+	const selectedSeries: Ref<Series | null> = ref(null);
+	const newSeries: Ref<Series | null> = ref(null);
 	const previewUrl: Ref<string | null> = ref(null);
 	const currentSeries = computed<Series>(() => {
 		let result: Series = defaultSeries;
 		if (action.value === "select") {
-			if (selectedSeries.name) {
-				result = selectedSeries;
+			if (selectedSeries.value?.name) {
+				result = selectedSeries.value;
 			}
 		}
 		if (action.value === "new") {
-			if (newSeries.name) {
-				result = newSeries;
+			if (newSeries.value?.name) {
+				result = newSeries.value;
 			}
 		}
 		emits("updateSeries", currentSeries.value);
 		return result;
 	});
 	const oldSerieses = getSeries();
-	async function createSeries(): Promise<void> {
-		const url = "http://localhost:5000/v1/author/series";
-		const accessToken = localStorage.getItem("access_token");
-		const response = await fetch(url, {
-			method: "POST",
-			headers: { Authorization: "Bearer " + accessToken },
-		});
-		if (response.status === 200) {
-			const responseData = await response.json();
-			console.log(responseData);
-		} else {
-			const errorData = await response.json();
-			console.error(errorData);
-		}
-	}
 	function limString(str: string, maxLength: number): string {
 		if (str.length < maxLength) {
 			return str;
 		} else {
 			return str.slice(0, maxLength) + " ...";
-		}
-	}
-	function changeAction(a: Action): void {
-		switch (a) {
-			case "select":
-				action.value = "select";
-				break;
-			case "new":
-				action.value = "new";
-				createSeries();
-				break;
 		}
 	}
 	const uploadImageArea: Ref<HTMLInputElement | null> = ref(null);
@@ -131,20 +93,26 @@
 			const renameFile = new File([file], newFilename, {
 				type: file.type,
 			});
-			newSeries.cover = newFilename;
-			uploadImage(renameFile);
+			if (newSeries.value?.cover) {
+				newSeries.value.cover = newFilename;
+				uploadImage(renameFile);
+			}
 		}
 	}
 	function resetCover(): void {
 		previewUrl.value = null;
-		newSeries.cover = null;
-		if (uploadImageArea.value) {
-			uploadImageArea.value.value = "";
+		if (newSeries.value?.cover) {
+			newSeries.value.cover = null;
+			if (uploadImageArea.value) {
+				uploadImageArea.value.value = "";
+			}
 		}
 	}
 	function selectSeries(title: string, cover: string): void {
-		selectedSeries.name = title;
-		selectedSeries.cover = cover;
+		if (selectedSeries.value?.name) {
+			selectedSeries.value.name = title;
+			selectedSeries.value.cover = cover;
+		}
 	}
 </script>
 <template>
@@ -215,7 +183,7 @@
 			<Input
 				name="new-series-area"
 				:max-length="300"
-				v-model="newSeries.name"
+				v-model="newSeries?.name"
 				class="child-4kK6OY-cJl"
 			/>
 		</div>

@@ -1,26 +1,26 @@
 <script setup lang="ts">
 	import icons from "@/components/icons";
-	import { ref, watchEffect, type Ref, computed, reactive, watch } from "vue";
-	import SettingBar from "./SettingBar.vue";
+	import { computed, reactive, watch, watchEffect } from "vue";
 	import { MdEditor } from "md-editor-v3";
 	import "md-editor-v3/lib/style.css";
-	import { APIError } from "@/api/errors";
+	import SettingBar from "./SettingBar.vue";
 	type ArtitleItems = {
-		id?: number;
-		title?: string;
-		body?: string;
-		slug?: string;
-		createdAt?: Date;
-		updatedAt?: Date;
-		isPublished?: boolean;
-		publishedAt?: Date;
-		seriesId?: number | null;
-		authorId?: number;
-		tags?: string[];
+		id: number;
+		title: string;
+		body: string;
+		slug: string;
+		createdAt: Date;
+		updatedAt: Date;
+		isPublished: boolean;
+		publishedAt: Date;
+		seriesId: number | null;
+		authorId: number;
+		tags: string[];
 	};
 	type Status = {
 		moreButton: boolean;
 		sync: boolean;
+		update: boolean;
 	};
 	const props = defineProps<{
 		articleId: string;
@@ -28,8 +28,8 @@
 	const status: Status = reactive({
 		moreButton: false,
 		sync: true,
+		update: false,
 	});
-	const model = ref("");
 	async function getArticleData(): Promise<ArtitleItems> {
 		const url =
 			"http://localhost:5000/v1/author/article/" + props.articleId;
@@ -55,48 +55,79 @@
 			throw errorData.error;
 		}
 	}
-	const currentArticle: Ref<ArtitleItems> = ref({});
+	const currentArticle: ArtitleItems = reactive({
+		id: 1,
+		title: "",
+		body: "",
+		slug: "",
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		isPublished: false,
+		publishedAt: new Date(),
+		tags: [],
+		seriesId: null,
+		authorId: 1,
+	});
 	const articleJson = computed<{
-		id?: number;
-		title?: string;
-		body?: string;
-		slug?: string;
-		created_at?: string;
-		updated_at?: string;
-		is_published?: boolean;
-		published_at?: string;
-		tags?: string[];
-		series_id?: number | null;
+		id: number;
+		title: string;
+		body: string;
+		slug: string;
+		created_at: string;
+		updated_at: string;
+		is_published: boolean;
+		published_at: string;
+		tags: string[];
+		series_id: number | null;
 	}>(() => {
-		const article = currentArticle.value;
+		const article = currentArticle;
 		return {
-			id: article?.id,
-			title: article?.title,
-			body: article?.body,
-			slug: article?.slug,
-			created_at: article?.createdAt.toISOString(),
-			tags: article?.tags,
-			is_published: article?.isPublished,
-			published_at: article?.publishedAt.toISOString(),
+			id: article.id,
+			title: article.title,
+			body: article.body,
+			slug: article.slug,
+			created_at: article.createdAt.toISOString(),
+			tags: article.tags,
+			is_published: article.isPublished,
+			published_at: article.publishedAt.toISOString(),
 			updated_at: new Date().toISOString(),
-			series_id: article?.seriesId,
+			series_id: article.seriesId,
 		};
 	});
 
-	async function updateArticle(): Promise<void> {
+	async function update(): Promise<void> {
 		const url =
 			"http://localhost:5000/v1/author/article/" + props.articleId;
+		const accessToken = localStorage.getItem("access_token");
 		const response = await fetch(url, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: "Bearer " + accessToken,
+			},
 			body: JSON.stringify(articleJson.value),
 		});
 	}
 
+	async function publishOrUpdateArticle(): Promise<void> {
+		status.update = true;
+		if (!currentArticle.isPublished) {
+			currentArticle.isPublished = true;
+		}
+		update();
+	}
+	watchEffect(() => {
+		if (status.update) {
+			setTimeout(() => {
+				status.update = false;
+			}, 1000);
+		}
+	});
+
 	getArticleData()
 		.then((data) => {
-			currentArticle.value = data;
-			console.log(data);
+			Object.assign(currentArticle, data);
+			console.log(currentArticle);
 		})
 		.catch((error) => {
 			console.error(error);
@@ -113,7 +144,7 @@
 			name="article-title"
 			id="article-title"
 			placeholder="Article title"
-			v-model="currentArticle?.title"
+			v-model="currentArticle.title"
 		/>
 		<component
 			v-if="status.sync"
@@ -130,11 +161,12 @@
 				<button
 					type="button"
 					class="parent-V1cCQmh5ye child-E1GkNXh9yl"
+					@click="publishOrUpdateArticle"
 				>
 					<component
-						:is="icons.draft"
-						class="icon medium child-N1Z087nqke"
-						v-if="currentArticle?.isPublished"
+						:is="icons.update"
+						class="icon medium child-N1Z087nqke parent-DkmXQLaqyx"
+						v-if="currentArticle.isPublished"
 					/>
 					<component
 						:is="icons.publish"
@@ -143,7 +175,7 @@
 					/>
 
 					<span class="parent-EJQSS72ckl">{{
-						currentArticle?.isPublished ? "Update" : "Publish"
+						currentArticle.isPublished ? "Update" : "Publish"
 					}}</span>
 				</button>
 				<button
@@ -163,7 +195,7 @@
 					>
 						<div
 							class="child-VJMNmI35yx"
-							v-if="currentArticle?.isPublished"
+							v-if="currentArticle.isPublished"
 						>
 							Convert to draft
 						</div>
@@ -180,7 +212,7 @@
 			</div>
 		</div>
 	</div>
-	<MdEditor v-model="model" class="parent-VJTd3Xn9kx" />
+	<MdEditor v-model="currentArticle.body" class="parent-VJTd3Xn9kx" />
 </template>
 
 <style scoped>
