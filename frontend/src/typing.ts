@@ -5,9 +5,9 @@ export type Tag = {
 
 export type Series = {
 	id: number;
-	title: string;
+	name: string;
+	author_id: number;
 	cover: string;
-	author: string;
 };
 
 export type Article = {

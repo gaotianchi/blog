@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import type { Series, Tag } from "@/typing";
+import { getUnixTime } from "date-fns";
 
 export function fakeTags(count: number = 200): Tag[] {
 	const tags: Tag[] = [];
@@ -16,13 +17,12 @@ export function fakeTags(count: number = 200): Tag[] {
 
 export function fakeSeries(count: number = 15): Series[] {
 	const serieses: Series[] = [];
-	const author = faker.person.fullName();
 	for (let i = 0; i < count; i++) {
 		const series: Series = {
 			id: i + 1,
-			title: faker.lorem.sentence({ min: 6, max: 20 }),
+			name: faker.lorem.sentence({ min: 6, max: 20 }),
 			cover: "https://picsum.photos/50",
-			author: author,
+			author_id: i + 1,
 		};
 		serieses.push(series);
 	}

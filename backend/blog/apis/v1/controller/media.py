@@ -4,6 +4,7 @@ from typing import cast
 from flask import Blueprint, current_app, jsonify, request, send_file
 from werkzeug.utils import secure_filename
 
+from blog.apis.v1.controller.account import auth_required
 from blog.apis.v1.errors import abort
 from blog.utlis import allowed_image
 
@@ -11,6 +12,7 @@ media = Blueprint("media", __name__, url_prefix="/media")
 
 
 @media.route("/uploads", methods=["POST"])
+@auth_required
 def new_upload():
     file = request.files.get("file")
     if not file:

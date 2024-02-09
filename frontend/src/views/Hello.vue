@@ -5,24 +5,21 @@
 		id: number;
 		name: string;
 		author_id: number;
-		cover: string | null;
+		cover: number;
 	};
-	const currentSeries: Ref<Series | null> = ref(null);
-	function update(data: Series): void {
-		currentSeries.value = data;
-	}
+	const originalSeriesId = 0;
+	const currentSeriesId = ref(originalSeriesId);
 </script>
 
 <template>
-	{{ currentSeries }}
+	<div>{{ "current: " + currentSeriesId }}</div>
 	<Series
-		:series="{
-			id: 0,
-			name: '',
-			cover: '',
-			author_id: 0,
-		}"
-		@update-series="update"
+		:series_id="originalSeriesId"
+		@update-series="
+			(result) => {
+				currentSeriesId = result;
+			}
+		"
 	/>
 </template>
 
