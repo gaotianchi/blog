@@ -26,11 +26,11 @@
 					<slot name="title">Title</slot>
 				</div>
 				<div class="child-Ek0lyC0K1g parent-4JUNCmx5kg" v-if="!active">
-						<slot name="preview">Preview</slot>
+					<slot name="preview">Preview</slot>
 				</div>
 			</div>
 		</button>
-		<div class="child-N1ys-00Fke" v-if="active">
+		<div class="child-N1ys-00Fke" v-show="active">
 			<slot name="detail">Detail</slot>
 		</div>
 	</div>

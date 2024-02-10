@@ -26,7 +26,7 @@
 		seriesId: number;
 	}>();
 	const emits = defineEmits<{
-		updateSeries: [series_id: number];
+		updateSeries: [series: Series];
 	}>();
 	const action: Ref<Action> = ref("default");
 	const oldSerieses = getSeries();
@@ -44,23 +44,18 @@
 		url: "",
 		file: null,
 	});
-	onMounted(() => {
-		initOriginalSeries();
-	});
-	watchEffect(() => {
-		emits("updateSeries", currentSeries.id);
-	});
-
-	async function initOriginalSeries(): Promise<void> {
-		if (props.seriesId === 0) {
-			console.log("No original series found.");
-			return;
-		}
-		const seriesData = await getSeriesItem(props.seriesId);
-		console.log(seriesData);
-		Object.assign(originalSeries, seriesData);
-		Object.assign(currentSeries, originalSeries);
+	if (props.seriesId === 0) {
+		console.log("No original series found.");
+	} else {
+		console.log("Ready to init original series.");
+		getSeriesItem(props.seriesId).then((seriesData) => {
+			Object.assign(originalSeries, seriesData);
+			Object.assign(currentSeries, originalSeries);
+		});
 	}
+	watchEffect(() => {
+		emits("updateSeries", currentSeries);
+	});
 	async function createSeries(): Promise<void> {
 		if (!newSeries.name) {
 			alert("Series name cannot be empty!");

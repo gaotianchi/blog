@@ -4,20 +4,10 @@
 	import Permalink from "./settings/Permalink.vue";
 	import SeriesVue from "./settings/Series.vue";
 	import SettingItem from "./SettingItem.vue";
-	import { reactive, watch, watchEffect } from "vue";
-	import { format, getUnixTime } from "date-fns";
-	type Settings = {
-		tags: string[];
-		datetime: Date;
-		permalink: string;
-		series_id: number;
-	};
-	type Series = {
-		id: number;
-		name: string;
-		author_id: number;
-		cover: string;
-	};
+	import { reactive, watchEffect } from "vue";
+	import { format } from "date-fns";
+	import type { Series, Settings } from "@/typing";
+
 	const emits = defineEmits<{
 		updateSettings: [settings: Settings];
 	}>();
@@ -25,43 +15,15 @@
 		settings: Settings;
 	}>();
 	const currentSettings: Settings = reactive(props.settings);
+	const currentSeries: Series = reactive({
+		id: props.settings.seriesId,
+		name: "",
+		cover: "",
+		author_id: 0,
+	});
 	watchEffect(() => {
 		emits("updateSettings", currentSettings);
 	});
-	async function getSeries(): Promise<Series | void> {
-		if (!props.settings.series_id) {
-			return;
-		}
-		const url =
-			"http://localhost:5000/v1/author/series/" +
-			props.settings.series_id;
-		const response = await fetch(url);
-		if (response.status === 200) {
-			const seriesData = await response.json();
-			return seriesData;
-		} else {
-			const errorData = await response.json();
-			throw errorData.error;
-		}
-	}
-	const currentSeries: Series = reactive({
-		id: 0,
-		author_id: 0,
-		name: "",
-		cover: "",
-	});
-	getSeries()
-		.then((response) => {
-			Object.assign(currentSeries, response);
-		})
-		.catch((error) => {
-			console.error(error);
-		});
-
-	function getAutoSlug(): string {
-		const timestamp = getUnixTime(new Date()).toString();
-		return "blog-post-" + timestamp;
-	}
 </script>
 <template>
 	<div class="parent-Vk3Ihqa5kg">
@@ -82,12 +44,7 @@
 		<SettingItem>
 			<template #title>Datetime</template>
 			<template #preview>
-				{{
-					format(
-						currentSettings.datetime ?? new Date(),
-						"yyyy-MM-dd HH:mm"
-					)
-				}}
+				{{ format(currentSettings.datetime, "yyyy-MM-dd HH:mm") }}
 			</template>
 			<template #detail>
 				<Datetime
@@ -102,12 +59,10 @@
 		</SettingItem>
 		<SettingItem>
 			<template #title>Permalink</template>
-			<template #preview>{{
-				currentSettings.permalink ?? getAutoSlug()
-			}}</template>
+			<template #preview>{{ currentSettings.permalink }}</template>
 			<template #detail>
 				<Permalink
-					:permalink="props.settings.permalink ?? getAutoSlug()"
+					:permalink="props.settings.permalink"
 					@update-permalink="
 						(permalink) => {
 							currentSettings.permalink = permalink;
@@ -118,13 +73,16 @@
 		</SettingItem>
 		<SettingItem>
 			<template #title>Series</template>
-			<template #preview>{{ currentSeries.name }}</template>
+			<template #preview>{{
+				currentSeries.name ?? "No series selected"
+			}}</template>
 			<template #detail>
 				<SeriesVue
-					:series="currentSeries ?? {}"
+					:series-id="currentSettings.seriesId"
 					@update-series="
 						(series) => {
-							currentSettings.series_id = series.id;
+							currentSettings.seriesId = series.id;
+							currentSeries = series;
 						}
 					"
 				/>

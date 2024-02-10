@@ -10,34 +10,30 @@
 		updateDatetime: [newDatetime: Date];
 	}>();
 	const auto: Ref<boolean> = ref(true);
-	const customDatetime: Ref<Date> = ref(new Date());
 	const currentDatetime: Ref<Date> = ref(props.datetime);
-	watch(customDatetime, () => {
-		let result: Date = props.datetime;
-		if (auto.value) {
-			result = props.datetime;
-		} else {
-			result = customDatetime.value;
-		}
-		console.log(result);
-		currentDatetime.value = result;
-	});
-	watch(currentDatetime, () => {
-		emits("updateDatetime", currentDatetime.value);
-	});
 	const datePicker: Ref<HTMLElement | null> = ref(null);
 	watch(datePicker, () => {
 		datePicker.value?.focus();
-		console.log(customDatetime.value);
+	});
+	watchEffect(() => {
+		emits("updateDatetime", currentDatetime.value);
 	});
 </script>
 <template>
 	<div class="parent-E14-f9e9ye">
 		<div class="child-4J9WMcl9Je parent-VyzXfqx9Je">
-			<Radio name="auto-datetime" :value="true" v-model="auto"
+			<Radio
+				name="auto-datetime"
+				:value="true"
+				v-model="auto"
+				@selected="currentDatetime = datetime"
 				>Auto</Radio
 			>
-			<Radio name="custom-datetime" :value="false" v-model="auto"
+			<Radio
+				name="custom-datetime"
+				:value="false"
+				v-model="auto"
+				@selected="currentDatetime = datetime"
 				>Custom</Radio
 			>
 		</div>
@@ -47,7 +43,7 @@
 		<div class="child-4J9WMcl9Je parent-41dvG5l91g" v-if="!auto">
 			<Datepicker
 				:style="'border:none;border-bottom: var(--second-color) solid 1px;font-style:italic;padding:0;width:100%;font-size:small;letter-spacing:3px;'"
-				v-model="customDatetime"
+				v-model="currentDatetime"
 				minimum-view="time"
 				typeable
 				input-format="yyyy / MM / dd HH:mm"
@@ -59,6 +55,10 @@
 <style scoped>
 	.parent-E14-f9e9ye {
 		width: 100%;
+	}
+
+	.parent-VyzXfqx9Je {
+		margin: 10px 0;
 	}
 
 	.child-4J9WMcl9Je {

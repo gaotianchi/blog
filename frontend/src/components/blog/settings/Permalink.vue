@@ -1,7 +1,8 @@
 <script setup lang="ts">
-	import { ref, type Ref, computed, watchEffect } from "vue";
+	import { ref, type Ref, computed, watchEffect, watch } from "vue";
 	import Radio from "./Radio.vue";
 	import Input from "./Input.vue";
+	import { getUnixTime } from "date-fns";
 	const props = defineProps<{
 		permalink: string;
 	}>();
@@ -10,52 +11,61 @@
 	}>();
 
 	const auto: Ref<boolean> = ref(true);
-
-	const customSlug: Ref<string> = ref("");
+	const defaultPermalink = computed<string>(() => {
+		if (props.permalink) {
+			return props.permalink;
+		} else {
+			return "article_" + getUnixTime(new Date());
+		}
+	});
+	const customPermalink: Ref<string> = ref("");
+	const currentPermalink: Ref<string> = ref(defaultPermalink.value);
+	watch(customPermalink, () => {
+		customPermalink.value = cleanSlug(customPermalink.value);
+		if (!customPermalink.value) {
+			currentPermalink.value = defaultPermalink.value;
+		} else {
+			currentPermalink.value = customPermalink.value;
+		}
+	});
+	watchEffect(() => {
+		emits("updatePermalink", currentPermalink.value);
+	});
 	function cleanSlug(str: string): string {
 		return str
 			.toLowerCase()
 			.replace(/[^a-z0-9-]/g, "-")
 			.slice(0, 8000);
 	}
-	watchEffect(() => {
-		const cleanedSlug = cleanSlug(customSlug.value);
-		customSlug.value = cleanedSlug;
-	});
-	const currentPermalink = computed<string>(() => {
-		let result: string;
-		if (auto.value) {
-			result = props.permalink;
-		} else {
-			if (customSlug.value) {
-				result = customSlug.value;
-			} else {
-				result = props.permalink;
-			}
-		}
-		emits("updatePermalink", result);
-		return result;
-	});
 </script>
 
 <template>
 	<div class="parent-V1Qz5vW5yl">
 		<div class="child-4J9WMcl9Je parent-EJ5IqDbqkl">
-			{{ currentPermalink }}
+			{{ "https://gaotianchi.com/" + currentPermalink }}
 		</div>
 		<div class="child-4J9WMcl9Je parent-VyzXfqx9Je">
-			<Radio name="auto-permalink" :value="true" v-model="auto"
+			<Radio
+				name="auto-permalink"
+				:value="true"
+				v-model="auto"
+				@selected="currentPermalink = defaultPermalink"
 				>Auto</Radio
 			>
-			<Radio name="custom-permalink" :value="false" v-model="auto"
+			<Radio
+				name="custom-permalink"
+				:value="false"
+				v-model="auto"
+				@selected="currentPermalink = defaultPermalink"
 				>Custom</Radio
 			>
 		</div>
 		<Input
 			v-if="!auto"
 			name="slug-input-area"
-			v-model="customSlug"
+			v-model="customPermalink"
 			:max-length="8000"
+			placeholder="Please enter article permalink"
 		/>
 	</div>
 </template>

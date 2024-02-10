@@ -6,7 +6,7 @@
 		updateTags: [tags: string[]];
 	}>();
 	const props = defineProps<{
-		tags?: string[];
+		tags: string[];
 	}>();
 	const model: Ref<string> = ref(props.tags?.join(",") ?? "");
 	const typedTags = computed<string[]>(() => {
@@ -45,6 +45,9 @@
 	}
 	onMounted(() => {
 		tagInput.value?.focus();
+		if (model.value.trim()) {
+			model.value = model.value + ",";
+		}
 	});
 	watchEffect(() => {
 		const tagArr = model.value

@@ -4,25 +4,8 @@
 	import { MdEditor } from "md-editor-v3";
 	import "md-editor-v3/lib/style.css";
 	import SettingBar from "./SettingBar.vue";
-	type ArtitleItems = {
-		id: number;
-		title: string;
-		body: string;
-		slug: string;
-		createdAt: Date;
-		updatedAt: Date;
-		isPublished: boolean;
-		publishedAt: Date;
-		seriesId: number;
-		authorId: number;
-		tags: string[];
-	};
-	type Settings = {
-		tags: string[];
-		datetime: Date;
-		permalink: string;
-		series_id: number;
-	};
+	import type { Article, Settings } from "@/typing";
+
 	type Status = {
 		moreButton: boolean;
 		sync: boolean;
@@ -39,13 +22,13 @@
 		settings: false,
 	});
 
-	async function getArticleData(): Promise<ArtitleItems> {
+	async function getArticleData(): Promise<Article> {
 		const url =
 			"http://localhost:5000/v1/author/article/" + props.articleId;
 		const response = await fetch(url);
 		if (response.status === 200) {
 			const articleData = await response.json();
-			const data: ArtitleItems = {
+			const data: Article = {
 				id: articleData.id,
 				title: articleData.title,
 				body: articleData.body,
@@ -64,7 +47,7 @@
 			throw errorData.error;
 		}
 	}
-	const originalArticle: ArtitleItems = reactive({
+	const originalArticle: Article = reactive({
 		id: 0,
 		title: "",
 		body: "",
@@ -77,7 +60,7 @@
 		seriesId: 0,
 		authorId: 0,
 	});
-	const currentArticle: ArtitleItems = reactive(originalArticle);
+	const currentArticle: Article = reactive(originalArticle);
 	const articleJson = computed<{
 		id: number;
 		title: string;
@@ -150,7 +133,7 @@
 	function updateSettings(settings: Settings): void {
 		currentArticle.tags = settings.tags;
 		currentArticle.slug = settings.permalink;
-		currentArticle.seriesId = settings.series_id;
+		currentArticle.seriesId = settings.seriesId;
 		currentArticle.tags = settings.tags;
 	}
 </script>
@@ -230,14 +213,20 @@
 				<div class="parent-Vy_T35aq1x" v-if="status.settings">
 					<div class="parent-4yCs6qp9Jg">Article Settings</div>
 					<SettingBar
-						class="parent-dJnizjpqye"
 						:settings="{
 							tags: originalArticle.tags,
 							datetime: originalArticle.publishedAt,
 							permalink: originalArticle.slug,
-							series_id: originalArticle.seriesId,
+							seriesId: originalArticle.seriesId,
 						}"
-						@update-settings="updateSettings"
+						@update-settings="
+							(s) => {
+								currentArticle.tags = s.tags;
+								currentArticle.publishedAt = s.datetime;
+								currentArticle.slug = s.permalink;
+								currentArticle.seriesId = s.seriesId;
+							}
+						"
 					/>
 				</div>
 			</div>

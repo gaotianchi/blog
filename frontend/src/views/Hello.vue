@@ -1,26 +1,32 @@
 <script setup lang="ts">
-	import Series from "@/components/blog/settings/Series.vue";
-	import { type Ref, ref } from "vue";
-	type Series = {
-		id: number;
-		name: string;
-		author_id: number;
-		cover: number;
+	import { ref, type Ref } from "vue";
+	import type { Settings } from "@/typing";
+	import SettingBar from "@/components/blog/SettingBar.vue";
+	const origin: Settings = {
+		tags: ["hello", "world"],
+		datetime: new Date(),
+		permalink: "how-are-you-doing",
+		seriesId: 47,
 	};
-	const originalSeriesId = 47;
-	const currentSeriesId = ref(originalSeriesId);
+	const current = ref(origin);
 </script>
 
 <template>
-	<div>{{ "current: " + currentSeriesId }}</div>
-	<Series
-		:series-id="originalSeriesId"
-		@update-series="
-			(result) => {
-				currentSeriesId = result;
+	<div class="parent">
+		{{ current }}
+	</div>
+	<SettingBar
+		:settings="origin"
+		@update-settings="
+			(s) => {
+				current = s;
 			}
 		"
 	/>
 </template>
 
-<style scoped></style>
+<style scoped>
+	.parent {
+		min-height: 150px;
+	}
+</style>
