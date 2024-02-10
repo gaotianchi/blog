@@ -14,6 +14,13 @@ media = Blueprint("media", __name__, url_prefix="/media")
 @media.route("/uploads", methods=["POST"])
 @auth_required
 def new_upload():
+    if request.method == "OPTIONS":
+        response = jsonify("CORS preflight request successful")
+        response.headers.add("Access-Control-Allow-Methods", "POST")
+        response.headers.add(
+            "Access-Control-Allow-Headers", "Content-Type, Authorization"
+        )
+        return response, 200
     file = request.files.get("file")
     if not file:
         return abort(message="No file found.")
@@ -25,8 +32,8 @@ def new_upload():
         return abort(message="Invalid filename.")
     filename = secure_filename(file.filename)
     file.save(cast(Path, current_app.config["UPLOAD_FOLDER"]).joinpath(filename))  # type: ignore
-
-    return jsonify("Upload file successfully."), 201
+    data = dict(filename=filename)
+    return jsonify(data), 201
 
 
 @media.route("/uploads/<filename>", methods=["GET"])

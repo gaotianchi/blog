@@ -87,15 +87,15 @@ class Tag(db.Model):
 
 class Series(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(255), default="")
-    cover: Mapped[str] = mapped_column(String(255), default="")
+    name: Mapped[str] = mapped_column(String(255))
+    cover: Mapped[str] = mapped_column(String(255))
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     author: Mapped["User"] = relationship("User", back_populates="series")
     articles: Mapped["list[Article]"] = relationship("Article", back_populates="series")
 
     @classmethod
-    def create(cls, author: User) -> "Series":
-        new_series = Series(author=author)  # type:ignore
+    def create(cls, author: User, name: str, cover: str) -> "Series":
+        new_series = Series(author=author, name=name, cover=cover)  # type:ignore
         db.session.add(new_series)
         db.session.commit()
         return Series.query.get(new_series.id)  # type:ignore
@@ -181,7 +181,7 @@ class Article(db.Model):
             updated_at=self.updated_at.isoformat(),
             series_id=self.series_id,
             author_id=self.author_id,
-            tags=[tag.name for tag in self.tags],
+            tags=[tag.name for tag in self.tags],  # type: ignore
         )
 
     def __repr__(self) -> str:

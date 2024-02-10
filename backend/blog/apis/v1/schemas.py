@@ -84,11 +84,24 @@ SCHEMA_05 = {
         "id": {"type": "integer"},
         "author_id": {"type": "integer"},
         "name": {"type": "string"},
-        "cover": {"type": ["string", "null"]},
+        "cover": {"type": "string"},
     },
     "required": [
         "id",
         "author_id",
+        "name",
+        "cover",
+    ],
+}
+
+SCHEMA_06 = {
+    "$schema": SCHEMA,
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "cover": {"type": "string"},
+    },
+    "required": [
         "name",
         "cover",
     ],

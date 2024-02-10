@@ -1,27 +1,17 @@
 <script setup lang="ts">
 	import { ref, type Ref } from "vue";
-	import SettingBar from "@/components/blog/SettingBar.vue";
-	type Settings = {
-		tags: string[];
-		datetime: Date;
-		permalink: string;
-		series_id: number;
-	};
-	
-	function update(s: Settings): void {
-		settings.value = s;
-		console.log(settings);
+	import Radio from "@/components/blog/settings/Radio.vue";
+	const model = ref(0);
+	function hello(): void {
+		model.value += 1;
 	}
-	const props: Settings = {
-		tags: [],
-		datetime: new Date(),
-		permalink: "",
-		series_id: 0,
-	};
-	const settings: Ref<Settings> = ref(props);
+	const va = ref("");
 </script>
 
 <template>
-	<SettingBar :settings="props" @update-settings="(d) => {settings = d}" />
-	{{ settings }}
+	{{ model }}
+	<Radio name="hello" value="hello" v-model="va" @selected="hello"
+		>Hello</Radio
+	>
+	<Radio name="world" value="world" v-model="va">World</Radio>
 </template>

@@ -1,10 +1,17 @@
 <script setup lang="ts">
+	import { onMounted, ref, type Ref } from "vue";
+
 	const props = defineProps<{
 		name: string;
 		id?: string;
 		maxLength: number;
+		placeholder?: string;
 	}>();
 	const model = defineModel<string | undefined>();
+	const inputArea: Ref<HTMLInputElement | null> = ref(null);
+	onMounted(() => {
+		inputArea.value?.focus();
+	});
 </script>
 <template>
 	<div class="parent-VJrIoDZ5kx">
@@ -15,6 +22,8 @@
 			:aria-label="id ? id : name"
 			v-model="model"
 			class="parent-VJYuitZqkl"
+			ref="inputArea"
+			:placeholder="placeholder"
 		/>
 		<div class="parent-41PsiPZ5Jx">
 			<span class="child-E1gknPb51g parent-V1j1nw-5Jg">{{

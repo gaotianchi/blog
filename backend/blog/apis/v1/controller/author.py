@@ -4,7 +4,7 @@ from typing import Any, cast
 from flask import Blueprint, g, jsonify, request
 
 from blog.apis.v1.errors import abort
-from blog.apis.v1.schemas import SCHEMA_04, SCHEMA_05  # type: ignore
+from blog.apis.v1.schemas import SCHEMA_04, SCHEMA_05, SCHEMA_06  # type: ignore
 from blog.model.database import Article, Series, Tag, User
 from blog.utlis import validator
 
@@ -24,9 +24,17 @@ def new_article():
 @author.route("/series", methods=["POST"])
 @auth_required
 def new_series():
+    data = cast(dict[str, Any], request.json)
+    if validator(data, SCHEMA_06):
+        return abort()
     current_user = cast(User, g.current_user)
-    new_series = Series.create(author=current_user)
-    return jsonify(new_series.to_dict()), 201
+    new_series = Series.create(
+        author=current_user, name=data["name"], cover=data["cover"]
+    )
+    responseData = new_series.to_dict()
+    if validator(responseData, SCHEMA_05):
+        return abort()
+    return jsonify(responseData), 201
 
 
 @author.route("/series/<int:id>", methods=["PATCH"])
@@ -79,7 +87,7 @@ def get_article_data(id: int):
     current_article = cast(Article, Article.query.get(id))
     if not current_article:
         return abort(message="No article found.", status_code=404)
-    data = current_article.to_dict()
+    data = current_article.to_dict()  # type: ignore
     if validator(data, SCHEMA_04):  # type: ignore
         return abort()
     return jsonify(data), 200

@@ -7,14 +7,14 @@
 		author_id: number;
 		cover: number;
 	};
-	const originalSeriesId = 0;
+	const originalSeriesId = 47;
 	const currentSeriesId = ref(originalSeriesId);
 </script>
 
 <template>
 	<div>{{ "current: " + currentSeriesId }}</div>
 	<Series
-		:series_id="originalSeriesId"
+		:series-id="originalSeriesId"
 		@update-series="
 			(result) => {
 				currentSeriesId = result;

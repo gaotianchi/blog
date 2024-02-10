@@ -5,6 +5,7 @@
 		id?: string;
 		value: any;
 	}>();
+	const emits = defineEmits(["selected"]);
 </script>
 <template>
 	<div class="parent-E1x3c9x9Jg">
@@ -15,6 +16,7 @@
 			:name="name"
 			:id="id ? id : name"
 			:value="value"
+			@input="$emit('selected')"
 		/>
 		<label class="child-N1vpq9lqkx parent-4yWJs9l9kl" :for="id ? id : name"
 			><slot></slot
