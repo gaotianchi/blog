@@ -13,6 +13,7 @@ class BaseConfig:
     SECRET_KEY = b"0yy0lYd6o4Yqv3v99kt1J7VtJRbq44z8CVkTBw3Aagg="
     UPLOAD_FOLDER = ROOT.joinpath("data", "uploads")
     ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+    VALIDITY_INCREMENT = 7200
 
 
 class DevelopmentConfig(BaseConfig):

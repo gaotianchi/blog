@@ -1,6 +1,11 @@
-import type { Series, Tag } from "@/typing";
+import type { Article, MessageProp, Series, Tag } from "@/typing";
 import { fakeSeries, fakeTags } from "./fakes";
 import type { APIError } from "./errors";
+
+export function getAccessToken(): string | null {
+	const accessToken = localStorage.getItem("access_token");
+	return accessToken;
+}
 
 export function getTags(): Tag[] {
 	const tags = fakeTags();
@@ -28,11 +33,10 @@ export async function createSeriesItem(
 	seriesData: Series
 ): Promise<Series | void> {
 	const url = "http://localhost:5000/v1/author/series";
-	const accessToken = localStorage.getItem("access_token");
 	const response = await fetch(url, {
 		method: "POST",
 		headers: {
-			Authorization: "Bearer " + accessToken,
+			Authorization: "Bearer " + getAccessToken(),
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify(seriesData),
@@ -60,10 +64,9 @@ export async function createMediaItem(file: File): Promise<any> {
 	const url = "http://localhost:5000/v1/media/uploads";
 	const formData = new FormData();
 	formData.append("file", file);
-	const accessToken = localStorage.getItem("access_token");
 	const response = await fetch(url, {
 		method: "POST",
-		headers: { Authorization: "Bearer " + accessToken },
+		headers: { Authorization: "Bearer " + getAccessToken() },
 		body: formData,
 	});
 	if (response.status === 201) {
@@ -75,4 +78,61 @@ export async function createMediaItem(file: File): Promise<any> {
 		const errorResponse = await response.json();
 		throw errorResponse.error;
 	}
+}
+
+export async function updateArticleItem(
+	articleId: number | string,
+	articleJson: string
+): Promise<Article> {
+	const url = "http://localhost:5000/v1/author/article/" + articleId;
+	const response = await fetch(url, {
+		method: "PATCH",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: "Bearer " + getAccessToken(),
+		},
+		body: articleJson,
+	});
+	if (response.status === 200) {
+		const newArticleData = await response.json();
+		return newArticleData as Article;
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error as APIError;
+	}
+}
+
+export async function getArticleItem(
+	articleId: number | string
+): Promise<Article> {
+	const url = "http://localhost:5000/v1/author/article/" + articleId;
+	const response = await fetch(url);
+	if (response.status === 200) {
+		const articleData = await response.json();
+		const data: Article = {
+			id: articleData.id,
+			title: articleData.title,
+			body: articleData.body,
+			slug: articleData.slug,
+			createdAt: new Date(articleData.created_at),
+			updatedAt: new Date(articleData.updated_at),
+			isPublished: articleData.is_published,
+			publishedAt: new Date(articleData.published_at),
+			seriesId: articleData.series_id,
+			authorId: articleData.author_id,
+			tags: articleData.tags,
+		};
+		return data;
+	} else {
+		const errorData = await response.json();
+		throw errorData.error as APIError;
+	}
+}
+
+export function displayMessage(
+	messageprop: MessageProp,
+	message: string
+): void {
+	messageprop.active = true;
+	messageprop.message = message;
 }

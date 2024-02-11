@@ -44,15 +44,30 @@
 		url: "",
 		file: null,
 	});
+
 	if (props.seriesId === 0) {
 		console.log("No original series found.");
 	} else {
-		console.log("Ready to init original series.");
-		getSeriesItem(props.seriesId).then((seriesData) => {
-			Object.assign(originalSeries, seriesData);
-			Object.assign(currentSeries, originalSeries);
-		});
+		const localOriginalSeriesData =
+			sessionStorage.getItem("originalSeriesData");
+		let seriesData: Series = defaultSeries;
+		if (localOriginalSeriesData) {
+			console.log("Init series from sessionStorage.");
+			seriesData = JSON.parse(localOriginalSeriesData) as Series;
+		} else {
+			console.log("Init series from remote.");
+			getSeriesItem(props.seriesId).then((data) => {
+				seriesData = data;
+				sessionStorage.setItem(
+					"originalSeriesData",
+					JSON.stringify(seriesData)
+				);
+			});
+		}
+		Object.assign(originalSeries, seriesData);
+		Object.assign(currentSeries, originalSeries);
 	}
+
 	watchEffect(() => {
 		emits("updateSeries", currentSeries);
 	});

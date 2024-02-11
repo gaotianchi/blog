@@ -1,10 +1,12 @@
 <script setup lang="ts">
 	import icons from "@/components/icons";
-	import { computed, reactive, watch, watchEffect } from "vue";
+	import { computed, onMounted, reactive, ref, watch } from "vue";
 	import { MdEditor } from "md-editor-v3";
 	import "md-editor-v3/lib/style.css";
 	import SettingBar from "./SettingBar.vue";
-	import type { Article, Settings } from "@/typing";
+	import type { Article, ConfirmProp, MessageProp } from "@/typing";
+	import { updateArticleItem, getArticleItem, displayMessage } from "@/api";
+	import type { APIError } from "@/api/errors";
 
 	type Status = {
 		moreButton: boolean;
@@ -21,33 +23,20 @@
 		update: false,
 		settings: false,
 	});
-
-	async function getArticleData(): Promise<Article> {
-		const url =
-			"http://localhost:5000/v1/author/article/" + props.articleId;
-		const response = await fetch(url);
-		if (response.status === 200) {
-			const articleData = await response.json();
-			const data: Article = {
-				id: articleData.id,
-				title: articleData.title,
-				body: articleData.body,
-				slug: articleData.slug,
-				createdAt: new Date(articleData.created_at),
-				updatedAt: new Date(articleData.updated_at),
-				isPublished: articleData.is_published,
-				publishedAt: new Date(articleData.published_at),
-				seriesId: articleData.series_id,
-				authorId: articleData.author_id,
-				tags: articleData.tags,
-			};
-			return data;
-		} else {
-			const errorData = await response.json();
-			throw errorData.error;
-		}
-	}
-	const originalArticle: Article = reactive({
+	const messageProp: MessageProp = reactive({
+		active: false,
+		message: "",
+	});
+	const defaultConfirmProp: ConfirmProp = {
+		active: false,
+		header: undefined,
+		body: "",
+		yesMessage: undefined,
+		noMessage: undefined,
+		callback: () => {},
+	};
+	const confirmProp: ConfirmProp = reactive({ ...defaultConfirmProp });
+	const defaultArticle: Article = {
 		id: 0,
 		title: "",
 		body: "",
@@ -59,86 +48,108 @@
 		tags: [],
 		seriesId: 0,
 		authorId: 0,
-	});
-	const currentArticle: Article = reactive(originalArticle);
-	const articleJson = computed<{
-		id: number;
-		title: string;
-		body: string;
-		slug: string;
-		created_at: string;
-		updated_at: string;
-		is_published: boolean;
-		published_at: string;
-		tags: string[];
-		series_id: number | null;
-	}>(() => {
+	};
+
+	const originalArticle: Article = reactive({ ...defaultArticle });
+	const currentArticle: Article = reactive({ ...defaultArticle });
+	const articleJson = computed<string>(() => {
 		const currentJson = {
 			id: currentArticle.id,
-			title: currentArticle.title,
-			body: currentArticle.body,
-			slug: currentArticle.slug,
+			title: currentArticle.title.trim(),
+			body: currentArticle.body.trim(),
+			slug: currentArticle.slug.trim(),
 			created_at: currentArticle.createdAt.toISOString(),
 			tags: currentArticle.tags,
 			is_published: currentArticle.isPublished,
 			published_at: currentArticle.publishedAt.toISOString(),
-			updated_at: new Date().toISOString(),
+			updated_at: currentArticle.updatedAt.toISOString(),
 			series_id: currentArticle.seriesId,
 		};
-		console.log(currentJson);
-		return currentJson;
+		return JSON.stringify(currentJson);
 	});
-
-	async function update(): Promise<void> {
-		const url =
-			"http://localhost:5000/v1/author/article/" + props.articleId;
-		const accessToken = localStorage.getItem("access_token");
-		const response = await fetch(url, {
-			method: "PATCH",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: "Bearer " + accessToken,
-			},
-			body: JSON.stringify(articleJson.value),
-		});
-		console.log("Update article.");
-	}
-
-	async function publishOrUpdateArticle(): Promise<void> {
-		status.update = true;
-		if (!currentArticle.isPublished) {
-			currentArticle.isPublished = true;
+	onMounted(() => {
+		initOriginalArticle();
+	});
+	watch(articleJson, () => {
+		if (articleChanged()) {
+			status.sync = false;
+		} else {
+			status.sync = true;
 		}
-		update();
-	}
-	watchEffect(() => {
-		if (status.update) {
+	});
+	watch(messageProp, () => {
+		if (messageProp.active) {
 			setTimeout(() => {
-				status.update = false;
-			}, 1000);
+				messageProp.active = false;
+				messageProp.message = "";
+			}, 1500);
 		}
 	});
-	console.log(currentArticle);
-	getArticleData()
-		.then((data) => {
-			Object.assign(originalArticle, data);
-			console.log(originalArticle);
-		})
-		.catch((error) => {
-			console.error(error);
-		});
-	watch(currentArticle, () => {
-		status.sync = false;
-	});
-	function updateSettings(settings: Settings): void {
-		currentArticle.tags = settings.tags;
-		currentArticle.slug = settings.permalink;
-		currentArticle.seriesId = settings.seriesId;
-		currentArticle.tags = settings.tags;
+	function articleChanged(): boolean {
+		const oldArticle = sessionStorage.getItem("oldArticle") || "";
+		if (articleJson.value != oldArticle) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	async function initOriginalArticle(): Promise<void> {
+		const articleData = await getArticleItem(props.articleId);
+		Object.assign(originalArticle, articleData);
+		Object.assign(currentArticle, articleData);
+		sessionStorage.setItem("oldArticle", articleJson.value);
+	}
+	async function updateArticle(): Promise<void> {
+		status.update = true;
+		if (!articleChanged()) {
+			displayMessage(messageProp, "Article has been updated.");
+			status.update = false;
+			return;
+		}
+		try {
+			displayMessage(messageProp, "Saving changes.");
+			await updateArticleItem(props.articleId, articleJson.value);
+			status.sync = true;
+			sessionStorage.setItem("oldArticle", articleJson.value);
+			displayMessage(messageProp, "Changes saved successfully.");
+		} catch (error) {
+			const apiError = error as APIError;
+			console.log(apiError);
+			displayMessage(messageProp, "Saving failed, please try again.");
+		}
+		status.update = false;
+	}
+	function convertToDraft(): void {
+		currentArticle.isPublished = false;
+		updateArticle();
+	}
+	function resetConfirmProp(): void {
+		Object.assign(confirmProp, { ...defaultConfirmProp });
+	}
+	function desideToPublishArticle(): void {
+		resetConfirmProp();
+		confirmProp.active = true;
+		confirmProp.header = "Publish Article";
+		confirmProp.body = `Are you sure you want to publish the article 《${currentArticle.title}》?`;
+		confirmProp.callback = publishArticle;
+		confirmProp.yesMessage = "Publish";
+	}
+	function publishArticle(): void {
+		currentArticle.isPublished = true;
+		updateArticle();
 	}
 </script>
 
 <template>
+	<MessageProp :message-prop="messageProp" />
+	<ConfirmProp
+		:confirm-prop="confirmProp"
+		@confirm="
+			(decision: boolean) => {
+				confirmProp.active = false;
+			}
+		"
+	/>
 	<div class="parent-VJ4oXmhc1l child-">
 		<input
 			type="text"
@@ -162,12 +173,17 @@
 				<button
 					type="button"
 					class="parent-V1cCQmh5ye child-E1GkNXh9yl"
-					@click="publishOrUpdateArticle"
+					@click="
+						currentArticle.isPublished
+							? updateArticle()
+							: desideToPublishArticle()
+					"
 				>
 					<component
 						:is="icons.update"
 						class="icon medium child-N1Z087nqke parent-DkmXQLaqyx"
 						v-if="currentArticle.isPublished"
+						:class="{ active: status.update }"
 					/>
 					<component
 						:is="icons.publish"
@@ -187,7 +203,7 @@
 				>
 					<component
 						:is="icons.down"
-						class="icon medium parent-NJwJvQ29kg"
+						class="icon small parent-NJwJvQ29kg"
 						:class="{ active: status.moreButton }"
 					/>
 					<div
@@ -197,6 +213,7 @@
 						<div
 							class="child-VJMNmI35yx"
 							v-if="currentArticle.isPublished"
+							@click="convertToDraft"
 						>
 							Convert to draft
 						</div>
@@ -207,8 +224,9 @@
 			<div class="parent-SyjyVQncJl child-">
 				<component
 					:is="icons.setting"
-					class="icon medium parent-T1UEoQnqJx"
+					class="icon bigest parent-T1UEoQnqJx"
 					@click="status.settings = !status.settings"
+					:class="{ active: status.settings }"
 				/>
 				<div class="parent-Vy_T35aq1x" v-if="status.settings">
 					<div class="parent-4yCs6qp9Jg">Article Settings</div>
@@ -257,7 +275,7 @@
 		vertical-align: bottom;
 	}
 	.parent-Uybp7Xhq1e {
-		width: 350px;
+		width: 250px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -270,7 +288,6 @@
 	.child-E1GkNXh9yl {
 		border: none;
 		cursor: pointer;
-		background-color: #ffa33c;
 		border-radius: 5px;
 		height: 45px;
 	}
@@ -279,16 +296,31 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		background-color: #fe8700;
+	}
+	.parent-V1cCQmh5ye:hover {
+		background-color: #fe8700;
+	}
+	@keyframes rotateAnimation {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(-360deg);
+		}
+	}
+	.parent-DkmXQLaqyx.active {
+		animation: rotateAnimation 2s linear infinite;
 	}
 	.parent-EJQSS72ckl {
 		line-height: 24px;
 		color: white;
-		padding-left: 10px;
+		padding: 0 10px;
 		font-size: 16px;
 	}
 	.parent-NJwJvQ29kg {
 		width: fit-content;
-		padding: 5px;
+		padding: 3px;
 		transform: rotate(0deg);
 		transition: all 0.3s ease;
 	}
@@ -322,6 +354,8 @@
 	}
 	.parent-E1AC7735yx {
 		margin-left: 2px;
+		width: 16px;
+		padding: 0;
 	}
 	.parent-SyjyVQncJl {
 		width: 45px;
@@ -330,6 +364,13 @@
 		justify-content: center;
 		align-items: center;
 		cursor: pointer;
+	}
+	.parent-T1UEoQnqJx {
+		padding: 10px;
+	}
+	.parent-T1UEoQnqJx.active {
+		border: grey solid 1px;
+		background-color: rgba(177, 177, 177, 0.116);
 	}
 	.child-G1Bcjm39yl {
 		width: 45px;
@@ -345,13 +386,11 @@
 		padding: 10px 10px;
 		box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 		background: rgb(255, 255, 255);
+		cursor: default;
 	}
 	.parent-4yCs6qp9Jg {
 		font-size: 17px;
 		font-weight: 500;
 		padding-bottom: 10px;
 	}
-	/* .parent-dJnizjpqye{
-
-	} */
 </style>

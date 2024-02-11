@@ -2,7 +2,23 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import Hello from "@/views/Hello.vue";
 import World from "@/views/World.vue";
-import Editor from "@/components/blog/Editor.vue";
+import { getAccessToken } from "@/api";
+
+async function validateUser(): Promise<boolean> {
+	const url = "http://localhost:5000/v1/account/token";
+	const response = await fetch(url, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: "Bearer " + getAccessToken(),
+		},
+	});
+	if (response.status === 200) {
+		return true;
+	} else {
+		return false;
+	}
+}
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,25 +27,36 @@ const router = createRouter({
 			path: "/hello",
 			name: "hello",
 			component: Hello,
+			meta: { loginRequired: false },
 		},
 		{
 			path: "/world",
 			name: "world",
 			component: World,
+			meta: { loginRequired: false },
 		},
 		{
 			path: "/edit/article/:articleId(\\d+)",
 			name: "editArticle",
 			component: () => import("@/components/blog/Editor.vue"),
 			props: true,
+			meta: { loginRequired: true },
 		},
 		{
 			path: "/auth/:action(login|register)",
 			name: "auth",
 			component: () => import("@/components/auth-form/AuthForm.vue"),
 			props: true,
+			meta: { loginRequired: false },
 		},
 	],
 });
-
+router.beforeEach(async (to, from) => {
+	if (to.meta.loginRequired) {
+		const isAuthenticated = await validateUser();
+		if (!isAuthenticated && to.name !== "auth") {
+			return { name: "auth", params: { action: "login" } };
+		}
+	}
+});
 export default router;

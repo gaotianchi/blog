@@ -67,6 +67,7 @@
 			id="tag-editor"
 			v-model.trim="model"
 			ref="tagInput"
+			placeholder="Please enter article tags."
 		/>
 		<div class="child-41pk-Ex9Je parent-NJcl-4gqyg">
 			<div

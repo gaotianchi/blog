@@ -4,9 +4,10 @@
 	import Permalink from "./settings/Permalink.vue";
 	import SeriesVue from "./settings/Series.vue";
 	import SettingItem from "./SettingItem.vue";
-	import { reactive, watchEffect } from "vue";
+	import { onMounted, reactive, watchEffect } from "vue";
 	import { format } from "date-fns";
 	import type { Series, Settings } from "@/typing";
+	import { limString } from "@/api";
 
 	const emits = defineEmits<{
 		updateSettings: [settings: Settings];
@@ -21,6 +22,14 @@
 		cover: "",
 		author_id: 0,
 	});
+	onMounted(() => {
+		const localOriginalSeriesData =
+			sessionStorage.getItem("originalSeriesData");
+		if (localOriginalSeriesData) {
+			const sereisData = JSON.parse(localOriginalSeriesData);
+			currentSeries.name = (sereisData as Series).name;
+		}
+	});
 	watchEffect(() => {
 		emits("updateSettings", currentSettings);
 	});
@@ -29,7 +38,11 @@
 	<div class="parent-Vk3Ihqa5kg">
 		<SettingItem>
 			<template #title>Tags</template>
-			<template #preview>{{ currentSettings.tags?.join(",") }}</template>
+			<template #preview>{{
+				currentSettings.tags.length > 0
+					? currentSettings.tags?.join(",").trim()
+					: "No tags selected"
+			}}</template>
 			<template #detail>
 				<TagVue
 					:tags="props.settings.tags"
@@ -59,7 +72,9 @@
 		</SettingItem>
 		<SettingItem>
 			<template #title>Permalink</template>
-			<template #preview>{{ currentSettings.permalink }}</template>
+			<template #preview>{{
+				limString("https://gaotianchi.com/" + currentSettings.permalink, 46)
+			}}</template>
 			<template #detail>
 				<Permalink
 					:permalink="props.settings.permalink"

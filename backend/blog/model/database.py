@@ -7,7 +7,10 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, T
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from blog.config import get_config
 from blog.extens import db
+
+config = get_config()
 
 article_tag_association = db.Table(
     "article_tag_association",
@@ -53,6 +56,11 @@ class User(db.Model):
 
     def validate_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
+
+    def extend_validity_period(self) -> None:
+        self.token_validity_period += config.VALIDITY_INCREMENT
+        db.session.add(self)
+        db.session.commit()
 
     def to_dict(self) -> dict[str, Any]:
         return dict(
@@ -151,9 +159,9 @@ class Article(db.Model):
         body: str,
         slug: str,
         published_at: datetime,
+        tags: list[Tag],
         is_published: bool = False,
         series: Series | None = None,
-        tags: list[Tag] | None = None,
     ) -> "Article":  # type: ignore
         self.title = title
         self.body = body
@@ -162,8 +170,7 @@ class Article(db.Model):
         self.is_published = is_published
         if series:
             self.series = series
-        if tags:
-            self.tags.update(tags)
+        self.tags = set(tags)
         self.updated_at = datetime.utcnow()
         db.session.add(self)
         db.session.commit()

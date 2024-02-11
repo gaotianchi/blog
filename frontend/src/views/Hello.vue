@@ -1,32 +1,34 @@
 <script setup lang="ts">
-	import { ref, type Ref } from "vue";
-	import type { Settings } from "@/typing";
-	import SettingBar from "@/components/blog/SettingBar.vue";
-	const origin: Settings = {
-		tags: ["hello", "world"],
-		datetime: new Date(),
-		permalink: "how-are-you-doing",
-		seriesId: 47,
-	};
-	const current = ref(origin);
+	import { ref, watch, type Ref, reactive } from "vue";
+	import ConfirmPropVue from "@/components/ConfirmProp.vue";
+	import type { ConfirmProp } from "@/typing";
+	const model = ref("");
+	const decision = ref(false);
+	const confirmProp: ConfirmProp = reactive({
+		active: false,
+		header: "Delete Article",
+		body: "Are you sure you want to delete the article 'HELLO WORLD'?",
+		noMessage: "Cancel",
+		yesMessage: "Delete",
+		callback: update,
+	});
+	function update(): void {
+		model.value = "hello world";
+	}
 </script>
 
 <template>
-	<div class="parent">
-		{{ current }}
-	</div>
-	<SettingBar
-		:settings="origin"
-		@update-settings="
-			(s) => {
-				current = s;
+	{{ model }}
+	<button type="button" @click="confirmProp.active = true">Toggle</button>
+	<ConfirmPropVue
+		:confirm-prop="confirmProp"
+		@confirm="
+			(d) => {
+				confirmProp.active = false;
+				decision = d;
 			}
 		"
 	/>
 </template>
 
-<style scoped>
-	.parent {
-		min-height: 150px;
-	}
-</style>
+<style scoped></style>

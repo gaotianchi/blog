@@ -73,13 +73,14 @@ def update_article(id: int):
     if data["series_id"]:
         series = Series.query.get(data["series_id"])
         data_to_update["series"] = series
-    if data["tags"]:
-        tags: list[str] = data["tags"]
-        data_to_update["tags"] = Tag.create(*tags)
-
+    tags: list[str] = data["tags"]
+    data_to_update["tags"] = Tag.create(*tags)
     new_article = current_article.update(**data_to_update)  # type: ignore
+    responseData = new_article.to_dict()
+    if validator(responseData, SCHEMA_04):  # type: ignore
+        return abort()
 
-    return jsonify(new_article.to_dict()), 200  # type: ignore
+    return jsonify(responseData), 200  # type: ignore
 
 
 @author.route("/article/<int:id>", methods=["GET"])

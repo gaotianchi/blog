@@ -14,21 +14,20 @@ import SettingVue from "./Setting.vue";
 import UploadImageVue from "./UploadImage.vue";
 import CancelVue from "./Cancel.vue";
 
-
 export default {
-    fail: FailVue,
-    loading: LoadingVue,
-    login: LoginVue,
-    register: RegisterVue,
-    success: SuccessVue,
-    down: DownVue,
-    draft: DraftVue,
-    publish: PublishVue,
-    update: UpdateVue,
-    view: ViewVue,
-    sync: SyncVue,
-    unsync: UnSyncVue,
-    setting: SettingVue,
-    uploadImage: UploadImageVue,
-    cancel: CancelVue
-}
+	fail: FailVue,
+	loading: LoadingVue,
+	login: LoginVue,
+	register: RegisterVue,
+	success: SuccessVue,
+	down: DownVue,
+	draft: DraftVue,
+	publish: PublishVue,
+	update: UpdateVue,
+	view: ViewVue,
+	sync: SyncVue,
+	unsync: UnSyncVue,
+	setting: SettingVue,
+	uploadImage: UploadImageVue,
+	cancel: CancelVue,
+};
