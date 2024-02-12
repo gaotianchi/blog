@@ -7,7 +7,7 @@ export function getArticle(type: "local" | "remote" = "local"): Article | null {
 			const localArticleData = sessionStorage.getItem("localArticle");
 			article = JSON.parse(localArticleData || "");
 		case "remote":
-			const remoteArticleData = sessionStorage.getItem("localArticle");
+			const remoteArticleData = sessionStorage.getItem("remoteArticle");
 			article = JSON.parse(remoteArticleData || "");
 	}
 	return article;
@@ -21,7 +21,9 @@ export function setArticle(
 	switch (type) {
 		case "local":
 			sessionStorage.setItem("localArticle", articleData);
+			return;
 		case "remote":
 			sessionStorage.setItem("remoteArticle", articleData);
+			return;
 	}
 }

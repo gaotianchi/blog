@@ -16,7 +16,7 @@
 	const props = defineProps<{
 		tags: string[];
 	}>();
-	const model: Ref<string> = ref(props.tags?.join(",") ?? "");
+	const model: Ref<string> = ref(props.tags.join(",") ?? "");
 	const typedTags = computed<string[]>(() => {
 		const tagArr = model.value?.split(",").map((i) => i.trim()) || [];
 		return tagArr.slice(0, tagArr.length - 1);
@@ -26,30 +26,45 @@
 		return tagArr[tagArr.length - 1] || "";
 	});
 	const tagInput: Ref<HTMLElement | null> = ref(null);
-	const tags: Tag[] = reactive([]);
+	const allTags: Tag[] = reactive([]);
 	const index = new Index({ tokenize: "forward" });
-	tags.forEach((i) => {
+	allTags.forEach((i) => {
 		index.add(i.id, i.name);
 	});
 
 	const suggestedTags = computed(() => {
 		if (searchText.value.length === 0) {
-			const result = tags.filter(
+			const result = allTags.filter(
 				(tag) => !typedTags.value.includes(tag.name)
 			);
 			return result.slice(0, 10);
 		} else {
 			const searchResult = index.search(searchText.value, { limit: 10 });
-			const tagsItems = tags
+			const tagsItems = allTags
 				.filter((tag) => searchResult.includes(tag.id))
 				.filter((i) => !typedTags.value.includes(i.name));
 			return tagsItems;
 		}
 	});
+	onMounted(() => {
+		tagInput.value?.focus();
+		if (model.value.trim()) {
+			model.value = model.value + ",";
+		}
+		initOldTags()
+	});
+
+	watchEffect(() => {
+		const tagArr = model.value
+			?.split(",")
+			.map((i) => i.trim())
+			.filter((i) => i.length > 0);
+		emits("updateTags", [...new Set(tagArr)]);
+	});
 	async function initOldTags(): Promise<void> {
 		try {
 			const tagsData = await getTags();
-			Object.assign(tags, tagsData);
+			Object.assign(allTags, tagsData);
 		} catch (error) {
 			console.error(error);
 		}
@@ -59,24 +74,8 @@
 		model.value = typedTags.value.join(",") + ",";
 		tagInput.value?.focus();
 	}
-	onMounted(() => {
-		tagInput.value?.focus();
-		if (model.value.trim()) {
-			model.value = model.value + ",";
-		}
-		initOldTags();
-	});
-	watchEffect(() => {
-		const tagArr = model.value
-			?.split(",")
-			.map((i) => i.trim())
-			.filter((i) => i.length > 0);
-		emits("updateTags", [...new Set(tagArr)]);
-	});
 </script>
-
 <template>
-	<!-- <MessageProp /> -->
 	<div class="parent-VyJIlVgcyg">
 		<input
 			class="child-41pk-Ex9Je parent-VJtrsOlqye"

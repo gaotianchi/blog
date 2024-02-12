@@ -6,8 +6,8 @@
 	import SettingItem from "./SettingItem.vue";
 	import { onMounted, reactive, watchEffect } from "vue";
 	import { format } from "date-fns";
-	import type { Series, Settings } from "@/typing";
-	import { limString } from "@/api";
+	import type { Article, Series, Settings } from "@/typing";
+	import { getSeriesItem, limString } from "@/api";
 
 	const emits = defineEmits<{
 		updateSettings: [settings: Settings];
@@ -15,32 +15,84 @@
 	const props = defineProps<{
 		settings: Settings;
 	}>();
-	const currentSettings: Settings = reactive(props.settings);
+	const currentSettigns: Settings = reactive(props.settings);
+	const futureSettings: Settings = reactive(props.settings);
 	const currentSeries: Series = reactive({
 		id: props.settings.seriesId,
 		name: "",
 		cover: "",
 		author_id: 0,
 	});
+	onMounted(() => {});
+	initCurrentSettings();
+	initCurrentSeries();
 	watchEffect(() => {
-		emits("updateSettings", currentSettings);
+		emits("updateSettings", futureSettings);
 	});
+	function initCurrentSettings(): void {
+		const articleData = sessionStorage.getItem("localArticle");
+		const currentArticle: Article = JSON.parse(articleData || "");
+		if (currentArticle) {
+			currentSettigns.tags = currentArticle.tags;
+			currentSettigns.datetime = new Date(currentArticle.publishedAt);
+			currentSettigns.permalink = currentArticle.slug;
+			currentSettigns.seriesId = currentArticle.seriesId;
+		}
+	}
+	async function initCurrentSeries(): Promise<void> {
+		if (!currentSettigns.seriesId) {
+			console.log("No original series found.");
+			return;
+		}
+		try {
+			let currentSeriesItem: Series = { ...currentSeries };
+			if (sessionStorage.getItem("localSeries")) {
+				const seriesItem: Series = JSON.parse(
+					sessionStorage.getItem("localSeries") as string
+				);
+				if (seriesItem.id === currentSettigns.seriesId) {
+					currentSeriesItem = JSON.parse(
+						sessionStorage.getItem("localSeries") as string
+					);
+				} else {
+					currentSeriesItem = await getSeriesItem(
+						currentSettigns.seriesId
+					);
+					sessionStorage.setItem(
+						"localSeries",
+						JSON.stringify(currentSeriesItem)
+					);
+				}
+			} else {
+				currentSeriesItem = await getSeriesItem(
+					currentSettigns.seriesId
+				);
+				sessionStorage.setItem(
+					"localSeries",
+					JSON.stringify(currentSeriesItem)
+				);
+			}
+			Object.assign(currentSeries, currentSeriesItem);
+		} catch (error) {
+			console.error(error);
+		}
+	}
 </script>
 <template>
 	<div class="parent-Vk3Ihqa5kg">
 		<SettingItem>
 			<template #title>Tags</template>
 			<template #preview>{{
-				currentSettings.tags.length > 0
-					? currentSettings.tags?.join(",").trim()
+				currentSettigns.tags.length > 0
+					? currentSettigns.tags?.join(",").trim()
 					: "No tags selected"
 			}}</template>
 			<template #detail>
 				<TagVue
-					:tags="props.settings.tags"
+					:tags="currentSettigns.tags"
 					@update-tags="
 						(tags) => {
-							currentSettings.tags = tags;
+							futureSettings.tags = tags;
 						}
 					"
 				/>
@@ -49,14 +101,14 @@
 		<SettingItem>
 			<template #title>Datetime</template>
 			<template #preview>
-				{{ format(currentSettings.datetime, "yyyy-MM-dd HH:mm") }}
+				{{ format(currentSettigns.datetime, "yyyy-MM-dd HH:mm") }}
 			</template>
 			<template #detail>
 				<Datetime
-					:datetime="props.settings.datetime"
+					:datetime="currentSettigns.datetime"
 					@update-datetime="
 						(datetime) => {
-							currentSettings.datetime = datetime;
+							futureSettings.datetime = datetime;
 						}
 					"
 				/>
@@ -65,14 +117,17 @@
 		<SettingItem>
 			<template #title>Permalink</template>
 			<template #preview>{{
-				limString("https://gaotianchi.com/" + currentSettings.permalink, 46)
+				limString(
+					"https://gaotianchi.com/" + futureSettings.permalink,
+					46
+				)
 			}}</template>
 			<template #detail>
 				<Permalink
 					:permalink="props.settings.permalink"
 					@update-permalink="
 						(permalink) => {
-							currentSettings.permalink = permalink;
+							futureSettings.permalink = permalink;
 						}
 					"
 				/>
@@ -85,11 +140,10 @@
 			}}</template>
 			<template #detail>
 				<SeriesVue
-					:series-id="currentSettings.seriesId"
+					:series="currentSeries"
 					@update-series="
 						(series) => {
-							currentSettings.seriesId = series.id;
-							currentSeries = series;
+							futureSettings.seriesId = series.id;
 						}
 					"
 				/>
@@ -100,6 +154,6 @@
 <style scoped>
 	.parent-Vk3Ihqa5kg {
 		width: 300px;
-		height: fit-content;
+		min-height: 500px;
 	}
 </style>

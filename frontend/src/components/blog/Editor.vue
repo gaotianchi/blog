@@ -1,13 +1,14 @@
 <script setup lang="ts">
+	import "md-editor-v3/lib/style.css";
 	import icons from "@/components/icons";
 	import { computed, onMounted, reactive, ref, watch } from "vue";
 	import { MdEditor } from "md-editor-v3";
-	import "md-editor-v3/lib/style.css";
 	import SettingBar from "./SettingBar.vue";
 	import type { Article, ConfirmProp, MessageProp } from "@/typing";
 	import { updateArticleItem, getArticleItem, displayMessage } from "@/api";
 	import type { APIError } from "@/api/errors";
 	import { setArticle, getArticle } from "@/api/local";
+	import { isShallowEqual } from "@/utlis";
 	type Status = {
 		moreButton: boolean;
 		sync: boolean;
@@ -53,18 +54,18 @@
 	const originalArticle: Article = reactive({ ...defaultArticle });
 	const currentArticle: Article = reactive({ ...defaultArticle });
 	const currentJsonArticle = computed<string>(() => {
-		const currentArticleData = currentArticle;
+		const currentArticleData = { ...currentArticle };
 		currentArticleData.title = currentArticleData.title.trim();
 		currentArticleData.body = currentArticleData.body.trim();
 		currentArticleData.slug = currentArticleData.slug.trim();
 		const currentArticleJsonData = JSON.stringify(currentArticleData);
-		setArticle(currentArticle);
+		setArticle(currentArticleData);
 		return currentArticleJsonData;
 	});
 	onMounted(() => {
 		initArticleData();
 	});
-	watch(currentJsonArticle, () => {
+	watch(currentArticle, () => {
 		if (isSync()) {
 			status.sync = true;
 		} else {
@@ -81,9 +82,11 @@
 	});
 
 	function isSync(): boolean {
-		const localArticleJsonData = JSON.stringify(getArticle("local"));
-		const remoteArticleJsonData = JSON.stringify(getArticle("remote"));
-		if (localArticleJsonData == remoteArticleJsonData) {
+		const localArticleJsonData = JSON.parse(currentJsonArticle.value);
+		const remoteArticleJsonData = JSON.parse(
+			sessionStorage.getItem("remoteArticle") || ""
+		);
+		if (isShallowEqual(localArticleJsonData, remoteArticleJsonData)) {
 			return true;
 		} else {
 			return false;
@@ -118,7 +121,7 @@
 			status.sync = true;
 		} catch (error) {
 			const apiError = error as APIError;
-			console.log(apiError);
+			console.error(apiError);
 			displayMessage(messageProp, "Saving failed, please try again.");
 		}
 
@@ -335,7 +338,7 @@
 	.parent-VJFuGLhcyg {
 		position: absolute;
 		top: 45px;
-		right: -69px;
+		right: -50px;
 		width: 180px;
 		height: fit-content;
 		cursor: default;

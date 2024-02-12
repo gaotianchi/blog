@@ -19,13 +19,14 @@
 	import icons from "@/components/icons";
 	import { getUnixTime } from "date-fns";
 	import type { ConfirmProp, MessageProp, Series } from "@/typing";
+	import { getArticle } from "@/api/local";
 	type Action = "default" | "select" | "new";
 	type PreviewCover = {
 		url: string;
 		file: File | null;
 	};
 	const props = defineProps<{
-		seriesId: number;
+		series: Series;
 	}>();
 	const emits = defineEmits<{
 		updateSeries: [series: Series];
@@ -39,8 +40,8 @@
 		cover: "",
 	};
 	const newSeries: Series = reactive({ ...defaultSeries });
-	const originalSeries: Series = reactive({ ...defaultSeries });
-	const currentSeries: Series = reactive({ ...defaultSeries });
+	const currentSeries: Series = reactive({ ...props.series });
+	const futureSeries: Series = reactive({ ...props.series });
 	const uploadImageArea: Ref<HTMLInputElement | null> = ref(null);
 	const previewCover: PreviewCover = reactive({
 		url: "",
@@ -61,7 +62,8 @@
 	const confirmProp: ConfirmProp = reactive({ ...defaultConfirmProp });
 
 	watchEffect(() => {
-		emits("updateSeries", currentSeries);
+		emits("updateSeries", futureSeries);
+		sessionStorage.setItem("localSeries", JSON.stringify(futureSeries));
 	});
 	watch(messageProp, () => {
 		if (messageProp.active) {
@@ -71,23 +73,9 @@
 			}, 1500);
 		}
 	});
-	initOriginalSeriesItem();
 	onMounted(() => {
 		initAllSeries();
 	});
-	async function initOriginalSeriesItem(): Promise<void> {
-		if (!props.seriesId) {
-			console.log("No original found.");
-			return;
-		}
-		try {
-			const originalSeriesItem = await getSeriesItem(props.seriesId);
-			Object.assign(originalSeries, originalSeriesItem);
-			Object.assign(currentSeries, originalSeriesItem);
-		} catch (error) {
-			console.log(error);
-		}
-	}
 	async function initAllSeries(): Promise<void> {
 		try {
 			const allSeriesData = await getSeries();
@@ -95,6 +83,16 @@
 			sessionStorage.setItem("allSeries", JSON.stringify(allSeries));
 		} catch (error) {
 			console.error(error);
+		}
+	}
+	async function initRemoteSeries(): Promise<void> {
+		if (!props.series.id) {
+			return;
+		}
+		try {
+			
+		} catch(error) {
+
 		}
 	}
 	function getAllSeries(): Series[] {
@@ -109,7 +107,7 @@
 		sessionStorage.setItem("allSeries", JSON.stringify(allOldSeries));
 	}
 	function loadAllSeries(): void {
-		Object.assign(currentSeries, originalSeries);
+		Object.assign(futureSeries, currentSeries);
 		Object.assign(allSeries, getAllSeries());
 	}
 	async function createSeries(): Promise<void> {
@@ -124,7 +122,7 @@
 		}
 		try {
 			const newSeriesData = await createSeriesItem(newSeries);
-			Object.assign(currentSeries, newSeriesData);
+			Object.assign(futureSeries, newSeriesData);
 			updateAllLocalSeries(newSeriesData);
 			messageProp.active = true;
 			messageProp.message = "Successfully create series.";
@@ -207,8 +205,8 @@
 	<div class="parent-4JxPgYb9Jl">
 		<div class="parent-EJ5IqDbqkl child-N1IGDObcye">
 			{{
-				currentSeries.name
-					? limString(currentSeries.name, 90)
+				futureSeries.name
+					? limString(futureSeries.name, 90)
 					: "No series selected."
 			}}
 		</div>
@@ -217,7 +215,7 @@
 				name="default"
 				value="default"
 				v-model="action"
-				@selected="Object.assign(currentSeries, originalSeries)"
+				@selected="Object.assign(futureSeries, currentSeries)"
 				>Default</Radio
 			>
 			<Radio
@@ -231,7 +229,7 @@
 				name="new"
 				value="new"
 				v-model="action"
-				@selected="Object.assign(currentSeries, originalSeries)"
+				@selected="Object.assign(futureSeries, currentSeries)"
 				>New</Radio
 			>
 		</div>
@@ -243,7 +241,7 @@
 				class="parent- child-EJRV0dWq1e"
 				v-for="series in allSeries"
 				v-if="allSeries.length > 0"
-				@click="Object.assign(currentSeries, series)"
+				@click="Object.assign(futureSeries, series)"
 			>
 				<div class="parent-4kGYZF-qJl child-4yb5kK-9yx">
 					<img :src="series.cover" v-if="series.cover" />
