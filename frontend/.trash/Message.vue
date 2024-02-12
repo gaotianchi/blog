@@ -1,13 +1,33 @@
 <script setup lang="ts">
-	import type { MessageProp } from "@/typing";
-	defineProps<{
-		messageProp: MessageProp;
+	import { ref, watch } from "vue";
+
+	const props = defineProps<{
+		message: string;
 	}>();
+	const status = ref(false);
+	watch(status, () => {
+		if (status.value) {
+			setTimeout(() => {
+				status.value = false;
+			}, 1000);
+		}
+	});
+	if (!props.message.trim()) {
+		status.value = false;
+	}
 </script>
 <template>
 	<Transition>
-		<div class="parent-E1A1PUZo1x" v-if="messageProp.active">
-			<span class="parent-NyiIFLbi1e">{{ messageProp.message }}</span>
+		<div
+			class="parent-E1A1PUZo1x"
+			v-if="status"
+			@click="
+				() => {
+					status = true;
+				}
+			"
+		>
+			<span class="parent-NyiIFLbi1e">{{ message }}</span>
 		</div>
 	</Transition>
 </template>

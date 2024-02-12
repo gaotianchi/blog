@@ -30,7 +30,7 @@
 				</div>
 			</div>
 		</button>
-		<div class="child-N1ys-00Fke" v-show="active">
+		<div class="child-N1ys-00Fke" v-if="active">
 			<slot name="detail">Detail</slot>
 		</div>
 	</div>

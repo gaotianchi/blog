@@ -25,8 +25,8 @@ def filter_string(input_string: str):
     return filtered_string
 
 
-def get_auto_slug(prefix: str = "") -> str:
-    return prefix + str(time.time())
+def get_auto_slug(prefix: str = "article_") -> str:
+    return prefix + str(time.time())[0:9]
 
 
 class User(db.Model):
@@ -91,6 +91,9 @@ class Tag(db.Model):
             db.session.add(new_tag)
         db.session.commit()
         return [Tag.query.filter_by(name=name).first() for name in tags]  # type: ignore
+
+    def to_dict(self) -> dict[str, str | int]:
+        return dict(id=self.id, name=self.name)
 
 
 class Series(db.Model):
@@ -182,12 +185,12 @@ class Article(db.Model):
             title=self.title,
             body=self.body,
             slug=self.slug,
-            is_published=self.is_published,
-            published_at=self.published_at.isoformat(),
-            created_at=self.created_at.isoformat(),
-            updated_at=self.updated_at.isoformat(),
-            series_id=self.series_id,
-            author_id=self.author_id,
+            isPublished=self.is_published,
+            publishedAt=self.published_at.isoformat(),
+            createdAt=self.created_at.isoformat(),
+            updatedAt=self.updated_at.isoformat(),
+            seriesId=self.series_id,
+            authorId=self.author_id,
             tags=[tag.name for tag in self.tags],  # type: ignore
         )
 

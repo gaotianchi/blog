@@ -7,14 +7,28 @@ export function getAccessToken(): string | null {
 	return accessToken;
 }
 
-export function getTags(): Tag[] {
-	const tags = fakeTags();
-	return tags;
+export async function getTags(): Promise<Tag[]> {
+	const url = "http://localhost:5000/v1/author/tags";
+	const response = await fetch(url);
+	if (response.status === 200) {
+		const tagsData = await response.json();
+		return tagsData;
+	} else {
+		const errorData = await response.json();
+		throw errorData.error as APIError;
+	}
 }
 
-export function getSeries(): Series[] {
-	const sereises = fakeSeries();
-	return sereises;
+export async function getSeries(): Promise<Series[]> {
+	const url = "http://localhost:5000/v1/author/series";
+	const response = await fetch(url);
+	if (response.status === 200) {
+		const seriesData = await response.json();
+		return seriesData;
+	} else {
+		const errorData = await response.json();
+		throw errorData.error as APIError;
+	}
 }
 
 export async function getSeriesItem(seriesId: number): Promise<Series> {
@@ -29,9 +43,7 @@ export async function getSeriesItem(seriesId: number): Promise<Series> {
 	}
 }
 
-export async function createSeriesItem(
-	seriesData: Series
-): Promise<Series | void> {
+export async function createSeriesItem(seriesData: Series): Promise<Series> {
 	const url = "http://localhost:5000/v1/author/series";
 	const response = await fetch(url, {
 		method: "POST",
@@ -44,8 +56,6 @@ export async function createSeriesItem(
 	if (response.status === 201) {
 		const seriesData = await response.json();
 		return seriesData;
-	} else if (response.status === 200) {
-		return;
 	} else {
 		const errorResponse = await response.json();
 		throw errorResponse.error;
@@ -94,8 +104,21 @@ export async function updateArticleItem(
 		body: articleJson,
 	});
 	if (response.status === 200) {
-		const newArticleData = await response.json();
-		return newArticleData as Article;
+		const articleData = await response.json();
+		const data: Article = {
+			id: articleData.id,
+			title: articleData.title,
+			body: articleData.body,
+			slug: articleData.slug,
+			createdAt: new Date(articleData.createdAt),
+			updatedAt: new Date(articleData.updatedAt),
+			isPublished: articleData.isPublished,
+			publishedAt: new Date(articleData.publishedAt),
+			seriesId: articleData.seriesId || 0,
+			authorId: articleData.authorId,
+			tags: articleData.tags,
+		};
+		return data;
 	} else {
 		const errorResponse = await response.json();
 		throw errorResponse.error as APIError;
@@ -114,12 +137,12 @@ export async function getArticleItem(
 			title: articleData.title,
 			body: articleData.body,
 			slug: articleData.slug,
-			createdAt: new Date(articleData.created_at),
-			updatedAt: new Date(articleData.updated_at),
-			isPublished: articleData.is_published,
-			publishedAt: new Date(articleData.published_at),
-			seriesId: articleData.series_id,
-			authorId: articleData.author_id,
+			createdAt: new Date(articleData.createdAt),
+			updatedAt: new Date(articleData.updatedAt),
+			isPublished: articleData.isPublished,
+			publishedAt: new Date(articleData.publishedAt),
+			seriesId: articleData.seriesId || 0,
+			authorId: articleData.authorId,
 			tags: articleData.tags,
 		};
 		return data;

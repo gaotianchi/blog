@@ -7,7 +7,7 @@
 	import type { Article, ConfirmProp, MessageProp } from "@/typing";
 	import { updateArticleItem, getArticleItem, displayMessage } from "@/api";
 	import type { APIError } from "@/api/errors";
-
+	import { setArticle, getArticle } from "@/api/local";
 	type Status = {
 		moreButton: boolean;
 		sync: boolean;
@@ -15,7 +15,7 @@
 		settings: boolean;
 	};
 	const props = defineProps<{
-		articleId: string;
+		articleId: string | number;
 	}>();
 	const status: Status = reactive({
 		moreButton: false,
@@ -52,29 +52,23 @@
 
 	const originalArticle: Article = reactive({ ...defaultArticle });
 	const currentArticle: Article = reactive({ ...defaultArticle });
-	const articleJson = computed<string>(() => {
-		const currentJson = {
-			id: currentArticle.id,
-			title: currentArticle.title.trim(),
-			body: currentArticle.body.trim(),
-			slug: currentArticle.slug.trim(),
-			created_at: currentArticle.createdAt.toISOString(),
-			tags: currentArticle.tags,
-			is_published: currentArticle.isPublished,
-			published_at: currentArticle.publishedAt.toISOString(),
-			updated_at: currentArticle.updatedAt.toISOString(),
-			series_id: currentArticle.seriesId,
-		};
-		return JSON.stringify(currentJson);
+	const currentJsonArticle = computed<string>(() => {
+		const currentArticleData = currentArticle;
+		currentArticleData.title = currentArticleData.title.trim();
+		currentArticleData.body = currentArticleData.body.trim();
+		currentArticleData.slug = currentArticleData.slug.trim();
+		const currentArticleJsonData = JSON.stringify(currentArticleData);
+		setArticle(currentArticle);
+		return currentArticleJsonData;
 	});
 	onMounted(() => {
-		initOriginalArticle();
+		initArticleData();
 	});
-	watch(articleJson, () => {
-		if (articleChanged()) {
-			status.sync = false;
-		} else {
+	watch(currentJsonArticle, () => {
+		if (isSync()) {
 			status.sync = true;
+		} else {
+			status.sync = false;
 		}
 	});
 	watch(messageProp, () => {
@@ -85,38 +79,49 @@
 			}, 1500);
 		}
 	});
-	function articleChanged(): boolean {
-		const oldArticle = sessionStorage.getItem("oldArticle") || "";
-		if (articleJson.value != oldArticle) {
+
+	function isSync(): boolean {
+		const localArticleJsonData = JSON.stringify(getArticle("local"));
+		const remoteArticleJsonData = JSON.stringify(getArticle("remote"));
+		if (localArticleJsonData == remoteArticleJsonData) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	async function initOriginalArticle(): Promise<void> {
-		const articleData = await getArticleItem(props.articleId);
-		Object.assign(originalArticle, articleData);
-		Object.assign(currentArticle, articleData);
-		sessionStorage.setItem("oldArticle", articleJson.value);
+	async function initArticleData(): Promise<void> {
+		try {
+			const articleData = await getArticleItem(props.articleId);
+			setArticle(articleData, "remote");
+			Object.assign(originalArticle, articleData);
+			Object.assign(currentArticle, articleData);
+		} catch (error) {
+			console.error(error);
+		}
 	}
 	async function updateArticle(): Promise<void> {
 		status.update = true;
-		if (!articleChanged()) {
+		if (status.sync) {
 			displayMessage(messageProp, "Article has been updated.");
 			status.update = false;
 			return;
 		}
 		try {
 			displayMessage(messageProp, "Saving changes.");
-			await updateArticleItem(props.articleId, articleJson.value);
-			status.sync = true;
-			sessionStorage.setItem("oldArticle", articleJson.value);
+			const articleData = await updateArticleItem(
+				props.articleId,
+				currentJsonArticle.value
+			);
+			setArticle(articleData, "remote");
+			Object.assign(currentArticle, articleData);
 			displayMessage(messageProp, "Changes saved successfully.");
+			status.sync = true;
 		} catch (error) {
 			const apiError = error as APIError;
 			console.log(apiError);
 			displayMessage(messageProp, "Saving failed, please try again.");
 		}
+
 		status.update = false;
 	}
 	function convertToDraft(): void {

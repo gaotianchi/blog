@@ -1,933 +1,400 @@
 <script setup lang="ts">
 	import icons from "@/components/icons";
-	import { ref, watchEffect, type Ref, reactive } from "vue";
+	import { computed, onMounted, reactive, ref, watch } from "vue";
 	import { MdEditor } from "md-editor-v3";
 	import "md-editor-v3/lib/style.css";
-	import Datepicker from "vue3-datepicker";
-	import { format } from "date-fns";
-
-	const publishStatus: Ref<boolean> = ref(true);
-	const articleTitle: Ref<string> = ref("");
-	const macStatus: Ref<boolean> = ref(false);
-	const syncStatus: Ref<boolean> = ref(true);
-	const articleBody: Ref<string> = ref("");
-	const mscStatus: Ref<boolean> = ref(false);
-	const activeMscItems: Ref<string[]> = ref([]);
-	const tagsInputValue: Ref<string> = ref("hello, world");
-	const publishData: Ref<Date> = ref(new Date());
-	const articleSlug: Ref<string> = ref(
-		"loooooooooooong-long-long-long-article-slug-example"
-	);
-	const articleSeries: Ref<string> = ref("Example article series title.");
-	const seriesOption: Ref<"default" | "select" | "new"> = ref("default");
-	const seriesItems = reactive([
-		{
-			cover: "https://picsum.photos/40",
-			title: "Diam ut et nonumy eos minim kasd et",
-		},
-		{
-			cover: "https://picsum.photos/40",
-			title: "Diam Te clita et aliquyam ea feugiat at loremm ut amet elitr",
-		},
-		{
-			cover: "https://picsum.photos/40",
-			title: "Te clita et aliquyam ea feugiat at lorem ut amet elitra",
-		},
-		{
-			cover: "https://picsum.photos/40",
-			title: "Te clita et aliquyam ea feugiat at lorem ut amet elitra",
-		},
-		{
-			cover: "https://picsum.photos/40",
-			title: "Te clita et aliquyam ea feugiat at lorem ut amet elitra",
-		},
-		{
-			cover: "https://picsum.photos/40",
-			title: "Te clita et aliquyam ea feugiat at lorem ut amet elitra",
-		},
-	]);
-	const previewUrl: Ref<string | null> = ref(null);
-
-	watchEffect(() => {
-		articleSlug.value = articleSlug.value.substring(0, 8000);
-
-		articleSeries.value = articleSeries.value.substring(0, 300);
+	import SettingBar from "./SettingBar.vue";
+	import type { Article, ConfirmProp, MessageProp } from "@/typing";
+	import { updateArticleItem, getArticleItem, displayMessage } from "@/api";
+	import type { APIError } from "@/api/errors";
+	type Status = {
+		moreButton: boolean;
+		sync: boolean;
+		update: boolean;
+		settings: boolean;
+	};
+	const props = defineProps<{
+		articleId: string;
+	}>();
+	const status: Status = reactive({
+		moreButton: false,
+		sync: true,
+		update: false,
+		settings: false,
 	});
+	const messageProp: MessageProp = reactive({
+		active: false,
+		message: "",
+	});
+	const defaultConfirmProp: ConfirmProp = {
+		active: false,
+		header: undefined,
+		body: "",
+		yesMessage: undefined,
+		noMessage: undefined,
+		callback: () => {},
+	};
+	const confirmProp: ConfirmProp = reactive({ ...defaultConfirmProp });
+	const defaultArticle: Article = {
+		id: 0,
+		title: "",
+		body: "",
+		slug: "",
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		isPublished: false,
+		publishedAt: new Date(),
+		tags: [],
+		seriesId: 0,
+		authorId: 0,
+	};
 
-	const permalinkOption: Ref<boolean> = ref(false);
-	const fileInput: Ref<HTMLInputElement | null> = ref(null);
-
-	function changeMscItemStatus(item: string): void {
-		if (activeMscItems.value.includes(item)) {
-			activeMscItems.value = activeMscItems.value.filter(
-				(i) => i !== item
-			);
+	const originalArticle: Article = reactive({ ...defaultArticle });
+	const currentArticle: Article = reactive({ ...defaultArticle });
+	const articleJson = computed<string>(() => {
+		const currentJson = {
+			id: currentArticle.id,
+			title: currentArticle.title.trim(),
+			body: currentArticle.body.trim(),
+			slug: currentArticle.slug.trim(),
+			created_at: currentArticle.createdAt.toISOString(),
+			tags: currentArticle.tags,
+			is_published: currentArticle.isPublished,
+			published_at: currentArticle.publishedAt.toISOString(),
+			updated_at: currentArticle.updatedAt.toISOString(),
+			series_id: currentArticle.seriesId,
+		};
+		return JSON.stringify(currentJson);
+	});
+	onMounted(() => {
+		initOriginalArticle();
+	});
+	watch(articleJson, () => {
+		if (articleChanged()) {
+			status.sync = false;
 		} else {
-			activeMscItems.value.push(item);
+			status.sync = true;
 		}
-	}
-
-	function getMscItemStatus(item: string): boolean {
-		if (activeMscItems.value.includes(item)) {
+	});
+	watch(messageProp, () => {
+		if (messageProp.active) {
+			setTimeout(() => {
+				messageProp.active = false;
+				messageProp.message = "";
+			}, 1500);
+		}
+	});
+	function articleChanged(): boolean {
+		const oldArticle = sessionStorage.getItem("oldArticle") || "";
+		if (articleJson.value != oldArticle) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-
-	function limString(str: string, maxLength: number): string {
-		if (str.length <= maxLength) {
-			return str;
-		} else {
-			return str.substring(0, maxLength) + " ...";
-		}
+	async function initOriginalArticle(): Promise<void> {
+		const articleData = await getArticleItem(props.articleId);
+		Object.assign(originalArticle, articleData);
+		Object.assign(currentArticle, articleData);
+		sessionStorage.setItem("oldArticle", articleJson.value);
 	}
-
-	const triggerFileInput = () => {
-		fileInput?.value?.click();
-	};
-
-	const handleFileUpload = (event: Event) => {
-		const selectedFile = (event.target as HTMLInputElement).files?.[0];
-		console.log(selectedFile);
-		processFile(selectedFile);
-	};
-
-	const handleDrop = (event: DragEvent) => {
-		event.preventDefault();
-		const selectedFile = event.dataTransfer?.files?.[0];
-		processFile(selectedFile);
-	};
-
-	const processFile = (file: File | undefined) => {
-		if (file) {
-			console.log("Selected file:", file.name);
-
-			// Read the file and set the previewUrl
-			const reader = new FileReader();
-			reader.onload = () => {
-				previewUrl.value = reader.result as string;
-			};
-			reader.readAsDataURL(file);
-
-			// You can further process the file or upload it to a server
+	async function updateArticle(): Promise<void> {
+		status.update = true;
+		if (!articleChanged()) {
+			displayMessage(messageProp, "Article has been updated.");
+			status.update = false;
+			return;
 		}
-	};
-
-	const cancelUploadSeriesCover = () => {
-		if (fileInput.value) {
-			fileInput.value.value = "";
+		try {
+			displayMessage(messageProp, "Saving changes.");
+			const articleData = await updateArticleItem(
+				props.articleId,
+				articleJson.value
+			);
+			sessionStorage.setItem("oldArticle", articleJson.value);
+			Object.assign(originalArticle, articleData);
+			displayMessage(messageProp, "Changes saved successfully.");
+			status.sync = true;
+		} catch (error) {
+			const apiError = error as APIError;
+			console.log(apiError);
+			displayMessage(messageProp, "Saving failed, please try again.");
 		}
 
-		previewUrl.value = null;
-	};
+		status.update = false;
+	}
+	function convertToDraft(): void {
+		currentArticle.isPublished = false;
+		updateArticle();
+	}
+	function resetConfirmProp(): void {
+		Object.assign(confirmProp, { ...defaultConfirmProp });
+	}
+	function desideToPublishArticle(): void {
+		resetConfirmProp();
+		confirmProp.active = true;
+		confirmProp.header = "Publish Article";
+		confirmProp.body = `Are you sure you want to publish the article 《${currentArticle.title}》?`;
+		confirmProp.callback = publishArticle;
+		confirmProp.yesMessage = "Publish";
+	}
+	function publishArticle(): void {
+		currentArticle.isPublished = true;
+		updateArticle();
+	}
 </script>
 
 <template>
-	<div class="a-title-act-btn-header">
-		<div class="att-article-title">
-			<div class="at-tip">Article title</div>
-			<div class="att-input-area">
-				<input
-					type="text"
-					name="article-title"
-					id="article-title"
-					v-model="articleTitle"
-				/>
-				<div class="at-underline"></div>
-			</div>
-		</div>
-		<div class="sync-status-reporter">
-			<component class="icon" v-if="syncStatus" :is="icons.sync" />
-			<component class="icon" v-else :is="icons.unsync" />
-		</div>
-		<div class="action-btns-cont">
-			<div class="abs-main-one">
-				<button type="button" class="amo-mainbtn amobtn">
+	<MessageProp :message-prop="messageProp" />
+	<ConfirmProp
+		:confirm-prop="confirmProp"
+		@confirm="
+			(decision: boolean) => {
+				confirmProp.active = false;
+			}
+		"
+	/>
+	<div class="parent-VJ4oXmhc1l child-">
+		<input
+			type="text"
+			name="article-title"
+			id="article-title"
+			placeholder="Article title"
+			v-model="currentArticle.title"
+		/>
+		<component
+			v-if="status.sync"
+			:is="icons.sync"
+			class="icon medium child-G1Bcjm39yl"
+		/>
+		<component
+			v-else
+			:is="icons.unsync"
+			class="icon medium child-G1Bcjm39yl"
+		/>
+		<div class="parent-Uybp7Xhq1e child-">
+			<div class="parent-Vk4RmXncyg child-">
+				<button
+					type="button"
+					class="parent-V1cCQmh5ye child-E1GkNXh9yl"
+					@click="
+						currentArticle.isPublished
+							? updateArticle()
+							: desideToPublishArticle()
+					"
+				>
 					<component
-						class="icon"
-						v-if="publishStatus"
 						:is="icons.update"
+						class="icon medium child-N1Z087nqke parent-DkmXQLaqyx"
+						v-if="currentArticle.isPublished"
+						:class="{ active: status.update }"
 					/>
-					<component class="icon" v-else :is="icons.publish" />
+					<component
+						:is="icons.publish"
+						class="icon medium child-N1Z087nqke"
+						v-else
+					/>
 
-					<span class="abc-text">
-						{{ publishStatus ? "Update" : "Publish" }}
-					</span>
+					<span class="parent-EJQSS72ckl">{{
+						currentArticle.isPublished ? "Update" : "Publish"
+					}}</span>
 				</button>
 				<button
 					type="button"
-					class="amo-morebtn amobtn"
-					@mouseenter="macStatus = true"
-					@mouseleave="macStatus = false"
+					class="parent-E1AC7735yx child-E1GkNXh9yl"
+					@mouseenter="status.moreButton = true"
+					@mouseleave="status.moreButton = false"
 				>
 					<component
-						class="icon small icon-down"
 						:is="icons.down"
-						:class="[{ active: macStatus }]"
+						class="icon small parent-NJwJvQ29kg"
+						:class="{ active: status.moreButton }"
 					/>
-					<div class="more-actions-container" v-if="macStatus">
-						<div class="mac-item">
-							<component class="icon" :is="icons.view" />
-							<span class="maci-text">Preview blog post</span>
+					<div
+						class="parent-VJFuGLhcyg child-"
+						v-if="status.moreButton"
+					>
+						<div
+							class="child-VJMNmI35yx"
+							v-if="currentArticle.isPublished"
+							@click="convertToDraft"
+						>
+							Convert to draft
 						</div>
-						<div class="mac-item" v-if="publishStatus">
-							<component class="icon" :is="icons.draft" />
-							<span class="maci-text">Revert to draft</span>
-						</div>
+						<div class="child-VJMNmI35yx">Preview article</div>
 					</div>
 				</button>
 			</div>
-			<div class="abs-main-two">
-				<button
-					type="button"
-					class="amo-settingbtn amobtn"
-					@click="mscStatus = !mscStatus"
-				>
-					<component class="icon small" :is="icons.setting" />
-				</button>
-				<div class="more-setting-container" v-if="mscStatus">
-					<div class="msc-title">Article setting</div>
-					<div class="items-N1jOupAYJx">
-						<div class="item-NkzaO6RYJl">
-							<button
-								type="button"
-								class="items-NyM7s6AK1l"
-								:class="[{ active: getMscItemStatus('tag') }]"
-								@click="changeMscItemStatus('tag')"
-							>
-								<component
-									class="item-VkrD6pCK1l icon smallest"
-									:is="icons.down"
-									:class="[
-										{ active: getMscItemStatus('tag') },
-									]"
-								/>
-								<div class="item-VkrD6pCK1l items-NJ5vAaAFke">
-									<div class="item-Ek0lyC0K1g title">
-										Tags
-									</div>
-									<div
-										class="item-Ek0lyC0K1g detail"
-										v-if="!getMscItemStatus('tag')"
-									>
-										{{ tagsInputValue }}
-									</div>
-								</div>
-							</button>
-							<div
-								class="items-N1ys-00Fke"
-								v-if="getMscItemStatus('tag')"
-							>
-								<input
-									type="text"
-									name="tags"
-									id="tags-input-area"
-									v-model="tagsInputValue"
-								/>
-								<div class="items-N15UfCRK1g">
-									<div class="item-NkwhmARYke">apple</div>
-									<div class="item-NkwhmARYke">grow</div>
-								</div>
-							</div>
-						</div>
-						<div class="item-NkzaO6RYJl">
-							<button
-								type="button"
-								class="items-NyM7s6AK1l"
-								:class="[
-									{ active: getMscItemStatus('datetime') },
-								]"
-								@click="changeMscItemStatus('datetime')"
-							>
-								<component
-									class="item-VkrD6pCK1l icon smallest"
-									:is="icons.down"
-									:class="[
-										{
-											active: getMscItemStatus(
-												'datetime'
-											),
-										},
-									]"
-								/>
-								<div class="items-NJ5vAaAFke">
-									<div class="item-Ek0lyC0K1g title">
-										Publish date
-									</div>
-									<div
-										class="item-Ek0lyC0K1g detail"
-										v-if="!getMscItemStatus('datetime')"
-									>
-										{{
-											format(
-												publishData,
-												"yyyy-MM-dd HH:mm"
-											)
-										}}
-									</div>
-								</div>
-							</button>
-							<div
-								class="items-N1ys-00Fke"
-								v-if="getMscItemStatus('datetime')"
-							>
-								<Datepicker
-									:class="'item-jd9eu3ngid'"
-									:style="'width: 100%;height:30px;border:none;margin-top:10px;letter-spacing:3px;'"
-									v-model="publishData"
-									minimumView="time"
-									:typeable="true"
-									inputFormat="yyyy / MM / dd   HH:mm"
-								/>
-							</div>
-						</div>
-						<div class="item-NkzaO6RYJl">
-							<button
-								type="button"
-								class="items-NyM7s6AK1l"
-								:class="[{ active: getMscItemStatus('slug') }]"
-								@click="changeMscItemStatus('slug')"
-							>
-								<component
-									class="item-VkrD6pCK1l icon smallest"
-									:is="icons.down"
-									:class="[
-										{
-											active: getMscItemStatus('slug'),
-										},
-									]"
-								/>
-								<div class="items-NJ5vAaAFke">
-									<div class="item-Ek0lyC0K1g title">
-										Permalink
-									</div>
-									<div
-										class="item-Ek0lyC0K1g detail"
-										v-if="!getMscItemStatus('slug')"
-									>
-										{{
-											articleSlug.length <= 35
-												? articleSlug
-												: articleSlug.substring(0, 35) +
-												  " ..."
-										}}
-									</div>
-								</div>
-							</button>
-							<div
-								class="items-N1ys-00Fke"
-								v-if="getMscItemStatus('slug')"
-							>
-								<div class="item-Eyk5Ug15Jl title">
-									{{
-										"https://gaotianchi.com/" + articleSlug
-									}}
-								</div>
-								<div class="item-Eyk5Ug15Jl items-NJ99_xJ9Jx">
-									<div class="item-4ke2_l191x">
-										<input
-											class="item-NJKMKxkqkx"
-											type="radio"
-											name="auto-permalink"
-											id="auto-permalink"
-											v-model="permalinkOption"
-											:value="false"
-										/>
-										<label
-											for="auto-permalink"
-											class="item-V1J3ixkckg"
-											>Auto permalink
-										</label>
-									</div>
-									<div class="item-4ke2_l191x">
-										<input
-											class="item-NJKMKxkqkx"
-											type="radio"
-											name="custom-permalink"
-											id="custom-permalink"
-											v-model="permalinkOption"
-											:value="true"
-										/>
-										<label
-											for="custom-permalink"
-											class="item-V1J3ixkckg"
-											>Custom permalink
-										</label>
-									</div>
-								</div>
-								<div
-									class="item-Eyk5Ug15Jl"
-									v-if="permalinkOption"
-								>
-									<input
-										type="text"
-										name="custom-permalink-input"
-										id="custom-permalink-input"
-										v-model="articleSlug"
-										class="item-EkIs0xk9ke"
-									/>
-									<div class="item-EkIs0xk9ke message">
-										<span class="item-VJUWJWJc1x">
-											{{
-												articleSlug.length.toString() +
-												"/" +
-												"8000"
-											}}
-										</span>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="item-NkzaO6RYJl">
-							<button
-								type="button"
-								class="items-NyM7s6AK1l"
-								:class="[
-									{ active: getMscItemStatus('series') },
-								]"
-								@click="changeMscItemStatus('series')"
-							>
-								<component
-									class="item-VkrD6pCK1l icon smallest"
-									:is="icons.down"
-									:class="[
-										{
-											active: getMscItemStatus('series'),
-										},
-									]"
-								/>
-								<div class="items-NJ5vAaAFke">
-									<div class="item-Ek0lyC0K1g title">
-										Series
-									</div>
-									<div
-										class="item-Ek0lyC0K1g detail"
-										v-if="!getMscItemStatus('series')"
-									>
-										{{ articleSeries }}
-									</div>
-								</div>
-							</button>
-							<div
-								class="items-N1ys-00Fke"
-								v-if="getMscItemStatus('series')"
-							>
-								<div class="item-Eyk5Ug15Jl title">
-									{{
-										limString(
-											"Current series: " + articleSeries,
-											80
-										)
-									}}
-								</div>
-								<div class="item-Eyk5Ug15Jl">
-									<div class="item-4ke2_l191x">
-										<input
-											class="item-NJKMKxkqkx"
-											type="radio"
-											name="default-series"
-											id="default-series"
-											v-model="seriesOption"
-											value="default"
-										/>
-										<label
-											for="default-series"
-											class="item-V1J3ixkckg"
-											>Default
-										</label>
-									</div>
-									<div class="item-4ke2_l191x">
-										<input
-											class="item-NJKMKxkqkx"
-											type="radio"
-											name="select-series"
-											id="select-series"
-											v-model="seriesOption"
-											value="select"
-										/>
-										<label
-											for="select-series"
-											class="item-V1J3ixkckg"
-											>Choose another
-										</label>
-									</div>
-									<div class="item-4ke2_l191x">
-										<input
-											class="item-NJKMKxkqkx"
-											type="radio"
-											name="new-series"
-											id="new-series"
-											v-model="seriesOption"
-											value="new"
-										/>
-										<label
-											for="new-series"
-											class="item-V1J3ixkckg"
-											>New one
-										</label>
-									</div>
-								</div>
-								<div
-									class="item-Eyk5Ug15Jl items-NkXzjMk9Jg"
-									v-if="seriesOption === 'select'"
-								>
-									<div
-										class="item-EkDocfy5kx items-VyZmjzkqJx"
-										v-for="series in seriesItems"
-										@click="articleSeries = series.title"
-									>
-										<div class="item-N1OmiG15Je">
-											<img
-												:src="series.cover"
-												:alt="series.title"
-											/>
-										</div>
-										<span class="item-Nk6QEmkcke">{{
-											limString(series.title, 70)
-										}}</span>
-									</div>
-								</div>
-								<div
-									class="item-Eyk5Ug15Jl items-NkXzjMk9Jg"
-									v-if="seriesOption === 'new'"
-								>
-									<div class="item-NJN4f-gcyx">
-										<component
-											class="icon item-EkYXMMecJe"
-											:is="icons.cancel"
-											v-if="previewUrl"
-											@click="cancelUploadSeriesCover"
-										/>
-										<img
-											v-if="previewUrl"
-											:src="previewUrl"
-											alt="Preview"
-											class="item-NJrXbMgq1g"
-										/>
-										<component
-											v-else
-											:is="icons.uploadImage"
-											@click="triggerFileInput"
-											@dragover.prevent
-											@drop="handleDrop"
-										/>
-										<input
-											type="file"
-											name="upload-image"
-											id="upload-image"
-											style="display: none"
-											ref="fileInput"
-											@change="handleFileUpload"
-										/>
-									</div>
-									<div class="item-Eyk5Ug15Jl">
-										<input
-											type="text"
-											name="series-title-input"
-											id="series-title-input"
-											v-model="articleSeries"
-											class="item-EkIs0xk9ke"
-										/>
-										<div class="item-EkIs0xk9ke message">
-											<span class="item-VJUWJWJc1x">
-												{{
-													articleSeries.length.toString() +
-													"/" +
-													"300"
-												}}
-											</span>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+			<div class="parent-SyjyVQncJl child-">
+				<component
+					:is="icons.setting"
+					class="icon bigest parent-T1UEoQnqJx"
+					@click="status.settings = !status.settings"
+					:class="{ active: status.settings }"
+				/>
+				<div class="parent-Vy_T35aq1x" v-if="status.settings">
+					<div class="parent-4yCs6qp9Jg">Article Settings</div>
+					<SettingBar
+						:settings="{
+							tags: originalArticle.tags,
+							datetime: originalArticle.publishedAt,
+							permalink: originalArticle.slug,
+							seriesId: originalArticle.seriesId,
+						}"
+						@update-settings="
+							(s) => {
+								currentArticle.tags = s.tags;
+								currentArticle.publishedAt = s.datetime;
+								currentArticle.slug = s.permalink;
+								currentArticle.seriesId = s.seriesId;
+							}
+						"
+					/>
 				</div>
 			</div>
 		</div>
 	</div>
-
-	<MdEditor v-model="articleBody" />
+	<MdEditor v-model="currentArticle.body" class="parent-VJTd3Xn9kx" />
 </template>
 
 <style scoped>
-	.a-title-act-btn-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.att-article-title {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		justify-content: space-between;
-		flex-grow: 1;
-	}
-
-	.at-tip {
-		padding: 3px;
-		color: rgba(31, 35, 35, 0.29);
-		font-size: 13px;
-	}
-
-	.att-input-area {
+	.parent-VJ4oXmhc1l {
 		width: 100%;
-	}
-
-	#article-title {
-		width: 100%;
-		padding: 0 5px;
-		border: none;
-		outline: none;
-		font-size: 1.3rem;
-		font-weight: 500;
-	}
-
-	#article-title:focus,
-	#article-title:focus-visible {
-		border: none;
-		outline: none;
-	}
-
-	.at-underline {
-		outline: #ffa33c solid 1px;
-	}
-
-	.action-btns-cont {
-		position: relative;
-		width: 180px;
 		height: 50px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 	}
-
-	.abs-main-one {
-		position: relative;
-		display: flex;
-	}
-
-	.abs-main-two {
-		position: relative;
-		display: flex;
-	}
-
-	.amobtn {
-		height: 40px;
-		cursor: pointer;
-		border: none;
-		border-radius: 5px;
-	}
-
-	.amo-mainbtn {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		background-color: #ffa33c;
-	}
-
-	.abc-text {
-		padding-left: 5px;
-		color: white;
-	}
-
-	.amo-morebtn {
-		position: relative;
-		width: 35px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		border: #c4c4c4 solid 1px;
-		background-color: #b15eff;
-	}
-
-	.more-actions-container {
-		position: absolute;
-		top: 39px;
-		right: -35px;
-		z-index: 2;
-		padding: 15px 0;
-		box-shadow: -3px 3px 4px 0px rgba(0, 0, 0, 0.25);
-		background-color: white;
-	}
-
-	.mac-item {
-		width: 230px;
-		height: 40px;
-		display: flex;
-		justify-content: flex-start;
-		align-items: center;
-		padding: 4px 25px;
-		cursor: pointer;
-	}
-
-	.mac-item:hover {
-		background-color: rgb(222, 222, 222);
-	}
-
-	.maci-text {
-		padding-left: 10px;
-	}
-
-	.icon-down {
-		transform: rotate(90deg);
-		transition: all 0.3s ease;
-	}
-
-	.icon-down.active {
-		transform: none;
-	}
-
-	.sync-status-reporter {
-		padding: 0 5px;
-	}
-
-	.amo-settingbtn {
-		position: relative;
-		width: 35px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	#md-editor-v3 {
-		min-height: calc(100vh - 51px);
-	}
-
-	/* ================================ */
-	/* ================================ */
-	.more-setting-container {
-		position: absolute;
-		top: 46px;
-		right: 0;
-		z-index: 1;
-		width: 300px;
-		min-height: calc(100vh - 51px);
-		padding: 10px 20px;
-		box-shadow: -3px 3px 4px 0px rgba(0, 0, 0, 0.25);
-		background-color: white;
-	}
-
-	.msc-title {
+	#article-title {
 		width: 100%;
-		margin-bottom: 10px;
-		font-size: 1rem;
-		font-weight: 700;
-	}
-
-	.items-N1jOupAYJx {
-		width: 100%;
-	}
-
-	.item-NkzaO6RYJl {
-		width: 100%;
-		min-height: 40px;
-		margin-bottom: 20px;
-		border-bottom: rgba(128, 128, 128, 0.514) solid 1px;
-	}
-
-	button.items-NyM7s6AK1l {
-		width: 100%;
-		display: flex;
-		justify-content: flex-start;
-		align-items: center;
-		cursor: pointer;
-		border: none;
-		background-color: white;
-	}
-
-	.item-VkrD6pCK1l.icon {
-		transform: rotate(-90deg);
-		margin-right: 10px;
-		transition: all 0.3s ease;
-	}
-
-	.item-VkrD6pCK1l.icon.active {
-		transform: none;
-	}
-
-	.items-NJ5vAaAFke {
 		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: flex-start;
-	}
-
-	.item-Ek0lyC0K1g.title {
-		font-size: 1rem;
-		font-weight: 400;
-		text-align: left;
-	}
-
-	.item-Ek0lyC0K1g.detail {
-		font-size: smaller;
-		font-style: italic;
-		text-align: left;
-	}
-
-	.items-N1ys-00Fke {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-	}
-
-	#tags-input-area {
-		width: 100%;
-		height: 20px;
-		margin-top: 10px;
-		font-size: 1rem;
+		height: 45px;
 		border: none;
 		outline: none;
-		border-bottom: rgba(250, 187, 71, 0.514) solid 1px;
+		padding-bottom: 3px;
+		padding-top: 20px;
+		border-bottom: #ffa33c solid 1px;
+		font-size: 25px;
+		line-height: 45px;
+		vertical-align: bottom;
 	}
-
-	#tags-input-area:focus-visible {
-		border: none;
-		outline: none;
-		border-bottom: rgba(250, 71, 223, 0.514) solid 1px;
-	}
-
-	.items-N15UfCRK1g {
-		width: 100%;
-		min-height: 150px;
+	.parent-Uybp7Xhq1e {
+		width: 250px;
 		display: flex;
-		flex-direction: column;
-		justify-content: flex-start;
-		align-items: flex-start;
-		padding: 0 15px;
-	}
-
-	.item-NkwhmARYke {
-		width: 100%;
-		padding: 4px 0;
-		cursor: pointer;
-		border-bottom: rgba(128, 128, 128, 0.514) solid 1px;
-		font-weight: 700;
-	}
-
-	.item-jd9eu3ngid:focus-visible {
-		outline: none;
-	}
-
-	.item-Eyk5Ug15Jl {
-		margin-top: 10px;
-		overflow-x: hidden;
-	}
-
-	.item-Eyk5Ug15Jl.title {
-		font-size: small;
-		color: grey;
-	}
-
-	.item-4ke2_l191x {
-		width: 100%;
-		height: 25px;
-		padding-left: 20px;
-		display: flex;
+		justify-content: space-between;
 		align-items: center;
 	}
-
-	.item-NJKMKxkqkx {
-		width: 16px;
-		height: 16px;
-	}
-
-	.item-V1J3ixkckg {
-		padding-left: 10px;
-
-		font-size: small;
-	}
-
-	.item-EkIs0xk9ke {
-		width: 100%;
-		height: 25px;
-
-		border: none;
-		outline: none;
-	}
-
-	input.item-EkIs0xk9ke {
-		border-bottom: rgba(231, 155, 55, 0.514) solid 1px;
-	}
-
-	input.item-EkIs0xk9ke:focus-visible {
-		outline: none;
-	}
-
-	.item-EkIs0xk9ke.message {
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-	}
-
-	.item-VJUWJWJc1x {
-		font-size: smaller;
-		font-style: italic;
-		letter-spacing: 2px;
-		color: #6d6969;
-	}
-
-	.items-NkXzjMk9Jg {
-		width: 100%;
-		max-height: 260px;
-	}
-
-	.item-EkDocfy5kx {
-		width: 100%;
-		cursor: pointer;
-	}
-
-	.item-EkDocfy5kx:hover {
-		background-color: rgb(222, 222, 222);
-	}
-
-	.items-VyZmjzkqJx {
-		display: flex;
-		align-items: center;
-		margin: 2px 0;
-		padding: 3px 0;
-	}
-
-	.item-N1OmiG15Je {
-		width: 40px;
-		height: 40px;
-	}
-
-	.item-Nk6QEmkcke {
-		margin-left: 10px;
-		font-size: small;
-		color: #6d6969;
-	}
-
-	.item-NJN4f-gcyx {
+	.parent-Vk4RmXncyg {
 		position: relative;
-		width: 100%;
-
+		display: flex;
+		align-items: center;
+	}
+	.child-E1GkNXh9yl {
+		border: none;
+		cursor: pointer;
+		border-radius: 5px;
+		height: 45px;
+	}
+	.parent-V1cCQmh5ye {
+		width: 100px;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-
+		background-color: #fe8700;
+	}
+	.parent-V1cCQmh5ye:hover {
+		background-color: #fe8700;
+	}
+	@keyframes rotateAnimation {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(-360deg);
+		}
+	}
+	.parent-DkmXQLaqyx.active {
+		animation: rotateAnimation 2s linear infinite;
+	}
+	.parent-EJQSS72ckl {
+		line-height: 24px;
+		color: white;
+		padding: 0 10px;
+		font-size: 16px;
+	}
+	.parent-NJwJvQ29kg {
+		width: fit-content;
+		padding: 3px;
+		transform: rotate(0deg);
+		transition: all 0.3s ease;
+	}
+	.parent-NJwJvQ29kg.active {
+		transform: rotate(180deg);
+	}
+	.parent-VJFuGLhcyg {
+		position: absolute;
+		top: 45px;
+		right: -69px;
+		width: 180px;
+		height: fit-content;
+		cursor: default;
+		z-index: 99;
+		padding: 15px 0;
+		box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+		background: rgb(255, 255, 255);
+	}
+	.child-VJMNmI35yx {
+		width: 100%;
+		height: 35px;
+		display: flex;
+		align-items: center;
+		padding-left: 20px;
+		font-size: 16px;
+		line-height: 20px;
 		cursor: pointer;
 	}
-
-	.item-EkYXMMecJe {
+	.child-VJMNmI35yx:hover {
+		background-color: aliceblue;
+	}
+	.parent-E1AC7735yx {
+		margin-left: 2px;
+		width: 16px;
+		padding: 0;
+	}
+	.parent-SyjyVQncJl {
+		width: 45px;
+		height: 45px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+	}
+	.parent-T1UEoQnqJx {
+		padding: 10px;
+	}
+	.parent-T1UEoQnqJx.active {
+		border: grey solid 1px;
+		background-color: rgba(177, 177, 177, 0.116);
+	}
+	.child-G1Bcjm39yl {
+		width: 45px;
+	}
+	.parent-VJTd3Xn9kx {
+		min-height: calc(100vh - 50px);
+	}
+	.parent-Vy_T35aq1x {
 		position: absolute;
-		top: 0;
-		right: 0;
-
-		padding: 5px;
-		background-color: rgb(249, 249, 249);
+		top: 50px;
+		right: 0px;
+		z-index: 99;
+		padding: 10px 10px;
+		box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+		background: rgb(255, 255, 255);
+		cursor: default;
 	}
-
-	.item-EkYXMMecJe:hover {
-		background-color: #a9a2a2;
-	}
-
-	.item-NJrXbMgq1g {
-		max-width: 100%;
-		max-height: 100px;
+	.parent-4yCs6qp9Jg {
+		font-size: 17px;
+		font-weight: 500;
+		padding-bottom: 10px;
 	}
 </style>

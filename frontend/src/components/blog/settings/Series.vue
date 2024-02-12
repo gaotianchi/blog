@@ -1,5 +1,12 @@
 <script setup lang="ts">
-	import { reactive, ref, type Ref, onMounted, watchEffect } from "vue";
+	import {
+		reactive,
+		ref,
+		type Ref,
+		onMounted,
+		watchEffect,
+		watch,
+	} from "vue";
 	import {
 		getSeries,
 		getSeriesItem,
@@ -11,12 +18,7 @@
 	import Input from "./Input.vue";
 	import icons from "@/components/icons";
 	import { getUnixTime } from "date-fns";
-	type Series = {
-		id: number;
-		name: string;
-		author_id: number;
-		cover: string;
-	};
+	import type { ConfirmProp, MessageProp, Series } from "@/typing";
 	type Action = "default" | "select" | "new";
 	type PreviewCover = {
 		url: string;
@@ -29,7 +31,7 @@
 		updateSeries: [series: Series];
 	}>();
 	const action: Ref<Action> = ref("default");
-	const oldSerieses = getSeries();
+	const allSeries: Series[] = reactive([]);
 	const defaultSeries = {
 		id: 0,
 		name: "",
@@ -44,50 +46,94 @@
 		url: "",
 		file: null,
 	});
-
-	if (props.seriesId === 0) {
-		console.log("No original series found.");
-	} else {
-		const localOriginalSeriesData =
-			sessionStorage.getItem("originalSeriesData");
-		let seriesData: Series = defaultSeries;
-		if (localOriginalSeriesData) {
-			console.log("Init series from sessionStorage.");
-			seriesData = JSON.parse(localOriginalSeriesData) as Series;
-		} else {
-			console.log("Init series from remote.");
-			getSeriesItem(props.seriesId).then((data) => {
-				seriesData = data;
-				sessionStorage.setItem(
-					"originalSeriesData",
-					JSON.stringify(seriesData)
-				);
-			});
-		}
-		Object.assign(originalSeries, seriesData);
-		Object.assign(currentSeries, originalSeries);
-	}
+	const messageProp: MessageProp = reactive({
+		active: false,
+		message: "",
+	});
+	const defaultConfirmProp: ConfirmProp = {
+		active: false,
+		header: undefined,
+		body: "",
+		yesMessage: undefined,
+		noMessage: undefined,
+		callback: () => {},
+	};
+	const confirmProp: ConfirmProp = reactive({ ...defaultConfirmProp });
 
 	watchEffect(() => {
 		emits("updateSeries", currentSeries);
 	});
-	async function createSeries(): Promise<void> {
-		if (!newSeries.name) {
-			alert("Series name cannot be empty!");
+	watch(messageProp, () => {
+		if (messageProp.active) {
+			setTimeout(() => {
+				messageProp.active = false;
+				messageProp.message = "";
+			}, 1500);
+		}
+	});
+	initOriginalSeriesItem();
+	onMounted(() => {
+		initAllSeries();
+	});
+	async function initOriginalSeriesItem(): Promise<void> {
+		if (!props.seriesId) {
+			console.log("No original found.");
 			return;
 		}
-		if (previewCover.file) {
-			const resp = createMediaItem(previewCover.file);
-			console.log(resp);
+		try {
+			const originalSeriesItem = await getSeriesItem(props.seriesId);
+			Object.assign(originalSeries, originalSeriesItem);
+			Object.assign(currentSeries, originalSeriesItem);
+		} catch (error) {
+			console.log(error);
 		}
-		const newSeriesData = await createSeriesItem(newSeries);
-		if (newSeriesData) {
+	}
+	async function initAllSeries(): Promise<void> {
+		try {
+			const allSeriesData = await getSeries();
+			Object.assign(allSeries, allSeriesData);
+			sessionStorage.setItem("allSeries", JSON.stringify(allSeries));
+		} catch (error) {
+			console.error(error);
+		}
+	}
+	function getAllSeries(): Series[] {
+		console.log("Get all series from local.");
+		const allOldSeridsData = sessionStorage.getItem("allSeries");
+		const allOldSeries: Series[] = JSON.parse(allOldSeridsData || "[]");
+		return allOldSeries;
+	}
+	function updateAllLocalSeries(newSeries: Series): void {
+		const allOldSeries = getAllSeries();
+		allOldSeries.push(newSeries);
+		sessionStorage.setItem("allSeries", JSON.stringify(allOldSeries));
+	}
+	function loadAllSeries(): void {
+		Object.assign(currentSeries, originalSeries);
+		Object.assign(allSeries, getAllSeries());
+	}
+	async function createSeries(): Promise<void> {
+		messageProp.active = true;
+		messageProp.message = "Creating new series ...";
+		if (previewCover.file) {
+			try {
+				await createMediaItem(previewCover.file);
+			} catch (error) {
+				console.error(error);
+			}
+		}
+		try {
+			const newSeriesData = await createSeriesItem(newSeries);
 			Object.assign(currentSeries, newSeriesData);
+			updateAllLocalSeries(newSeriesData);
+			messageProp.active = true;
+			messageProp.message = "Successfully create series.";
+		} catch (error) {
+			console.error(error);
 		}
 		resetCover();
 		Object.assign(newSeries, defaultSeries);
 	}
-
 	function triggerFileInput(): void {
 		uploadImageArea?.value?.click();
 	}
@@ -129,8 +175,35 @@
 			uploadImageArea.value.value = "";
 		}
 	}
+	function resetConfirmProp(): void {
+		Object.assign(confirmProp, { ...defaultConfirmProp });
+	}
+	function desideToCreateSeries(): void {
+		if (!newSeries.name) {
+			alert("Series name cannot be empty!");
+			return;
+		}
+		resetConfirmProp();
+		Object.assign(confirmProp, {
+			active: true,
+			header: "Create series",
+			body: `Are you sure you want to create series 《${newSeries.name}》?`,
+			yesMessage: "Create",
+			noMessage: "Cancel",
+			callback: createSeries,
+		});
+	}
 </script>
 <template>
+	<MessageProp :message-prop="messageProp" />
+	<ConfirmProp
+		:confirm-prop="confirmProp"
+		@confirm="
+			(decision: boolean) => {
+				confirmProp.active = false;
+			}
+		"
+	/>
 	<div class="parent-4JxPgYb9Jl">
 		<div class="parent-EJ5IqDbqkl child-N1IGDObcye">
 			{{
@@ -151,7 +224,7 @@
 				name="select"
 				value="select"
 				v-model="action"
-				@selected="Object.assign(currentSeries, originalSeries)"
+				@selected="loadAllSeries"
 				>Select another</Radio
 			>
 			<Radio
@@ -168,16 +241,18 @@
 		>
 			<div
 				class="parent- child-EJRV0dWq1e"
-				v-for="series in oldSerieses"
+				v-for="series in allSeries"
+				v-if="allSeries.length > 0"
 				@click="Object.assign(currentSeries, series)"
 			>
 				<div class="parent-4kGYZF-qJl child-4yb5kK-9yx">
-					<img :src="series.cover" :alt="series.name" />
+					<img :src="series.cover" v-if="series.cover" />
 				</div>
 				<div class="parent-41Bi-YbqJe child-4yb5kK-9yx">
 					{{ limString(series.name, 100) }}
 				</div>
 			</div>
+			<div class="child-EJRV0dWq1e" v-else>No series found.</div>
 		</div>
 		<div class="parent- child-N1IGDObcye" v-if="action === 'new'">
 			<div class="parent-4y1uGqZ91g child-4kK6OY-cJl">
@@ -220,7 +295,7 @@
 				<button
 					type="button"
 					class="parent-NJjk3xxsJg"
-					@click="createSeries"
+					@click="desideToCreateSeries"
 				>
 					New
 				</button>

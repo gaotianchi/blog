@@ -53,27 +53,27 @@ SCHEMA_04 = {  # type: ignore
     "type": "object",
     "properties": {
         "id": {"type": "integer"},
-        "author_id": {"type": "integer"},
+        "authorId": {"type": "integer"},
         "body": {"type": "string"},
-        "created_at": {"type": "string", "format": "date-time"},
-        "is_published": {"type": "boolean"},
-        "published_at": {"type": "string", "format": "date-time"},
-        "series_id": {"type": ["integer", "null"]},
+        "createdAt": {"type": "string", "format": "date-time"},
+        "isPublished": {"type": "boolean"},
+        "publishedAt": {"type": "string", "format": "date-time"},
+        "seriesId": {"type": ["integer", "null"]},
         "slug": {"type": "string"},
         "tags": {"type": "array", "items": {"type": "string"}},
         "title": {"type": "string"},
-        "updated_at": {"type": "string", "format": "date-time"},
+        "updatedAt": {"type": "string", "format": "date-time"},
     },
     "required": [
         "id",
         "body",
-        "created_at",
-        "is_published",
-        "published_at",
+        "createdAt",
+        "isPublished",
+        "publishedAt",
         "slug",
         "tags",
         "title",
-        "updated_at",
+        "updatedAt",
     ],
 }
 
@@ -105,4 +105,35 @@ SCHEMA_06 = {
         "name",
         "cover",
     ],
+}
+
+
+SCHEMA_07 = {
+    "$schema": SCHEMA,
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {"id": {"type": "integer"}, "name": {"type": "string"}},
+        "required": ["id", "name"],
+    },
+}
+
+SCHEMA_08 = {
+    "$schema": SCHEMA,
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "id": {"type": "integer"},
+            "author_id": {"type": "integer"},
+            "name": {"type": "string"},
+            "cover": {"type": "string"},
+        },
+        "required": [
+            "id",
+            "author_id",
+            "name",
+            "cover",
+        ],
+    },
 }

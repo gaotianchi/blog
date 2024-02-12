@@ -22,14 +22,6 @@
 		cover: "",
 		author_id: 0,
 	});
-	onMounted(() => {
-		const localOriginalSeriesData =
-			sessionStorage.getItem("originalSeriesData");
-		if (localOriginalSeriesData) {
-			const sereisData = JSON.parse(localOriginalSeriesData);
-			currentSeries.name = (sereisData as Series).name;
-		}
-	});
 	watchEffect(() => {
 		emits("updateSettings", currentSettings);
 	});

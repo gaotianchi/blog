@@ -13,6 +13,7 @@ import UnSyncVue from "./UnSync.vue";
 import SettingVue from "./Setting.vue";
 import UploadImageVue from "./UploadImage.vue";
 import CancelVue from "./Cancel.vue";
+import DefaultImageVue from "./DefaultImage.vue";
 
 export default {
 	fail: FailVue,
@@ -30,4 +31,5 @@ export default {
 	setting: SettingVue,
 	uploadImage: UploadImageVue,
 	cancel: CancelVue,
+	defaultImage: DefaultImageVue,
 };

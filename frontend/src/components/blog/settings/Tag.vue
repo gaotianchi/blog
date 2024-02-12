@@ -1,7 +1,15 @@
 <script setup lang="ts">
-	import { type Ref, ref, computed, onMounted, watchEffect } from "vue";
+	import {
+		type Ref,
+		ref,
+		computed,
+		onMounted,
+		watchEffect,
+		reactive,
+	} from "vue";
 	import { getTags } from "@/api";
 	import { Index } from "flexsearch";
+	import type { Tag } from "@/typing";
 	const emits = defineEmits<{
 		updateTags: [tags: string[]];
 	}>();
@@ -17,7 +25,8 @@
 		const tagArr = model.value?.split(",").map((i) => i.trim()) || [];
 		return tagArr[tagArr.length - 1] || "";
 	});
-	const tags = getTags();
+	const tagInput: Ref<HTMLElement | null> = ref(null);
+	const tags: Tag[] = reactive([]);
 	const index = new Index({ tokenize: "forward" });
 	tags.forEach((i) => {
 		index.add(i.id, i.name);
@@ -37,7 +46,14 @@
 			return tagsItems;
 		}
 	});
-	const tagInput: Ref<HTMLElement | null> = ref(null);
+	async function initOldTags(): Promise<void> {
+		try {
+			const tagsData = await getTags();
+			Object.assign(tags, tagsData);
+		} catch (error) {
+			console.error(error);
+		}
+	}
 	function addTag(newTag: string): void {
 		typedTags.value.push(newTag);
 		model.value = typedTags.value.join(",") + ",";
@@ -48,6 +64,7 @@
 		if (model.value.trim()) {
 			model.value = model.value + ",";
 		}
+		initOldTags();
 	});
 	watchEffect(() => {
 		const tagArr = model.value
@@ -59,6 +76,7 @@
 </script>
 
 <template>
+	<!-- <MessageProp /> -->
 	<div class="parent-VyJIlVgcyg">
 		<input
 			class="child-41pk-Ex9Je parent-VJtrsOlqye"

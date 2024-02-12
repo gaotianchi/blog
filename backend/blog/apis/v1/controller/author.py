@@ -4,7 +4,13 @@ from typing import Any, cast
 from flask import Blueprint, g, jsonify, request
 
 from blog.apis.v1.errors import abort
-from blog.apis.v1.schemas import SCHEMA_04, SCHEMA_05, SCHEMA_06  # type: ignore
+from blog.apis.v1.schemas import (  # type: ignore
+    SCHEMA_04,
+    SCHEMA_05,
+    SCHEMA_06,
+    SCHEMA_07,
+    SCHEMA_08,
+)
 from blog.model.database import Article, Series, Tag, User
 from blog.utlis import validator
 
@@ -66,12 +72,12 @@ def update_article(id: int):
     data_to_update["title"] = data["title"]
     data_to_update["body"] = data["body"]
     data_to_update["slug"] = data["slug"]
-    data_to_update["is_published"] = data["is_published"]
+    data_to_update["is_published"] = data["isPublished"]
     data_to_update["published_at"] = datetime.strptime(
-        data["published_at"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        data["publishedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
     )
-    if data["series_id"]:
-        series = Series.query.get(data["series_id"])
+    if data["seriesId"]:
+        series = Series.query.get(data["seriesId"])
         data_to_update["series"] = series
     tags: list[str] = data["tags"]
     data_to_update["tags"] = Tag.create(*tags)
@@ -103,3 +109,21 @@ def get_series_data(id: int):
     if validator(data, SCHEMA_05):
         return abort()
     return jsonify(data), 200
+
+
+@author.route("/tags", methods=["GET"])
+def get_all_tags():
+    tags = cast(list[Tag], Tag.query.all())
+    tagsData = [dict(**tag.to_dict()) for tag in tags]  # type: ignore
+    if validator(tagsData, SCHEMA_07):
+        return abort()
+    return jsonify(tagsData), 200
+
+
+@author.route("/series", methods=["GET"])
+def get_all_series():
+    series = cast(list[Series], Series.query.all())
+    seriesData = [dict(**s.to_dict()) for s in series]  # type: ignore
+    if validator(seriesData, SCHEMA_08):
+        return abort()
+    return jsonify(seriesData), 200
