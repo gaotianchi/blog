@@ -9,14 +9,14 @@
 	} from "vue";
 	import { getTags } from "@/api";
 	import { Index } from "flexsearch";
-	import type { Tag } from "@/typing";
+	import type { Article, Tag } from "@/typing";
 	const emits = defineEmits<{
 		updateTags: [tags: string[]];
 	}>();
 	const props = defineProps<{
 		tags: string[];
 	}>();
-	const model: Ref<string> = ref(props.tags.join(",") ?? "");
+	const model: Ref<string> = ref(props.tags.sort().join(","));
 	const typedTags = computed<string[]>(() => {
 		const tagArr = model.value?.split(",").map((i) => i.trim()) || [];
 		return tagArr.slice(0, tagArr.length - 1);
@@ -51,7 +51,7 @@
 		if (model.value.trim()) {
 			model.value = model.value + ",";
 		}
-		initOldTags()
+		initAllTags();
 	});
 
 	watchEffect(() => {
@@ -59,15 +59,20 @@
 			?.split(",")
 			.map((i) => i.trim())
 			.filter((i) => i.length > 0);
-		emits("updateTags", [...new Set(tagArr)]);
+		emits("updateTags", [...new Set(tagArr)].sort());
 	});
-	async function initOldTags(): Promise<void> {
+	async function initAllTags(): Promise<void> {
 		try {
 			const tagsData = await getTags();
 			Object.assign(allTags, tagsData);
 		} catch (error) {
 			console.error(error);
 		}
+	}
+	function loadRemoteTags(): void {
+		const SessionRemoteArticle: Article = JSON.parse(
+			sessionStorage.getItem("remoteArticle") as string
+		);
 	}
 	function addTag(newTag: string): void {
 		typedTags.value.push(newTag);

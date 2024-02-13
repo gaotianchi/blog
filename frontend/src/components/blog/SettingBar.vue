@@ -31,7 +31,7 @@
 	});
 	function initCurrentSettings(): void {
 		const articleData = sessionStorage.getItem("localArticle");
-		const currentArticle: Article = JSON.parse(articleData || "");
+		const currentArticle: Article = JSON.parse(articleData || "{}");
 		if (currentArticle) {
 			currentSettigns.tags = currentArticle.tags;
 			currentSettigns.datetime = new Date(currentArticle.publishedAt);

@@ -5,25 +5,29 @@ export function getArticle(type: "local" | "remote" = "local"): Article | null {
 	switch (type) {
 		case "local":
 			const localArticleData = sessionStorage.getItem("localArticle");
-			article = JSON.parse(localArticleData || "");
+			article = JSON.parse(localArticleData || "{}");
 		case "remote":
 			const remoteArticleData = sessionStorage.getItem("remoteArticle");
-			article = JSON.parse(remoteArticleData || "");
+			article = JSON.parse(remoteArticleData || "{}");
 	}
-	return article;
+	if (article?.id) {
+		return article;
+	} else {
+		return null;
+	}
 }
 
 export function setArticle(
 	article: Article,
 	type: "local" | "remote" = "local"
 ): void {
-	const articleData = JSON.stringify(article);
+	const articleString = JSON.stringify(article);
 	switch (type) {
 		case "local":
-			sessionStorage.setItem("localArticle", articleData);
+			sessionStorage.setItem("localArticle", articleString);
 			return;
 		case "remote":
-			sessionStorage.setItem("remoteArticle", articleData);
+			sessionStorage.setItem("remoteArticle", articleString);
 			return;
 	}
 }

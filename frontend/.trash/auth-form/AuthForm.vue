@@ -4,6 +4,7 @@
 	import SubmitBtn from "./SubmitBtn.vue";
 	import { ref, watchEffect, type Ref, watch } from "vue";
 	import { APIError } from "@/api/errors";
+	import { login } from "@/api/auth";
 	type FormStatus = "normal" | "fail" | "success" | "loading";
 	type FormAction = "register" | "login";
 	type InputStatus = "normal" | "warning" | "error" | "success";
@@ -159,6 +160,7 @@
 					status.value = "fail";
 					return;
 				}
+				
 				const loginUrl = "http://localhost:5000/v1/account/token";
 				const loginFormData = new URLSearchParams();
 				loginFormData.append("grant_type", "password");

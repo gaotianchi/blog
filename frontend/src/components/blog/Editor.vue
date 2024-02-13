@@ -51,21 +51,19 @@
 		authorId: 0,
 	};
 
-	const originalArticle: Article = reactive({ ...defaultArticle });
-	const currentArticle: Article = reactive({ ...defaultArticle });
-	const currentJsonArticle = computed<string>(() => {
-		const currentArticleData = { ...currentArticle };
-		currentArticleData.title = currentArticleData.title.trim();
-		currentArticleData.body = currentArticleData.body.trim();
-		currentArticleData.slug = currentArticleData.slug.trim();
-		const currentArticleJsonData = JSON.stringify(currentArticleData);
-		setArticle(currentArticleData);
-		return currentArticleJsonData;
+	const remoteArticle: Article = reactive({ ...defaultArticle });
+	const localArticle: Article = reactive({ ...defaultArticle });
+	const localArticleJsonData = computed<string>(() => {
+		const result = { ...localArticle };
+		result.title = result.title.trim();
+		result.body = result.body.trim();
+		result.slug = result.slug.trim();
+		return JSON.stringify(result);
 	});
 	onMounted(() => {
 		initArticleData();
 	});
-	watch(currentArticle, () => {
+	watch(localArticle, () => {
 		if (isSync()) {
 			status.sync = true;
 		} else {
@@ -82,11 +80,11 @@
 	});
 
 	function isSync(): boolean {
-		const localArticleJsonData = JSON.parse(currentJsonArticle.value);
+		const localArticleData = JSON.parse(localArticleJsonData.value);
 		const remoteArticleJsonData = JSON.parse(
 			sessionStorage.getItem("remoteArticle") || ""
 		);
-		if (isShallowEqual(localArticleJsonData, remoteArticleJsonData)) {
+		if (isShallowEqual(localArticleData, remoteArticleJsonData)) {
 			return true;
 		} else {
 			return false;
@@ -96,8 +94,8 @@
 		try {
 			const articleData = await getArticleItem(props.articleId);
 			setArticle(articleData, "remote");
-			Object.assign(originalArticle, articleData);
-			Object.assign(currentArticle, articleData);
+			Object.assign(remoteArticle, articleData);
+			Object.assign(localArticle, articleData);
 		} catch (error) {
 			console.error(error);
 		}
@@ -113,10 +111,10 @@
 			displayMessage(messageProp, "Saving changes.");
 			const articleData = await updateArticleItem(
 				props.articleId,
-				currentJsonArticle.value
+				localArticleJsonData.value
 			);
 			setArticle(articleData, "remote");
-			Object.assign(currentArticle, articleData);
+			Object.assign(localArticle, articleData);
 			displayMessage(messageProp, "Changes saved successfully.");
 			status.sync = true;
 		} catch (error) {
@@ -128,7 +126,7 @@
 		status.update = false;
 	}
 	function convertToDraft(): void {
-		currentArticle.isPublished = false;
+		localArticle.isPublished = false;
 		updateArticle();
 	}
 	function resetConfirmProp(): void {
@@ -138,12 +136,12 @@
 		resetConfirmProp();
 		confirmProp.active = true;
 		confirmProp.header = "Publish Article";
-		confirmProp.body = `Are you sure you want to publish the article 《${currentArticle.title}》?`;
+		confirmProp.body = `Are you sure you want to publish the article 《${localArticle.title}》?`;
 		confirmProp.callback = publishArticle;
 		confirmProp.yesMessage = "Publish";
 	}
 	function publishArticle(): void {
-		currentArticle.isPublished = true;
+		localArticle.isPublished = true;
 		updateArticle();
 	}
 </script>
@@ -164,7 +162,7 @@
 			name="article-title"
 			id="article-title"
 			placeholder="Article title"
-			v-model="currentArticle.title"
+			v-model="localArticle.title"
 		/>
 		<component
 			v-if="status.sync"
@@ -182,7 +180,7 @@
 					type="button"
 					class="parent-V1cCQmh5ye child-E1GkNXh9yl"
 					@click="
-						currentArticle.isPublished
+						localArticle.isPublished
 							? updateArticle()
 							: desideToPublishArticle()
 					"
@@ -190,7 +188,7 @@
 					<component
 						:is="icons.update"
 						class="icon medium child-N1Z087nqke parent-DkmXQLaqyx"
-						v-if="currentArticle.isPublished"
+						v-if="localArticle.isPublished"
 						:class="{ active: status.update }"
 					/>
 					<component
@@ -200,7 +198,7 @@
 					/>
 
 					<span class="parent-EJQSS72ckl">{{
-						currentArticle.isPublished ? "Update" : "Publish"
+						localArticle.isPublished ? "Update" : "Publish"
 					}}</span>
 				</button>
 				<button
@@ -220,7 +218,7 @@
 					>
 						<div
 							class="child-VJMNmI35yx"
-							v-if="currentArticle.isPublished"
+							v-if="localArticle.isPublished"
 							@click="convertToDraft"
 						>
 							Convert to draft
@@ -240,17 +238,17 @@
 					<div class="parent-4yCs6qp9Jg">Article Settings</div>
 					<SettingBar
 						:settings="{
-							tags: originalArticle.tags,
-							datetime: originalArticle.publishedAt,
-							permalink: originalArticle.slug,
-							seriesId: originalArticle.seriesId,
+							tags: remoteArticle.tags,
+							datetime: remoteArticle.publishedAt,
+							permalink: remoteArticle.slug,
+							seriesId: remoteArticle.seriesId,
 						}"
 						@update-settings="
 							(s) => {
-								currentArticle.tags = s.tags;
-								currentArticle.publishedAt = s.datetime;
-								currentArticle.slug = s.permalink;
-								currentArticle.seriesId = s.seriesId;
+								localArticle.tags = s.tags;
+								localArticle.publishedAt = s.datetime;
+								localArticle.slug = s.permalink;
+								localArticle.seriesId = s.seriesId;
 							}
 						"
 					/>
@@ -258,7 +256,7 @@
 			</div>
 		</div>
 	</div>
-	<MdEditor v-model="currentArticle.body" class="parent-VJTd3Xn9kx" />
+	<MdEditor v-model="localArticle.body" class="parent-VJTd3Xn9kx" />
 </template>
 
 <style scoped>

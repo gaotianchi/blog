@@ -5,11 +5,11 @@ from flask import Blueprint, g, jsonify, request
 
 from blog.apis.v1.errors import abort
 from blog.apis.v1.schemas import (  # type: ignore
-    SCHEMA_04,
-    SCHEMA_05,
-    SCHEMA_06,
-    SCHEMA_07,
-    SCHEMA_08,
+    schema_04,
+    schema_05,
+    schema_06,
+    schema_07,
+    schema_08,
 )
 from blog.model.database import Article, Series, Tag, User
 from blog.utlis import validator
@@ -31,14 +31,14 @@ def new_article():
 @auth_required
 def new_series():
     data = cast(dict[str, Any], request.json)
-    if validator(data, SCHEMA_06):
+    if validator(data, schema_06):
         return abort()
     current_user = cast(User, g.current_user)
     new_series = Series.create(
         author=current_user, name=data["name"], cover=data["cover"]
     )
     responseData = new_series.to_dict()
-    if validator(responseData, SCHEMA_05):
+    if validator(responseData, schema_05):
         return abort()
     return jsonify(responseData), 201
 
@@ -50,7 +50,7 @@ def update_series(id: int):
     if not current_series:
         return abort(message="No series found", status_code=404)
     data = cast(dict[str, Any], request.json)
-    if validator(data, SCHEMA_05):
+    if validator(data, schema_05):
         return abort()
     data_to_update = {}
     data_to_update["name"] = data["name"]
@@ -66,7 +66,7 @@ def update_article(id: int):
     if not current_article:
         return abort(message="No article found.")
     data = cast(dict[str, Any], request.json)
-    if validator(data, SCHEMA_04):  # type: ignore
+    if validator(data, schema_04):  # type: ignore
         return abort()
     data_to_update = {}
     data_to_update["title"] = data["title"]
@@ -83,7 +83,7 @@ def update_article(id: int):
     data_to_update["tags"] = Tag.create(*tags)
     new_article = current_article.update(**data_to_update)  # type: ignore
     responseData = new_article.to_dict()
-    if validator(responseData, SCHEMA_04):  # type: ignore
+    if validator(responseData, schema_04):  # type: ignore
         return abort()
 
     return jsonify(responseData), 200  # type: ignore
@@ -95,7 +95,7 @@ def get_article_data(id: int):
     if not current_article:
         return abort(message="No article found.", status_code=404)
     data = current_article.to_dict()  # type: ignore
-    if validator(data, SCHEMA_04):  # type: ignore
+    if validator(data, schema_04):  # type: ignore
         return abort()
     return jsonify(data), 200
 
@@ -106,7 +106,7 @@ def get_series_data(id: int):
     if not current_series:
         return abort(message="No series fount", status_code=404)
     data = current_series.to_dict()
-    if validator(data, SCHEMA_05):
+    if validator(data, schema_05):
         return abort()
     return jsonify(data), 200
 
@@ -115,7 +115,7 @@ def get_series_data(id: int):
 def get_all_tags():
     tags = cast(list[Tag], Tag.query.all())
     tagsData = [dict(**tag.to_dict()) for tag in tags]  # type: ignore
-    if validator(tagsData, SCHEMA_07):
+    if validator(tagsData, schema_07):
         return abort()
     return jsonify(tagsData), 200
 
@@ -124,6 +124,6 @@ def get_all_tags():
 def get_all_series():
     series = cast(list[Series], Series.query.all())
     seriesData = [dict(**s.to_dict()) for s in series]  # type: ignore
-    if validator(seriesData, SCHEMA_08):
+    if validator(seriesData, schema_08):
         return abort()
     return jsonify(seriesData), 200

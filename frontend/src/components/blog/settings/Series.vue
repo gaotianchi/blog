@@ -18,7 +18,7 @@
 	import Input from "./Input.vue";
 	import icons from "@/components/icons";
 	import { getUnixTime } from "date-fns";
-	import type { ConfirmProp, MessageProp, Series } from "@/typing";
+	import type { Article, ConfirmProp, MessageProp, Series } from "@/typing";
 	import { getArticle } from "@/api/local";
 	type Action = "default" | "select" | "new";
 	type PreviewCover = {
@@ -85,14 +85,26 @@
 			console.error(error);
 		}
 	}
-	async function initRemoteSeries(): Promise<void> {
-		if (!props.series.id) {
-			return;
-		}
-		try {
-			
-		} catch(error) {
-
+	async function loadRemoteSeries(): Promise<void> {
+		const SessionRemoteArticle: Article = JSON.parse(
+			sessionStorage.getItem("remoteArticle") as string
+		);
+		const SessionRemoteSeries: Series = JSON.parse(
+			sessionStorage.getItem("remoteSeries") || "{}"
+		);
+		if (SessionRemoteArticle.seriesId === (SessionRemoteSeries.id || 0)) {
+			console.log("Load remote series from local.");
+			Object.assign(futureSeries, SessionRemoteSeries);
+		} else {
+			const remoteSeries = await getSeriesItem(
+				SessionRemoteArticle.seriesId
+			);
+			console.log("Load remote series from remote.");
+			sessionStorage.setItem(
+				"remoteSeries",
+				JSON.stringify(remoteSeries)
+			);
+			Object.assign(futureSeries, remoteSeries);
 		}
 	}
 	function getAllSeries(): Series[] {
@@ -106,8 +118,8 @@
 		allOldSeries.push(newSeries);
 		sessionStorage.setItem("allSeries", JSON.stringify(allOldSeries));
 	}
-	function loadAllSeries(): void {
-		Object.assign(futureSeries, currentSeries);
+	async function loadAllSeries(): Promise<void> {
+		await loadRemoteSeries();
 		Object.assign(allSeries, getAllSeries());
 	}
 	async function createSeries(): Promise<void> {
@@ -215,7 +227,7 @@
 				name="default"
 				value="default"
 				v-model="action"
-				@selected="Object.assign(futureSeries, currentSeries)"
+				@selected="loadRemoteSeries"
 				>Default</Radio
 			>
 			<Radio
@@ -229,7 +241,7 @@
 				name="new"
 				value="new"
 				v-model="action"
-				@selected="Object.assign(futureSeries, currentSeries)"
+				@selected="loadRemoteSeries"
 				>New</Radio
 			>
 		</div>

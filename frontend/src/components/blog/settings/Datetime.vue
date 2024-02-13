@@ -3,6 +3,7 @@
 	import Datepicker from "vue3-datepicker";
 	import { format } from "date-fns";
 	import Radio from "./Radio.vue";
+	import type { Article } from "@/typing";
 	const props = defineProps<{
 		datetime: Date;
 	}>();
@@ -18,6 +19,12 @@
 	watchEffect(() => {
 		emits("updateDatetime", currentDatetime.value);
 	});
+	function getRemoteDatetime(): Date {
+		const SessionRemoteArticle: Article = JSON.parse(
+			sessionStorage.getItem("remoteArticle") as string
+		);
+		return new Date(SessionRemoteArticle.publishedAt);
+	}
 </script>
 <template>
 	<div class="parent-E14-f9e9ye">
@@ -26,14 +33,14 @@
 				name="auto-datetime"
 				:value="true"
 				v-model="auto"
-				@selected="currentDatetime = datetime"
+				@selected="currentDatetime = getRemoteDatetime()"
 				>Auto</Radio
 			>
 			<Radio
 				name="custom-datetime"
 				:value="false"
 				v-model="auto"
-				@selected="currentDatetime = datetime"
+				@selected="currentDatetime = getRemoteDatetime()"
 				>Custom</Radio
 			>
 		</div>

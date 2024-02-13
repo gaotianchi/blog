@@ -42,13 +42,7 @@ const router = createRouter({
 			props: true,
 			meta: { loginRequired: true },
 		},
-		{
-			path: "/auth/:action(login|register)",
-			name: "auth",
-			component: () => import("@/components/auth-form/AuthForm.vue"),
-			props: true,
-			meta: { loginRequired: false },
-		},
+
 	],
 });
 router.beforeEach(async (to, from) => {

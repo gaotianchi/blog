@@ -1,3 +1,5 @@
+
+
 export type Tag = {
 	id: number;
 	name: string;
@@ -56,4 +58,9 @@ export type ConfirmProp = {
 	yesMessage?: string;
 	noMessage?: string;
 	callback: CallableFunction;
+};
+
+export type TokenResponse = {
+	accessToken: string;
+	tokenType: string;
 };

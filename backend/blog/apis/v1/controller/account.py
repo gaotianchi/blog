@@ -9,7 +9,7 @@ from blog.model.database import User
 from blog.utlis import validator
 
 from ..errors import abort
-from ..schemas import SCHEMA_01, SCHEMA_02, SCHEMA_03
+from ..schemas import schema_01, schema_02, schema_03
 
 account = Blueprint("account", __name__, url_prefix="/account")
 
@@ -81,14 +81,14 @@ def new_user():
         username=request.form.get("username"),
         password=request.form.get("password"),
     )
-    if validator(data, SCHEMA_01):
+    if validator(data, schema_01):
         return abort()
 
     if User.query.filter_by(username=data["username"]).first():
         return abort("username", f"username <{data['username']}> has been used.")
 
     user = User.create(cast(str, data["username"]), cast(str, data["password"]))
-    if validator(user.to_dict(), SCHEMA_03):
+    if validator(user.to_dict(), schema_03):
         return abort()
 
     return jsonify(f"Created user <{data['username']}>."), 201
@@ -105,7 +105,7 @@ def new_token():
         password=request.form.get("password"),
     )
 
-    if validator(request_data, SCHEMA_01):
+    if validator(request_data, schema_01):
         return abort()
 
     user = User.query.filter_by(username=request_data["username"]).first()  # type: ignore
@@ -121,7 +121,7 @@ def new_token():
     token_type = "Bearer"
 
     response_data = dict(access_token=access_token, token_type=token_type)
-    if validator(response_data, SCHEMA_02):
+    if validator(response_data, schema_02):
         return abort()
 
     return jsonify(response_data), 200

@@ -1,5 +1,4 @@
 import type { Article, MessageProp, Series, Tag } from "@/typing";
-import { fakeSeries, fakeTags } from "./fakes";
 import type { APIError } from "./errors";
 
 export function getAccessToken(): string | null {

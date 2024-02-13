@@ -3,6 +3,7 @@
 	import Radio from "./Radio.vue";
 	import Input from "./Input.vue";
 	import { getUnixTime } from "date-fns";
+	import type { Article } from "@/typing";
 	const props = defineProps<{
 		permalink: string;
 	}>();
@@ -11,19 +12,12 @@
 	}>();
 
 	const auto: Ref<boolean> = ref(true);
-	const defaultPermalink = computed<string>(() => {
-		if (props.permalink) {
-			return props.permalink;
-		} else {
-			return "article_" + getUnixTime(new Date());
-		}
-	});
 	const customPermalink: Ref<string> = ref("");
-	const currentPermalink: Ref<string> = ref(defaultPermalink.value);
+	const currentPermalink: Ref<string> = ref(props.permalink);
 	watch(customPermalink, () => {
 		customPermalink.value = cleanSlug(customPermalink.value);
 		if (!customPermalink.value) {
-			currentPermalink.value = defaultPermalink.value;
+			currentPermalink.value = getRemotePermalink();
 		} else {
 			currentPermalink.value = customPermalink.value;
 		}
@@ -31,6 +25,16 @@
 	watchEffect(() => {
 		emits("updatePermalink", currentPermalink.value);
 	});
+	function getRemotePermalink(): string {
+		const SessionRemoteArticle: Article = JSON.parse(
+			sessionStorage.getItem("remoteArticle") as string
+		);
+		if (SessionRemoteArticle.slug) {
+			return SessionRemoteArticle.slug;
+		} else {
+			return "article_" + getUnixTime(new Date());
+		}
+	}
 	function cleanSlug(str: string): string {
 		return str
 			.toLowerCase()
@@ -49,14 +53,14 @@
 				name="auto-permalink"
 				:value="true"
 				v-model="auto"
-				@selected="currentPermalink = defaultPermalink"
+				@selected="currentPermalink = getRemotePermalink()"
 				>Auto</Radio
 			>
 			<Radio
 				name="custom-permalink"
 				:value="false"
 				v-model="auto"
-				@selected="currentPermalink = defaultPermalink"
+				@selected="currentPermalink = getRemotePermalink()"
 				>Custom</Radio
 			>
 		</div>

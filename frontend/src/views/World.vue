@@ -1,31 +1,22 @@
 <script setup lang="ts">
 	import { ref, type Ref } from "vue";
-	import type { Series } from "@/typing";
-	import SeriesVue from "@/components/blog/settings/Series.vue";
-	const origin = 47;
-	const current: Ref<Series> = ref({
-		id: origin,
-		cover: "",
-		name: "",
-		author_id: 0,
-	});
+	import { authFormDataValidate } from "@/components/auth/schemas";
+	import Ajv, { type JSONSchemaType } from "ajv";
+	const ajv = new Ajv();
+	const result = ref("");
+	const data = {
+		username: "gaotianchi",
+		password: "gaotianchi123",
+	};
+	const valid = authFormDataValidate(data);
+	if (valid) {
+		result.value = "hello world"
+	} else {
+		result.value = validate.error
+	}
 </script>
 
 <template>
-	<div class="parent">
-		{{ current }}
-	</div>
-	<SeriesVue
-		:series-id="origin"
-		@update-series="
-			(s) => {
-				current = s;
-			}
-		"
-	/>
+	{{ result }}
 </template>
-<style scoped>
-	.parent {
-		min-height: 150px;
-	}
-</style>
+<style scoped></style>

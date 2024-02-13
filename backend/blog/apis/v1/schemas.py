@@ -1,23 +1,18 @@
-SCHEMA = "http://json-schema.org/draft-07/schema#"
-USERNAME = {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,49}$"}
-PASSWORD = {
-    "type": "string",
-    "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{7,}$",
-}
-
-
-SCHEMA_01 = {
-    "$schema": SCHEMA,
+schema_01 = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
-        "username": USERNAME,
-        "password": PASSWORD,
+        "username": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,49}$"},
+        "password": {
+            "type": "string",
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{7,}$",
+        },
     },
     "required": ["username", "password"],
 }
 
-SCHEMA_02 = {
-    "$schema": SCHEMA,
+schema_02 = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
         "access_token": {"type": "string"},
@@ -26,8 +21,8 @@ SCHEMA_02 = {
     "required": ["access_token", "token_type"],
 }
 
-SCHEMA_03 = {
-    "$schema": SCHEMA,
+schema_03 = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
         "description": {"type": "string"},
@@ -48,8 +43,8 @@ SCHEMA_03 = {
     ],
 }
 
-SCHEMA_04 = {  # type: ignore
-    "$schema": SCHEMA,
+schema_04 = {  # type: ignore
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
         "id": {"type": "integer"},
@@ -77,8 +72,8 @@ SCHEMA_04 = {  # type: ignore
     ],
 }
 
-SCHEMA_05 = {
-    "$schema": SCHEMA,
+schema_05 = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
         "id": {"type": "integer"},
@@ -94,8 +89,8 @@ SCHEMA_05 = {
     ],
 }
 
-SCHEMA_06 = {
-    "$schema": SCHEMA,
+schema_06 = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
         "name": {"type": "string"},
@@ -108,8 +103,8 @@ SCHEMA_06 = {
 }
 
 
-SCHEMA_07 = {
-    "$schema": SCHEMA,
+schema_07 = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "array",
     "items": {
         "type": "object",
@@ -118,8 +113,8 @@ SCHEMA_07 = {
     },
 }
 
-SCHEMA_08 = {
-    "$schema": SCHEMA,
+schema_08 = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "array",
     "items": {
         "type": "object",
