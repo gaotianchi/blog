@@ -5,3 +5,13 @@ export type AuthFormData = {
 	username: string;
 	password: string;
 };
+export type InputElement = {
+	status: InputStatus;
+	value: string;
+	conditions: { [key: string]: boolean };
+};
+export type RegisterStatus = {
+	username: InputElement;
+	password: InputElement;
+	passwordConfirmation: InputElement;
+};

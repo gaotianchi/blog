@@ -7,8 +7,6 @@ const authFormDataSchema: JSONSchemaType<AuthFormData> = {
 	properties: {
 		username: {
 			type: "string",
-			minLength: 3,
-			maxLength: 100,
 			pattern: "^[a-z][a-z0-9_]{2,99}$",
 		},
 		password: {
@@ -21,6 +19,6 @@ const authFormDataSchema: JSONSchemaType<AuthFormData> = {
 	additionalProperties: false,
 };
 
-export function authFormDataValidate(data: AuthFormData) {
-	const validator = ajv.compile(authFormDataSchema);
+export function authFormDataValidate() {
+	return ajv.compile(authFormDataSchema);
 }

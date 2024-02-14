@@ -5,13 +5,10 @@
 	}>();
 </script>
 <template>
-	<div class="parent-EkQQhPEokl">
-		<component
-			v-if="props.status"
-			:is="icons.success"
-			class="icon smallest"
-		/>
-		<component v-else :is="icons.fail" class="icon smallest" />
+	<div class="parent-EkQQhPEokl" v-if="props.status">
+		<div class="parent-Nk7VmcBjJg">
+			<component :is="icons.fail" class="icon smallest" />
+		</div>
 		<span class="parent-Vk-U6DVsJe">
 			<slot></slot>
 		</span>
@@ -23,9 +20,13 @@
 		display: flex;
 		align-items: center;
 	}
+	.parent-Nk7VmcBjJg {
+		min-width: 12px;
+		min-height: 12px;
+	}
 	.parent-Vk-U6DVsJe {
-        line-height: 13px;
-        font-size: 13px;
-        margin-left: 5px;
+		line-height: 13px;
+		font-size: 13px;
+		margin-left: 5px;
 	}
 </style>
