@@ -1,12 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
-import pytz
 
-# 北京时区
-beijing_timezone = pytz.timezone("Asia/Shanghai")
+def deserialize_datetime(date_string: str) -> datetime:
+    given_time = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S%z")
+    utc_time = given_time.astimezone(timezone.utc)
+    return utc_time
 
-# 获取北京的当前时间
-current_time_beijing = datetime.now(beijing_timezone).strftime("%Y-%m-%d %H:%M %z")
 
-# 打印结果
-print("北京的当前时间:", current_time_beijing)
+def serialize_datetime(date_object: datetime) -> str:
+    return date_object.strftime("%Y-%m-%dT%H:%M:%S%z")

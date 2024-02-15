@@ -42,7 +42,24 @@ const router = createRouter({
 			props: true,
 			meta: { loginRequired: true },
 		},
-
+		{
+			path: "/auth",
+			component: () => import("@/views/Auth.vue"),
+			meta: { loginRequired: false },
+			children: [
+				{
+					path: "register",
+					component: () =>
+						import("@/components/auth/RegisterForm.vue"),
+					name: "Register",
+				},
+				{
+					path: "login",
+					component: () => import("@/components/auth/LoginForm.vue"),
+					name: "Login",
+				},
+			],
+		},
 	],
 });
 router.beforeEach(async (to, from) => {

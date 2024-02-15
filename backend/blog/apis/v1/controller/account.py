@@ -83,20 +83,18 @@ def new_user():
     )
     if validator(data, schema_01):
         return abort()
-
     if User.query.filter_by(username=data["username"]).first():
         return abort("username", f"username <{data['username']}> has been used.")
-
     user = User.create(cast(str, data["username"]), cast(str, data["password"]))
-    if validator(user.to_dict(), schema_03):
+    responseData = user.to_dict()
+    if validator(responseData, schema_03):
         return abort()
-
-    return jsonify(f"Created user <{data['username']}>."), 201
+    return jsonify(responseData), 201
 
 
 @account.route("/token", methods=["POST"])
 def new_token():
-    grant_type = request.form.get("grant_type")
+    grant_type = request.form.get("grantType")
     if grant_type != "password":
         return abort("grant_type", "Invalid grant type.")
 
@@ -120,7 +118,7 @@ def new_token():
     access_token = generate_access_token(cast(User, user))
     token_type = "Bearer"
 
-    response_data = dict(access_token=access_token, token_type=token_type)
+    response_data = dict(accessToken=access_token, tokenType=token_type)
     if validator(response_data, schema_02):
         return abort()
 

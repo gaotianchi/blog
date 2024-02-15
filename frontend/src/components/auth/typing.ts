@@ -15,3 +15,20 @@ export type RegisterStatus = {
 	password: InputElement;
 	passwordConfirmation: InputElement;
 };
+export type LoginStatus = {
+	username: InputElement;
+	password: InputElement;
+};
+export type RegisterResponseData = {
+	id: number;
+	username: string;
+	nickname: string;
+	description: string;
+	registeredAt: string;
+	lastLoginAt: string;
+	tokenValidityPeriod: number;
+};
+export type LoginResponseData = {
+	accessToken: string;
+	tokenType: string;
+};

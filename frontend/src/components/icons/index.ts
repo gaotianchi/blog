@@ -14,6 +14,7 @@ import SettingVue from "./Setting.vue";
 import UploadImageVue from "./UploadImage.vue";
 import CancelVue from "./Cancel.vue";
 import DefaultImageVue from "./DefaultImage.vue";
+import LogoVue from "./Logo.vue";
 
 export default {
 	fail: FailVue,
@@ -32,4 +33,5 @@ export default {
 	uploadImage: UploadImageVue,
 	cancel: CancelVue,
 	defaultImage: DefaultImageVue,
+	logo: LogoVue,
 };

@@ -1,65 +1,111 @@
 <script setup lang="ts">
-	import { computed, reactive, ref, type Ref } from "vue";
+	import { computed, reactive, ref, watch, type Ref } from "vue";
 	import FormInput from "./AuthFormInput.vue";
 	import SubmitButton from "./AuthSubmitButton.vue";
 	import AuthFormErrorMessage from "./AuthFormErrorMessage.vue";
-	import type { AuthStatus, AuthFormData, RegisterStatus } from "./typing";
+	import type { AuthStatus, RegisterStatus } from "./typing";
 	import defaults from "./defaults";
-	import { setRegisterStatus, getRegisterStatus } from "./localApi";
+	import { registerUser } from "./remoteApi";
+	import type { APIError } from "@/api/errors";
+	import { useRouter } from "vue-router";
+	import {
+		usernameCondition_1,
+		usernameCondition_2,
+		usernameCondition_3,
+		passwordCondition_1,
+		passwordCondition_2,
+	} from "./inputValidator";
+	const router = useRouter();
 	const status: Ref<AuthStatus> = ref("normal");
-	const registerStatus: RegisterStatus = reactive({ ...getRegisterStatus() });
-	// const username: InputElement = reactive({ ...defaults.inputElement });
-	// const password: InputElement = reactive({ ...defaults.inputElement });
-	// const passwordConfirmation: InputElement = reactive({
-	// 	...defaults.inputElement,
-	// });
-	const usernameConditon_1 = computed<boolean>(() => {
-		const reg = new RegExp("^[a-z0-9_]+$");
-		return reg.test(registerStatus.username.value);
+	const registerStatus: RegisterStatus = reactive({
+		...defaults.registerStatus,
 	});
-	const usernameConditon_2 = computed<boolean>(() => {
-		const reg = new RegExp("^[a-z]");
-		return reg.test(registerStatus.username.value);
-	});
-	const usernameConditon_3 = computed<boolean>(() => {
+	const passwordConfirmationCondition_1 = computed<boolean>(() => {
 		return (
-			registerStatus.username.value.length > 2 &&
-			registerStatus.username.value.length < 100
+			registerStatus.password.value ===
+			registerStatus.passwordConfirmation.value
 		);
 	});
-	const passwordCondition_1 = computed<boolean>(() => {
-		return registerStatus.password.value.length > 5;
+	const passwordConfirmationCondition_2 = computed<boolean>(() => {
+		return registerStatus.passwordConfirmation.value.length > 0;
 	});
-	const passwordCondition_2 = computed<boolean>(() => {
-		const reg = new RegExp("^(?=.*[a-zA-Z])(?=.*\\d).$");
-		return reg.test(registerStatus.password.value);
+	watch(status, () => {
+		if (status.value === "fail") {
+			setTimeout(() => {
+				status.value = "normal";
+			}, 3000);
+		}
 	});
-	function submitForm(): void {
-		
-		registerStatus.username.conditions.usernameConditon_1 =
-			usernameConditon_1.value;
-		registerStatus.username.conditions.usernameConditon_2 =
-			usernameConditon_2.value;
-		registerStatus.username.conditions.usernameConditon_3 =
-			usernameConditon_3.value;
-		if (
-			usernameConditon_1.value &&
-			usernameConditon_2.value &&
-			usernameConditon_3.value
-		) {
-			registerStatus.username.status = "success";
-		} else {
+	function validateFormData(): boolean {
+		const uCondition_1 = usernameCondition_1(registerStatus.username.value);
+		const uCondition_2 = usernameCondition_2(registerStatus.username.value);
+		const uCondition_3 = usernameCondition_3(registerStatus.username.value);
+		registerStatus.username.conditions.condition_1 = uCondition_1;
+		registerStatus.username.conditions.condition_2 = uCondition_2;
+		registerStatus.username.conditions.condition_3 = uCondition_3;
+		const usernameConditions = uCondition_1 && uCondition_2 && uCondition_3;
+		if (!usernameConditions) {
 			registerStatus.username.status = "error";
 		}
-		registerStatus.password.conditions.passwordCondition_1 =
-			passwordCondition_1.value;
-		registerStatus.password.conditions.passwordCondition_2 =
-			passwordCondition_2.value;
-
-		if (passwordCondition_1.value && passwordCondition_2.value) {
+		const pCondition_1 = passwordCondition_1(registerStatus.password.value);
+		const pCondition_2 = passwordCondition_2(registerStatus.password.value);
+		registerStatus.password.conditions.condition_1 = pCondition_1;
+		registerStatus.password.conditions.condition_2 = pCondition_2;
+		const passwordConditions = pCondition_1 && pCondition_2;
+		if (passwordConditions) {
 			registerStatus.password.status = "success";
 		} else {
 			registerStatus.password.status = "error";
+		}
+		registerStatus.passwordConfirmation.conditions.condition_1 =
+			passwordConfirmationCondition_1.value;
+		registerStatus.passwordConfirmation.conditions.condition_2 =
+			passwordConfirmationCondition_2.value;
+		const passwordConfirmationConditions =
+			passwordConfirmationCondition_1.value &&
+			passwordConfirmationCondition_2.value;
+		if (passwordConfirmationConditions) {
+			registerStatus.passwordConfirmation.status = "success";
+		} else {
+			registerStatus.passwordConfirmation.status = "error";
+		}
+		if (
+			usernameConditions &&
+			passwordConditions &&
+			passwordConfirmationConditions
+		) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	async function submitForm(): Promise<void> {
+		registerStatus.username.conditions.condition_4 = true;
+		status.value = "loading";
+		if (!validateFormData()) {
+			status.value = "fail";
+			return;
+		}
+		const registerFormData = new FormData();
+		registerFormData.append("username", registerStatus.username.value);
+		registerFormData.append("password", registerStatus.password.value);
+		try {
+			await registerUser(registerFormData);
+			status.value = "success";
+			registerStatus.username.status = "success";
+			setTimeout(() => {
+				router.push({ name: "Login" });
+			}, 2000);
+			return;
+		} catch (error) {
+			console.error(error);
+			status.value = "fail";
+			const apiError = error as APIError;
+			if (apiError.target === "username") {
+				registerStatus.username.status = "error";
+				registerStatus.username.conditions.condition_4 = false;
+			}
+			return;
 		}
 	}
 </script>
@@ -78,13 +124,12 @@
 				<div class="child-VyRJw8Vjyg">
 					<div
 						class="child-4kGsZ_Eoye"
-						v-if="registerStatus.username.status != 'normal'"
+						v-if="registerStatus.username.status == 'error'"
 					>
 						<AuthFormErrorMessage
 							class="child-VJLyS5Bj1e"
 							:status="
-								!registerStatus.username.conditions
-									.usernameCondition_1
+								!registerStatus.username.conditions.condition_1
 							"
 						>
 							Contains only lowercase letters, underscores, and
@@ -93,8 +138,7 @@
 						<AuthFormErrorMessage
 							class="child-VJLyS5Bj1e"
 							:status="
-								!registerStatus.username.conditions
-									.usernameCondition_2
+								!registerStatus.username.conditions.condition_2
 							"
 						>
 							Must start with a lowercase letter.
@@ -102,12 +146,19 @@
 						<AuthFormErrorMessage
 							class="child-VJLyS5Bj1e"
 							:status="
-								!registerStatus.username.conditions
-									.usernameCondition_3
+								!registerStatus.username.conditions.condition_3
 							"
 						>
 							The length is greater than or equal to 3 and less
 							than or equal to 100.
+						</AuthFormErrorMessage>
+						<AuthFormErrorMessage
+							class="child-VJLyS5Bj1e"
+							:status="
+								!registerStatus.username.conditions.condition_4
+							"
+						>
+							This username has been used.
 						</AuthFormErrorMessage>
 					</div>
 				</div>
@@ -123,13 +174,12 @@
 				<div class="child-VyRJw8Vjyg">
 					<div
 						class="child-4kGsZ_Eoye"
-						v-if="registerStatus.password.status != 'normal'"
+						v-if="registerStatus.password.status == 'error'"
 					>
 						<AuthFormErrorMessage
 							class="child-VJLyS5Bj1e"
 							:status="
-								!registerStatus.password.conditions
-									.passwordCondition_1
+								!registerStatus.password.conditions.condition_1
 							"
 						>
 							The length is greater than or equal to 6.
@@ -137,8 +187,7 @@
 						<AuthFormErrorMessage
 							class="child-VJLyS5Bj1e"
 							:status="
-								!registerStatus.password.conditions
-									.passwordCondition_2
+								!registerStatus.password.conditions.condition_2
 							"
 						>
 							Must contain letters and numbers.
@@ -155,14 +204,37 @@
 					v-model="registerStatus.passwordConfirmation.value"
 				/>
 				<div class="child-VyRJw8Vjyg">
-					<div class="child-4kGsZ_Eoye">
-						<!-- <AuthFormMessage :status=""></AuthFormMessage> -->
+					<div
+						class="child-4kGsZ_Eoye"
+						v-if="
+							registerStatus.passwordConfirmation.status ==
+							'error'
+						"
+					>
+						<AuthFormErrorMessage
+							class="child-VJLyS5Bj1e"
+							:status="
+								!registerStatus.passwordConfirmation.conditions
+									.condition_1
+							"
+						>
+							Must be consistent with the previous password.
+						</AuthFormErrorMessage>
+						<AuthFormErrorMessage
+							class="child-VJLyS5Bj1e"
+							:status="
+								!registerStatus.passwordConfirmation.conditions
+									.condition_2
+							"
+						>
+							This field cannot be empty.
+						</AuthFormErrorMessage>
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class="parent-E1QvAI4o1g">
-			<SubmitButton btn-type="login" :btn-status="status" />
+			<SubmitButton btn-type="register" :btn-status="status" />
 		</div>
 	</form>
 </template>

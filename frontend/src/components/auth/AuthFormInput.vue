@@ -48,6 +48,6 @@
 	}
 	input:focus,
 	input:focus-visible {
-		outline: #8f8f8f solid 3px;
+		outline-width: 3px;
 	}
 </style>

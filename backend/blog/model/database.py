@@ -1,6 +1,6 @@
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Set
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
@@ -9,6 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from blog.config import get_config
 from blog.extens import db
+from blog.utlis import serialize_datetime
 
 config = get_config()
 
@@ -68,9 +69,11 @@ class User(db.Model):
             username=self.username,
             nickname=self.nickname,
             description=self.description,
-            registered_at=self.registered_at.isoformat(),
-            last_login_at=self.last_login_at.isoformat(),
-            token_validity_period=self.token_validity_period,
+            registeredAt=serialize_datetime(
+                self.registered_at.astimezone(timezone.utc)
+            ),
+            lastLoginAt=serialize_datetime(self.last_login_at.astimezone(timezone.utc)),
+            tokenValidityPeriod=self.token_validity_period,
         )
 
 

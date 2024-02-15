@@ -1,50 +1,55 @@
+SCHEMA = "http://json-schema.org/draft-07/schema#"
+DATETIMEPATTERN = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})([+-]\\d{4})$"
+
 schema_01 = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": SCHEMA,
     "type": "object",
     "properties": {
-        "username": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,49}$"},
+        "username": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,99}$"},
         "password": {
             "type": "string",
-            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{7,}$",
+            "pattern": "^(?=.*[a-zA-Z])(?=.*\\d).{6,}$",
         },
     },
     "required": ["username", "password"],
+    "additionalProperties": False,
 }
 
 schema_02 = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": SCHEMA,
     "type": "object",
     "properties": {
-        "access_token": {"type": "string"},
-        "token_type": {"type": "string", "enum": ["Bearer"]},
+        "accessToken": {"type": "string"},
+        "tokenType": {"type": "string", "enum": ["Bearer"]},
     },
-    "required": ["access_token", "token_type"],
+    "required": ["accessToken", "tokenType"],
+    "additionalProperties": False,
 }
 
 schema_03 = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": SCHEMA,
     "type": "object",
     "properties": {
         "description": {"type": "string"},
         "id": {"type": "integer"},
-        "last_login_at": {"type": "string", "format": "date-time"},
+        "lastLoginAt": {"type": "string", "pattern": DATETIMEPATTERN},
         "nickname": {"type": "string"},
-        "registered_at": {"type": "string", "format": "date-time"},
-        "token_validity_period": {"type": "integer"},
+        "registeredAt": {"type": "string", "pattern": DATETIMEPATTERN},
+        "tokenValidityPeriod": {"type": "integer"},
         "username": {"type": "string"},
     },
     "required": [
         "id",
-        "last_login_at",
+        "lastLoginAt",
         "nickname",
-        "registered_at",
-        "token_validity_period",
+        "registeredAt",
+        "tokenValidityPeriod",
         "username",
     ],
 }
 
 schema_04 = {  # type: ignore
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": SCHEMA,
     "type": "object",
     "properties": {
         "id": {"type": "integer"},
@@ -73,7 +78,7 @@ schema_04 = {  # type: ignore
 }
 
 schema_05 = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": SCHEMA,
     "type": "object",
     "properties": {
         "id": {"type": "integer"},
@@ -90,7 +95,7 @@ schema_05 = {
 }
 
 schema_06 = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": SCHEMA,
     "type": "object",
     "properties": {
         "name": {"type": "string"},
@@ -104,7 +109,7 @@ schema_06 = {
 
 
 schema_07 = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": SCHEMA,
     "type": "array",
     "items": {
         "type": "object",
@@ -114,7 +119,7 @@ schema_07 = {
 }
 
 schema_08 = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": SCHEMA,
     "type": "array",
     "items": {
         "type": "object",
