@@ -37,10 +37,10 @@ def new_series():
     new_series = Series.create(
         author=current_user, name=data["name"], cover=data["cover"]
     )
-    responseData = new_series.to_dict()
-    if validator(responseData, schema_05):
+    response_data = new_series.to_dict()
+    if validator(response_data, schema_05):
         return abort()
-    return jsonify(responseData), 201
+    return jsonify(response_data), 201
 
 
 @author.route("/series/<int:id>", methods=["PATCH"])
@@ -82,11 +82,11 @@ def update_article(id: int):
     tags: list[str] = data["tags"]
     data_to_update["tags"] = Tag.create(*tags)
     new_article = current_article.update(**data_to_update)  # type: ignore
-    responseData = new_article.to_dict()
-    if validator(responseData, schema_04):  # type: ignore
+    response_data = new_article.to_dict()
+    if validator(response_data, schema_04):  # type: ignore
         return abort()
 
-    return jsonify(responseData), 200  # type: ignore
+    return jsonify(response_data), 200  # type: ignore
 
 
 @author.route("/article/<int:id>", methods=["GET"])
@@ -94,10 +94,10 @@ def get_article_data(id: int):
     current_article = cast(Article, Article.query.get(id))
     if not current_article:
         return abort(message="No article found.", status_code=404)
-    data = current_article.to_dict()  # type: ignore
-    if validator(data, schema_04):  # type: ignore
+    response_data = current_article.to_dict()  # type: ignore
+    if validator(response_data, schema_04):  # type: ignore
         return abort()
-    return jsonify(data), 200
+    return jsonify(response_data), 200
 
 
 @author.route("/series/<int:id>")

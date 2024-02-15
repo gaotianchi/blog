@@ -55,14 +55,14 @@ schema_04 = {  # type: ignore
         "id": {"type": "integer"},
         "authorId": {"type": "integer"},
         "body": {"type": "string"},
-        "createdAt": {"type": "string", "format": "date-time"},
+        "createdAt": {"type": "string", "pattern": DATETIMEPATTERN},
         "isPublished": {"type": "boolean"},
-        "publishedAt": {"type": "string", "format": "date-time"},
-        "seriesId": {"type": ["integer", "null"]},
+        "publishedAt": {"type": "string", "pattern": DATETIMEPATTERN},
+        "seriesId": {"type": "integer"},
         "slug": {"type": "string"},
         "tags": {"type": "array", "items": {"type": "string"}},
         "title": {"type": "string"},
-        "updatedAt": {"type": "string", "format": "date-time"},
+        "updatedAt": {"type": "string", "pattern": DATETIMEPATTERN},
     },
     "required": [
         "id",
@@ -74,6 +74,7 @@ schema_04 = {  # type: ignore
         "tags",
         "title",
         "updatedAt",
+        "seriesId"
     ],
 }
 
@@ -82,13 +83,13 @@ schema_05 = {
     "type": "object",
     "properties": {
         "id": {"type": "integer"},
-        "author_id": {"type": "integer"},
+        "authorId": {"type": "integer"},
         "name": {"type": "string"},
         "cover": {"type": "string"},
     },
     "required": [
         "id",
-        "author_id",
+        "authorId",
         "name",
         "cover",
     ],

@@ -7,6 +7,7 @@
 	import defaults from "./defaults";
 	import { login } from "./remoteApi";
 	import type { APIError } from "@/api/errors";
+	import { setAccessToken } from "./localApi";
 	import {
 		usernameCondition_1,
 		usernameCondition_2,
@@ -64,10 +65,7 @@
 		loginFormData.append("password", loginStatus.password.value);
 		try {
 			const loginResponseData = await login(loginFormData);
-			localStorage.setItem(
-				"accessToken",
-				JSON.stringify(loginResponseData)
-			);
+			setAccessToken(loginResponseData);
 			loginStatus.username.status = "success";
 			loginStatus.password.status = "success";
 			status.value = "success";
@@ -191,3 +189,4 @@
 	</form>
 </template>
 <style src="./style.css"></style>
+./localApi

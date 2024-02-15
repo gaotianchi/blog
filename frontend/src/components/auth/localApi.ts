@@ -1,14 +1,13 @@
-import type { RegisterStatus } from "./typing";
-import defaults from "./defaults";
-export function setRegisterStatus(status: RegisterStatus): void {
-	const data = JSON.stringify(status);
-	sessionStorage.setItem("registerStatus", data);
+import type { LoginResponseData } from "./typing";
+
+export function setAccessToken(data: LoginResponseData): void {
+	localStorage.setItem("accessToken", JSON.stringify(data));
 }
-export function getRegisterStatus(): RegisterStatus {
-	const data = sessionStorage.getItem("registerStatus");
+export function getAccessToken(): LoginResponseData | null {
+	const data = localStorage.getItem("accessToken");
 	if (data) {
 		return JSON.parse(data);
 	} else {
-		return defaults.registerStatus;
+		return null;
 	}
 }

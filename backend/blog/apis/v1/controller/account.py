@@ -86,10 +86,10 @@ def new_user():
     if User.query.filter_by(username=data["username"]).first():
         return abort("username", f"username <{data['username']}> has been used.")
     user = User.create(cast(str, data["username"]), cast(str, data["password"]))
-    responseData = user.to_dict()
-    if validator(responseData, schema_03):
+    response_data = user.to_dict()
+    if validator(response_data, schema_03):
         return abort()
-    return jsonify(responseData), 201
+    return jsonify(response_data), 201
 
 
 @account.route("/token", methods=["POST"])
@@ -130,4 +130,7 @@ def new_token():
 def validate_user():
     current_user = cast(User, g.current_user)
     current_user.extend_validity_period()
-    return jsonify("Successfully update access token period."), 200
+    response_data = current_user.to_dict()
+    if validator(response_data, schema_03):
+        return abort()
+    return jsonify(response_data), 200

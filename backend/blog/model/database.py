@@ -126,7 +126,7 @@ class Series(db.Model):
             id=self.id,
             name=self.name,
             cover=self.cover,
-            author_id=self.author_id,
+            authorId=self.author_id,
         )
 
     def __repr__(self) -> str:
@@ -189,13 +189,13 @@ class Article(db.Model):
             body=self.body,
             slug=self.slug,
             isPublished=self.is_published,
-            publishedAt=self.published_at.isoformat(),
-            createdAt=self.created_at.isoformat(),
-            updatedAt=self.updated_at.isoformat(),
-            seriesId=self.series_id,
+            publishedAt=serialize_datetime(self.published_at.astimezone(timezone.utc)),
+            createdAt=serialize_datetime(self.created_at.astimezone(timezone.utc)),
+            updatedAt=serialize_datetime(self.updated_at.astimezone(timezone.utc)),
+            seriesId=self.series_id or 0,
             authorId=self.author_id,
             tags=[tag.name for tag in self.tags],  # type: ignore
         )
 
     def __repr__(self) -> str:
-        return f"Article <{self.title}>"
+        return f"Article <{self.id}>"
