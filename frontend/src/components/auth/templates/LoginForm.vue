@@ -3,18 +3,18 @@
 	import FormInput from "./AuthFormInput.vue";
 	import SubmitButton from "./AuthSubmitButton.vue";
 	import AuthFormErrorMessage from "./AuthFormErrorMessage.vue";
-	import type { AuthStatus, LoginStatus } from "./typing";
-	import defaults from "./defaults";
-	import { login } from "./remoteApi";
+	import type { AuthStatus, LoginStatus } from "../typing";
+	import defaults from "../defaults";
+	import { login } from "../remoteApi";
 	import type { APIError } from "@/api/errors";
-	import { setAccessToken } from "./localApi";
+	import { setAccessToken } from "../localApi";
 	import {
 		usernameCondition_1,
 		usernameCondition_2,
 		usernameCondition_3,
 		passwordCondition_1,
 		passwordCondition_2,
-	} from "./inputValidator";
+	} from "../inputValidator";
 	const status: Ref<AuthStatus> = ref("normal");
 	const loginStatus: LoginStatus = reactive({
 		...defaults.loginStatus,

@@ -1,3 +1,5 @@
+import type { EnumDeclaration } from "typescript";
+
 export type Tag = {
 	id: number;
 	name: string;
@@ -13,11 +15,39 @@ export type Article = {
 	title: string;
 	body: string;
 	slug: string;
-	createdAt: string;
-	updatedAt: string;
-	publishedAt: string;
+	createdAt: Date;
+	updatedAt: Date;
+	publishedAt: Date;
 	isPublished: boolean;
 	authorId: number;
 	tags: string[];
 	seriesId: number;
-}
+};
+export type SettingStatus = {
+	tags: {
+		open: boolean;
+	};
+	datetime: {
+		open: boolean;
+		mode: "default" | "custom";
+	};
+	permalink: {
+		open: boolean;
+		mode: "default" | "custom";
+	};
+	series: {
+		open: boolean;
+		mode: "default" | "selected" | "new";
+	};
+};
+export type Confirm = {
+	header?: string;
+	body: string;
+	yesMessage?: string;
+	noMessage?: string;
+	callback: CallableFunction;
+};
+export type PreviewCover = {
+	url: string;
+	file: File | null;
+};

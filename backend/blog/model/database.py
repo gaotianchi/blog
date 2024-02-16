@@ -1,5 +1,4 @@
 import re
-import time
 from datetime import datetime, timezone
 from typing import Any, Set
 
@@ -26,8 +25,8 @@ def filter_string(input_string: str):
     return filtered_string
 
 
-def get_auto_slug(prefix: str = "article_") -> str:
-    return prefix + str(time.time())[0:9]
+def get_auto_slug(prefix: str = "Blog_article_") -> str:
+    return prefix + datetime.now().strftime("%Y%m%d%H%m")
 
 
 class User(db.Model):

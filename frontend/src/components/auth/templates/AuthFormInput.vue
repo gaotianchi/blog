@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { type Ref, onMounted, ref } from "vue";
-	import type { InputStatus } from "./typing";
+	import type { InputStatus } from "../typing";
 	const props = defineProps<{
 		type: "text" | "password";
 		name: string;

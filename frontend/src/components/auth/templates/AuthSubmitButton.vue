@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { computed } from "vue";
 	import icons from "@/components/icons";
-	import type { AuthAction, AuthStatus } from "./typing";
+	import type { AuthAction, AuthStatus } from "../typing";
 	const props = defineProps<{
 		btnType: AuthAction;
 		btnStatus: AuthStatus;

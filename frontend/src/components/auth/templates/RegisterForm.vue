@@ -3,9 +3,9 @@
 	import FormInput from "./AuthFormInput.vue";
 	import SubmitButton from "./AuthSubmitButton.vue";
 	import AuthFormErrorMessage from "./AuthFormErrorMessage.vue";
-	import type { AuthStatus, RegisterStatus } from "./typing";
-	import defaults from "./defaults";
-	import { registerUser } from "./remoteApi";
+	import type { AuthStatus, RegisterStatus } from "../typing";
+	import defaults from "../defaults";
+	import { registerUser } from "../remoteApi";
 	import type { APIError } from "@/api/errors";
 	import { useRouter } from "vue-router";
 	import {
@@ -14,7 +14,7 @@
 		usernameCondition_3,
 		passwordCondition_1,
 		passwordCondition_2,
-	} from "./inputValidator";
+	} from "../inputValidator";
 	const router = useRouter();
 	const status: Ref<AuthStatus> = ref("normal");
 	const registerStatus: RegisterStatus = reactive({

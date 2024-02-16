@@ -5,18 +5,16 @@
 	import Tags from "@/components/articleEditor/settings/Tags.vue";
 	import SettingItem from "@/components/blog/SettingItem.vue";
 	import { localArticle } from "@/components/articleEditor/localApi";
+	import moment from "moment-timezone";
+	import Datetime from "@/components/articleEditor/settings/Datetime.vue";
+	import { dateFormatter } from "@/components/articleEditor/utlis";
+	import Permalink from "@/components/articleEditor/settings/Permalink.vue";
+	import { limString } from "@/api";
+
 </script>
 
 <template>
-	<SettingItem>
-		<template #title>Tags</template>
-		<template #preview>{{
-			localArticle.tags.join(",") || "No tags"
-		}}</template>
-		<template #detail>
-			<Tags />
-		</template>
-	</SettingItem>
+
 </template>
 
 <style scoped></style>

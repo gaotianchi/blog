@@ -46,6 +46,7 @@
 
 	.parent-NyM7s6AK1l {
 		width: 100%;
+		height: 40px;
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;

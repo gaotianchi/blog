@@ -126,13 +126,13 @@ schema_08 = {
         "type": "object",
         "properties": {
             "id": {"type": "integer"},
-            "author_id": {"type": "integer"},
+            "authorId": {"type": "integer"},
             "name": {"type": "string"},
             "cover": {"type": "string"},
         },
         "required": [
             "id",
-            "author_id",
+            "authorId",
             "name",
             "cover",
         ],
