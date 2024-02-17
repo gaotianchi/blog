@@ -1,10 +1,18 @@
 <script setup lang="ts">
-	import { ref, type Ref } from "vue";
+	import { reactive, ref, type Ref } from "vue";
+	import type { SettingItem } from "@/typing";
 	import icons from "@/components/icons";
-	const active: Ref<boolean> = ref(false);
-	const changeStatus = () => {
+	const props = defineProps<{
+		initStatus: boolean;
+	}>();
+	const emits = defineEmits<{
+		changeStatus: [status: boolean];
+	}>();
+	const active = ref(props.initStatus);
+	function changeStatus(): void {
 		active.value = !active.value;
-	};
+		emits("changeStatus", active.value);
+	}
 </script>
 
 <template>

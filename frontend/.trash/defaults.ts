@@ -1,4 +1,4 @@
-import type { RegisterStatus, InputElement, LoginStatus } from "./typing";
+import type { RegisterStatus, InputElement, LoginStatus } from "./auth/typing";
 
 const defaultInputElement: InputElement = {
 	value: "",

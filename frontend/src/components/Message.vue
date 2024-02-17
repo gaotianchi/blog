@@ -1,10 +1,18 @@
 <script setup lang="ts">
-	import { message } from "../localApi";
+	import { watch } from "vue";
+	import { messageProp } from "@/api/local";
+	watch(messageProp, () => {
+		if (messageProp.value.length > 0) {
+			setTimeout(() => {
+				messageProp.value = "";
+			}, 2000);
+		}
+	});
 </script>
 <template>
 	<Transition>
-		<div class="parent-E1A1PUZo1x" v-if="message.value.length > 0">
-			<span class="parent-NyiIFLbi1e">{{ message.value }}</span>
+		<div class="parent-E1A1PUZo1x" v-if="messageProp.length > 0">
+			<span class="parent-NyiIFLbi1e">{{ messageProp }}</span>
 		</div>
 	</Transition>
 </template>

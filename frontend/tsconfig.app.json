@@ -1,13 +1,33 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
-  "exclude": ["src/**/__tests__/*"],
+  "include": [
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    ".trash/typing.ts",
+    ".trash/utlis.ts",
+    ".trash/localApi.ts",
+    ".trash/remoteApi.ts",
+    ".trash/defaults.ts",
+    ".trash/auth/localApi.ts",
+    ".trash/auth/remoteApi.ts",
+    ".trash/auth/schemas.ts",
+    ".trash/auth/typing.ts",
+    ".trash/index.ts",
+    ".trash/fakes.ts",
+    ".trash/auth.ts"
+  ],
+  "exclude": [
+    "src/**/__tests__/*"
+  ],
   "compilerOptions": {
     "composite": true,
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   }
 }

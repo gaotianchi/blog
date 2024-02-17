@@ -2,10 +2,10 @@ import type { APIError } from "@/api/errors";
 import type { Article, Tag, Series } from "./typing";
 import { rootUrl } from "@/confit";
 import { reactive } from "vue";
-import defaults from "./defaults";
+import { defaultArticle, defaultSeries } from "@/defaults";
 
-export const remoteArticle: Article = reactive({ ...defaults.article });
-export const remoteSeries: Series = reactive({ ...defaults.serise });
+export const remoteArticle: Article = reactive({ ...defaultArticle });
+export const remoteSeries: Series = reactive({ ...defaultSeries });
 export const allRemoteSeries: Series[] = reactive([]);
 export async function getAllRemoteTags(): Promise<Tag[]> {
 	const url = rootUrl + "/author/tags";
@@ -43,9 +43,7 @@ export async function getAllRemoteSeriesItem(): Promise<Series[]> {
 		throw errorData.error as APIError;
 	}
 }
-export async function createSeriesItem(): Promise<Series> {
-	const url = rootUrl + "/author/series";
-	const response = await fetch(url, {
-		
-	})
-}
+// export async function createSeriesItem(): Promise<Series> {
+// 	const url = rootUrl + "/author/series";
+// 	const response = await fetch(url, {});
+// }

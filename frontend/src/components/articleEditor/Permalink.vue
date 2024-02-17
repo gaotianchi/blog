@@ -1,9 +1,9 @@
 <script setup lang="ts">
-	import Radio from "../Radio.vue";
-	import { localArticle, settingStatus } from "../../localApi";
-	import { remoteArticle } from "../../remoteApi";
 	import { ref, watch } from "vue";
-	import InputA from "../InputA.vue";
+	import { localArticle, settingStatus } from "@/api/local";
+	import { remoteArticle } from "@/api/remote";
+	import Radio from "@/components/Radio.vue";
+	import InputA from "@/components/InputA.vue";
 	const customSlug = ref("");
 	watch(customSlug, () => {
 		customSlug.value = cleanSlug(customSlug.value);
@@ -30,7 +30,7 @@
 		</div>
 		<div class="child-4J9WMcl9Je parent-VyzXfqx9Je">
 			<Radio
-				name="default"
+				name="default-permalink"
 				value="default"
 				v-model="settingStatus.permalink.mode"
 				@selected="
@@ -41,7 +41,7 @@
 				>Auto</Radio
 			>
 			<Radio
-				name="custom"
+				name="custom-permalink"
 				value="custom"
 				v-model="settingStatus.permalink.mode"
 				@selected="
@@ -74,7 +74,7 @@
 	.parent-EJ5IqDbqkl {
 		min-height: 20px;
 		max-height: 40px;
-		overflow-y: scroll;
+		overflow-y: auto;
 		word-wrap: break-word;
 		line-height: 20px;
 		text-align: left;

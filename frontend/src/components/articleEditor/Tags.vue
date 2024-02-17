@@ -1,10 +1,10 @@
 <script setup lang="ts">
-	import { Index } from "flexsearch";
-	import type { Tag } from "../../typing";
-	import InputA from "../InputA.vue";
-	import { getAllRemoteTags } from "../../remoteApi";
 	import { onMounted, ref, type Ref, computed, watch } from "vue";
-	import { localArticle } from "../../localApi";
+	import { Index } from "flexsearch";
+	import type { Tag } from "@/typing";
+	import { getAllRemoteTags } from "@/api/remote";
+	import { localArticle } from "@/api/local";
+	import InputA from "@/components/InputA.vue";
 	const model: Ref<string> = ref(localArticle.tags.join(","));
 	const allTags: Ref<Tag[]> = ref([]);
 	const index = new Index({ tokenize: "forward" });
@@ -96,7 +96,7 @@
 		width: 100%;
 		height: 150px;
 		padding-left: 20px;
-		overflow-y: scroll;
+		overflow-y: auto;
 	}
 
 	.child-VysQ-Vx9kg {

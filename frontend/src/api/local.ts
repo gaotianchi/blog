@@ -1,4 +1,32 @@
-import type { Article } from "@/typing";
+import { reactive, type Ref, ref } from "vue";
+import type {
+	Article,
+	Series,
+	Confirm,
+	SettingStatus,
+	Tag,
+	LoginResponseData,
+} from "@/typing";
+import {
+	defaultArticle,
+	defaultSeries,
+	defaultConfirm,
+	defaultSettingStatus,
+} from "@/defaults";
+
+export const localArticle: Article = reactive({ ...defaultArticle });
+export const messageProp: Ref<string> = ref("");
+export const localSeries: Series = reactive({ ...defaultSeries });
+export const confirmProp: Confirm = reactive({ ...defaultConfirm });
+export const settingStatus: SettingStatus = reactive({
+	...defaultSettingStatus,
+});
+export function propMessage(msg: string): void {
+	messageProp.value = msg;
+}
+export function propConfirm(cf: Confirm): void {
+	Object.assign(confirmProp, cf);
+}
 
 export function getArticle(type: "local" | "remote" = "local"): Article | null {
 	let article: Article | null = null;
@@ -29,5 +57,28 @@ export function setArticle(
 		case "remote":
 			sessionStorage.setItem("remoteArticle", articleString);
 			return;
+	}
+}
+export function getAllLocalTags(): Tag[] {
+	const data = sessionStorage.getItem("allLocalTags");
+	if (data) {
+		return JSON.parse(data);
+	} else {
+		return [];
+	}
+}
+export function setAllLocalTags(tags: Tag[]): void {
+	sessionStorage.setItem("allLocalTags", JSON.stringify(tags));
+}
+
+export function setAccessToken(data: LoginResponseData): void {
+	localStorage.setItem("accessToken", JSON.stringify(data));
+}
+export function getAccessToken(): LoginResponseData | null {
+	const data = localStorage.getItem("accessToken");
+	if (data) {
+		return JSON.parse(data);
+	} else {
+		return null;
 	}
 }

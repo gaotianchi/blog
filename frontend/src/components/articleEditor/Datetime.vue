@@ -1,12 +1,12 @@
 <script setup lang="ts">
+	import type { DatePickerInstance } from "@vuepic/vue-datepicker";
+	import "@vuepic/vue-datepicker/dist/main.css";
 	import { reactive, ref, type Ref } from "vue";
 	import DatePicker from "@vuepic/vue-datepicker";
-	import "@vuepic/vue-datepicker/dist/main.css";
-	import Radio from "../Radio.vue";
-	import { localArticle, settingStatus } from "../../localApi";
-	import { remoteArticle } from "../../remoteApi";
-	import type { DatePickerInstance } from "@vuepic/vue-datepicker";
-	import { dateFormatter } from "../../utlis";
+	import { localArticle, settingStatus } from "@/api/local";
+	import { remoteArticle } from "@/api/remote";
+	import { dateFormatter } from "@/utlis";
+	import Radio from "@/components/Radio.vue";
 	const currentArticle = reactive(localArticle);
 	const datepicker: Ref<DatePickerInstance> = ref(null);
 	function openPicker(): void {
@@ -42,14 +42,14 @@
 		</div>
 		<div class="parent-Vy07YaPsJe">
 			<Radio
-				name="default"
+				name="default-datetime"
 				value="default"
 				v-model="settingStatus.datetime.mode"
 				@selected="resetDate"
 				>Default</Radio
 			>
 			<Radio
-				name="custom"
+				name="custom-datetime"
 				value="custom"
 				v-model="settingStatus.datetime.mode"
 				@selected="openPicker"

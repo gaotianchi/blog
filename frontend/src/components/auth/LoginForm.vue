@@ -1,23 +1,23 @@
 <script setup lang="ts">
 	import { reactive, ref, watch, type Ref } from "vue";
+	import type { AuthStatus, LoginStatus } from "@/typing";
+	import { defaultLoginStatus } from "@/defaults";
+	import { login } from "@/api/remote";
+	import type { APIError } from "@/api/errors";
+	import { setAccessToken } from "@/api/local";
 	import FormInput from "./AuthFormInput.vue";
 	import SubmitButton from "./AuthSubmitButton.vue";
 	import AuthFormErrorMessage from "./AuthFormErrorMessage.vue";
-	import type { AuthStatus, LoginStatus } from "../typing";
-	import defaults from "../defaults";
-	import { login } from "../remoteApi";
-	import type { APIError } from "@/api/errors";
-	import { setAccessToken } from "../localApi";
 	import {
 		usernameCondition_1,
 		usernameCondition_2,
 		usernameCondition_3,
 		passwordCondition_1,
 		passwordCondition_2,
-	} from "../inputValidator";
+	} from "./inputValidator";
 	const status: Ref<AuthStatus> = ref("normal");
 	const loginStatus: LoginStatus = reactive({
-		...defaults.loginStatus,
+		...defaultLoginStatus,
 	});
 	watch(status, () => {
 		if (status.value === "fail") {
@@ -189,4 +189,5 @@
 	</form>
 </template>
 <style src="./style.css"></style>
-./localApi
+./localApi ../../../../.trash/defaults ../../../../.trash/auth/localApi
+../../../../.trash/auth/remoteApi ../../../../.trash/auth/typing

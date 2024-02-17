@@ -1,5 +1,3 @@
-import type { EnumDeclaration } from "typescript";
-
 export type Tag = {
 	id: number;
 	name: string;

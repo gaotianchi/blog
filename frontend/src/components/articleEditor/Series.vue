@@ -1,22 +1,30 @@
 <script setup lang="ts">
-	import Radio from "../Radio.vue";
-	import InputA from "../InputA.vue";
-	import { localArticle, settingStatus } from "../../localApi";
+	import { onMounted, reactive, ref, type Ref } from "vue";
+	import type { PreviewCover, Series } from "@/typing";
+	import { defaultPreviewCover, defaultSeries } from "@/defaults";
+	import { dateFormatter } from "@/utlis";
+	import {
+		localArticle,
+		localSeries,
+		settingStatus,
+		propConfirm,
+		propMessage,
+	} from "@/api/local";
 	import {
 		remoteArticle,
 		getAllRemoteSeriesItem,
 		allRemoteSeries,
-	} from "../../remoteApi";
+		postMediaItem,
+		postSeriesItem,
+	} from "@/api/remote";
+	import Radio from "@/components/Radio.vue";
+	import InputA from "@/components/InputA.vue";
 	import icons from "@/components/icons";
-	import { onMounted, reactive, ref, type Ref } from "vue";
-	import Message from "../Message.vue";
-	import Confirm from "../Confirm.vue";
-	import { message, confirm } from "../../localApi";
-	import type { PreviewCover } from "../../typing";
-	const previewCover: PreviewCover = reactive({
-		url: "",
-		file: null,
-	});
+	import Message from "@/components/Message.vue";
+	import Confirm from "@/components/Confirm.vue";
+	const previewCover: PreviewCover = reactive({ ...defaultPreviewCover });
+	const uploadImageArea: Ref<HTMLInputElement | null> = ref(null);
+	const newSeries: Series = reactive({ ...defaultSeries });
 	onMounted(() => {
 		loadAllSeries();
 	});
@@ -32,35 +40,129 @@
 			console.error(error);
 		}
 	}
+	function selectSeries(s: Series): void {
+		localArticle.seriesId = s.id;
+		Object.assign(localSeries, s);
+	}
+	function triggerFileInput(): void {
+		uploadImageArea?.value?.click();
+	}
+	function getRenamedFile(originalFile: File): File {
+		const nameArr = originalFile.name.split(".");
+		const newFilename =
+			"image-" +
+			dateFormatter(new Date(), "YYYYMMDDhhmmss") +
+			"." +
+			nameArr[nameArr.length - 1];
+		const renameFile = new File([originalFile], newFilename, {
+			type: originalFile.type,
+		});
+		return renameFile;
+	}
+	function getPreviewUrl(file: File): Promise<string> {
+		return new Promise((resolve) => {
+			const reader = new FileReader();
+			reader.onload = () => {
+				const url = reader.result as string;
+				resolve(url);
+			};
+			reader.readAsDataURL(file);
+		});
+	}
+	async function handleFileUpload(e: Event): Promise<void> {
+		const selectedFile = (e.target as HTMLInputElement).files?.[0];
+		if (selectedFile) {
+			const renamedFile = getRenamedFile(selectedFile);
+			previewCover.file = renamedFile;
+			previewCover.url = await getPreviewUrl(renamedFile);
+			newSeries.cover = renamedFile.name;
+		}
+	}
+	function resetCover(): void {
+		previewCover.url = "";
+		newSeries.cover = "";
+		if (uploadImageArea.value) {
+			uploadImageArea.value.value = "";
+		}
+	}
 	async function createSeries(): Promise<void> {
-		
+		propMessage("Creating series ...");
+		if (previewCover.file) {
+			try {
+				await postMediaItem(previewCover.file);
+			} catch (error) {
+				console.error(error);
+			}
+		}
+		try {
+			const seriesData = await postSeriesItem(newSeries);
+			Object.assign(localSeries, seriesData);
+			localArticle.seriesId = seriesData.id;
+			allRemoteSeries.push(seriesData);
+			propMessage("Successfully create new series.");
+		} catch (error) {
+		} finally {
+			resetCover();
+			Object.assign(newSeries, defaultSeries);
+		}
+	}
+	function desideToCreateSeries(): void {
+		if (!newSeries.name) {
+			alert("Series name cannot be empty!");
+			return;
+		}
+		propConfirm({
+			header: "Create series",
+			body: `Are you sure you want to create series 《${newSeries.name}》?`,
+			yesMessage: "Create",
+			noMessage: "Cancel",
+			callback: createSeries,
+		});
 	}
 </script>
 <template>
 	<Message />
 	<Confirm />
 	<div class="parent-4JxPgYb9Jl">
-		<div class="parent-EJ5IqDbqkl child-N1IGDObcye">{{}}</div>
+		<div class="parent-EJ5IqDbqkl child-N1IGDObcye">
+			{{
+				localSeries.name.length > 0
+					? localSeries.name
+					: "No series selected."
+			}}
+		</div>
 		<div class="parent- child-N1IGDObcye">
 			<Radio
-				name="default"
+				name="default-series"
 				value="default"
 				v-model="settingStatus.series.mode"
-				@selected=""
+				@selected="
+					() => {
+						localArticle.seriesId = remoteArticle.seriesId;
+					}
+				"
 				>Default</Radio
 			>
 			<Radio
-				name="selected"
+				name="selected-series"
 				value="selected"
 				v-model="settingStatus.series.mode"
-				@selected=""
+				@selected="
+					() => {
+						localArticle.seriesId = remoteArticle.seriesId;
+					}
+				"
 				>Select another</Radio
 			>
 			<Radio
-				name="new"
+				name="new-series"
 				value="new"
 				v-model="settingStatus.series.mode"
-				@selected=""
+				@selected="
+					() => {
+						localArticle.seriesId = remoteArticle.seriesId;
+					}
+				"
 				>New</Radio
 			>
 		</div>
@@ -70,14 +172,16 @@
 		>
 			<div
 				class="parent- child-EJRV0dWq1e"
-				v-for="series in allRemoteSeries"
+				v-for="s in allRemoteSeries"
 				v-if="allRemoteSeries.length > 0"
-				@click=""
+				@click="selectSeries(s)"
 			>
 				<div class="parent-4kGYZF-qJl child-4yb5kK-9yx">
-					<img :src="series.cover" v-if="series.cover" />
+					<img :src="s.cover" v-if="s.cover" />
 				</div>
-				<div class="parent-41Bi-YbqJe child-4yb5kK-9yx">{{}}</div>
+				<div class="parent-41Bi-YbqJe child-4yb5kK-9yx">
+					{{ s.name }}
+				</div>
 			</div>
 			<div class="child-EJRV0dWq1e" v-else>No series found.</div>
 		</div>
@@ -115,12 +219,13 @@
 				/>
 			</div>
 			<div class="parent-G1U6ilxo1e">
-				<Input
+				<InputA
 					name="new-series-area"
 					:max-length="300"
 					v-model="newSeries.name"
 					class="child-4kK6OY-cJl"
 					placeholder="Please enter new series name"
+					auto-focus
 				/>
 				<button
 					type="button"
@@ -144,7 +249,7 @@
 
 	.parent-EJ5IqDbqkl {
 		height: 40px;
-		overflow-y: scroll;
+		overflow-y: auto;
 		word-wrap: break-word;
 		line-height: 20px;
 		text-align: left;
@@ -154,7 +259,7 @@
 
 	.parent-EyA9lY-5Jx {
 		max-height: 420px;
-		overflow-y: scroll;
+		overflow-y: auto;
 	}
 
 	.child-EJRV0dWq1e {

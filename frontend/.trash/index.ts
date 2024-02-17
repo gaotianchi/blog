@@ -1,5 +1,5 @@
 import type { Article, MessageProp, Series, Tag } from "@/typing";
-import type { APIError } from "./errors";
+import type { APIError } from "../src/api/errors";
 
 export function getAccessToken(): string | null {
 	const accessToken = localStorage.getItem("access_token");

@@ -1,10 +1,8 @@
 <script setup lang="ts">
+	import { useRoute, useRouter } from "vue-router";
+	import type { AuthAction } from "@/typing";
 	import Header from "@/components/Header.vue";
 	import icons from "@/components/icons";
-	import auth from "@/components/auth";
-	import type { AuthAction } from "@/components/auth/typing";
-	import { ref, type Ref } from "vue";
-	import { useRoute, useRouter } from "vue-router";
 	const route = useRoute();
 	const router = useRouter();
 
@@ -106,7 +104,7 @@
 		letter-spacing: 1px;
 	}
 	.parent-N1WKCpLjyx {
-		height: calc(100vh - 50px);
+		height: calc(100vh - 60px);
 		display: flex;
 		justify-content: center;
 	}

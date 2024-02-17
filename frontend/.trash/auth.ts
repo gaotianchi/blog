@@ -1,5 +1,5 @@
 import type { TokenResponse } from "@/typing";
-import type { APIError } from "./errors";
+import type { APIError } from "../src/api/errors";
 
 export async function login(formData: FormData): Promise<TokenResponse> {
 	const url = "http://localhost:5000/v1/account/token";

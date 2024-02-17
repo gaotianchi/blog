@@ -1,6 +1,23 @@
 import Ajv, { type JSONSchemaType } from "ajv";
-const ajv = new Ajv();
+import moment from "moment";
 
+const ajv = new Ajv();
+export function getLocalDatetime(dateString: string): Date {
+	const timezone = moment.tz.guess();
+	const localizedMoment = moment.tz(dateString, timezone);
+	return localizedMoment.toDate();
+}
+export function dateFormatter(date: Date, format?: string): string {
+	const dateFormat = format || "YYYY-MM-DD  hh:mm  A";
+	return moment(date).format(dateFormat);
+}
+export function limString(str: string, maxLength: number): string {
+	if (str.length < maxLength) {
+		return str;
+	} else {
+		return str.slice(0, maxLength) + " ...";
+	}
+}
 export function validator(data: any, schema: JSONSchemaType<any>): boolean {
 	const validate = ajv.compile(schema);
 	return validate(data);

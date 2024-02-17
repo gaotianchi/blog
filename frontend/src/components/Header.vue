@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import icons from "./icons";
+	import icons from "@/components/icons";
 </script>
 <template>
 	<header class="parent-4JKdmTIsyg">
@@ -13,14 +13,15 @@
 </template>
 <style scoped>
 	.parent-4JKdmTIsyg {
-		height: 50px;
+		height: 55px;
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
 		background: rgb(255, 255, 255);
-        padding: 2px 5px;
+		padding: 0 5px;
+		margin-bottom: 5px;
 	}
 	.parent-EkcpQ6Is1e {
 		display: flex;

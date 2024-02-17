@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import Hello from "@/views/Hello.vue";
 import World from "@/views/World.vue";
-import { validateUser } from "@/components/auth/remoteApi";
+import { validateUser } from "@/api/remote";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),

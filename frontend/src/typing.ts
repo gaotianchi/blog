@@ -1,24 +1,13 @@
-
-
 export type Tag = {
 	id: number;
 	name: string;
 };
-
 export type Series = {
 	id: number;
 	name: string;
-	author_id: number;
 	cover: string;
+	authorId: number;
 };
-
-export type Settings = {
-	tags: string[];
-	datetime: Date;
-	permalink: string;
-	seriesId: number;
-};
-
 export type Article = {
 	id: number;
 	title: string;
@@ -26,41 +15,80 @@ export type Article = {
 	slug: string;
 	createdAt: Date;
 	updatedAt: Date;
-	isPublished: boolean;
 	publishedAt: Date;
-	seriesId: number;
+	isPublished: boolean;
 	authorId: number;
 	tags: string[];
+	seriesId: number;
 };
-
-export type ArticleJson = {
-	id: number;
-	title: string;
-	body: string;
-	slug: string;
-	created_at: string;
-	updated_at: string;
-	is_published: boolean;
-	published_at: string;
-	tags: string[];
-	series_id: number | null;
+export type SettingStatus = {
+	tags: {
+		open: boolean;
+	};
+	datetime: {
+		open: boolean;
+		mode: "default" | "custom";
+	};
+	permalink: {
+		open: boolean;
+		mode: "default" | "custom";
+	};
+	series: {
+		open: boolean;
+		mode: "default" | "selected" | "new";
+	};
 };
-
-export type MessageProp = {
-	active: boolean;
-	message: string;
-};
-
-export type ConfirmProp = {
-	active: boolean;
+export type Confirm = {
 	header?: string;
 	body: string;
 	yesMessage?: string;
 	noMessage?: string;
 	callback: CallableFunction;
 };
-
-export type TokenResponse = {
+export type PreviewCover = {
+	url: string;
+	file: File | null;
+};
+export type InputStatus = "normal" | "error" | "success";
+export type AuthAction = "login" | "register";
+export type AuthStatus = "normal" | "loading" | "fail" | "success";
+export type AuthFormData = {
+	username: string;
+	password: string;
+};
+export type InputElement = {
+	status: InputStatus;
+	value: string;
+	conditions: { [key: string]: boolean };
+};
+export type RegisterStatus = {
+	username: InputElement;
+	password: InputElement;
+	passwordConfirmation: InputElement;
+};
+export type LoginStatus = {
+	username: InputElement;
+	password: InputElement;
+};
+export type RegisterResponseData = {
+	id: number;
+	username: string;
+	nickname: string;
+	description: string;
+	registeredAt: string;
+	lastLoginAt: string;
+	tokenValidityPeriod: number;
+};
+export type LoginResponseData = {
 	accessToken: string;
 	tokenType: string;
 };
+export type APIError = {
+	target: string;
+	message: string;
+	statusCode: number;
+};
+export type SettingItem = {
+	open: boolean;
+	mode?: string;
+}

@@ -1,24 +1,24 @@
 <script setup lang="ts">
+	import { useRouter } from "vue-router";
 	import { computed, reactive, ref, watch, type Ref } from "vue";
+	import type { AuthStatus, RegisterStatus } from "@/typing";
+	import { defaultRegisterStatus } from "@/defaults";
+	import { registerUser } from "@/api/remote";
+	import type { APIError } from "@/api/errors";
 	import FormInput from "./AuthFormInput.vue";
 	import SubmitButton from "./AuthSubmitButton.vue";
 	import AuthFormErrorMessage from "./AuthFormErrorMessage.vue";
-	import type { AuthStatus, RegisterStatus } from "../typing";
-	import defaults from "../defaults";
-	import { registerUser } from "../remoteApi";
-	import type { APIError } from "@/api/errors";
-	import { useRouter } from "vue-router";
 	import {
 		usernameCondition_1,
 		usernameCondition_2,
 		usernameCondition_3,
 		passwordCondition_1,
 		passwordCondition_2,
-	} from "../inputValidator";
+	} from "./inputValidator";
 	const router = useRouter();
 	const status: Ref<AuthStatus> = ref("normal");
 	const registerStatus: RegisterStatus = reactive({
-		...defaults.registerStatus,
+		...defaultRegisterStatus,
 	});
 	const passwordConfirmationCondition_1 = computed<boolean>(() => {
 		return (
@@ -239,3 +239,5 @@
 	</form>
 </template>
 <style src="./style.css"></style>
+../../../../.trash/defaults ../../../../.trash/auth/remoteApi
+../../../../.trash/auth/typing

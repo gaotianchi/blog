@@ -1,36 +1,36 @@
 <script setup lang="ts">
-	import { confirm } from "../localApi";
-	import defaults from "../defaults";
+	import { confirmProp } from "@/api/local";
+	import { defaultConfirm } from "@/defaults";
 	function submitDecision(decision: boolean): void {
 		if (decision) {
-			confirm.callback();
+			confirmProp.callback();
 		}
-		Object.assign(confirm, { ...defaults.confirm });
+		Object.assign(confirmProp, { ...defaultConfirm });
 	}
 </script>
 <template>
 	<Teleport to="body">
 		<Transition>
-			<div class="parent-N1J4Cd-iJg" v-if="confirm.body.length > 0">
+			<div class="parent-N1J4Cd-iJg" v-if="confirmProp.body.length > 0">
 				<div class="parent-V1UVAObiyl">
 					<div class="parent-NyoVCdZoJg">
-						{{ confirm.header ?? "Message" }}
+						{{ confirmProp.header ?? "Message" }}
 					</div>
-					<div class="parent-E1JrCd-sye">{{ confirm.body }}</div>
+					<div class="parent-E1JrCd-sye">{{ confirmProp.body }}</div>
 					<div class="parent-VJVBCOZokg">
 						<button
 							type="button"
 							class="parent-VkKBAOWsJg child-N1SU0_-jyg"
 							@click="submitDecision(false)"
 						>
-							{{ confirm.noMessage ?? "No" }}
+							{{ confirmProp.noMessage ?? "No" }}
 						</button>
 						<button
 							type="button"
 							class="parent-N1yLCdbike child-N1SU0_-jyg"
 							@click="submitDecision(true)"
 						>
-							{{ confirm.yesMessage ?? "Yes" }}
+							{{ confirmProp.yesMessage ?? "Yes" }}
 						</button>
 					</div>
 				</div>
@@ -100,3 +100,4 @@
 		transform: scale(1.1);
 	}
 </style>
+../../defaults
