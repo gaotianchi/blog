@@ -189,5 +189,3 @@
 	</form>
 </template>
 <style src="./style.css"></style>
-./localApi ../../../../.trash/defaults ../../../../.trash/auth/localApi
-../../../../.trash/auth/remoteApi ../../../../.trash/auth/typing

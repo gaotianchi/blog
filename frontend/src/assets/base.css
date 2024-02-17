@@ -93,3 +93,11 @@ body {
   width: var(--icon-size-bigest);
   height: var(--icon-size-bigest);
 }
+
+.black {
+  filter: brightness(0);
+}
+
+.white {
+  filter: brightness(100);
+}

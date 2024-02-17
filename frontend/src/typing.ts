@@ -8,6 +8,19 @@ export type Series = {
 	cover: string;
 	authorId: number;
 };
+export type SerializedArticle = {
+	id: number;
+	title: string;
+	body: string;
+	slug: string;
+	createdAt: string;
+	updatedAt: string;
+	publishedAt: string;
+	isPublished: boolean;
+	authorId: number;
+	tags: string[];
+	seriesId: number;
+}
 export type Article = {
 	id: number;
 	title: string;

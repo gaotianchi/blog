@@ -1,16 +1,13 @@
 <script setup lang="ts">
 	import { reactive, ref, type Ref } from "vue";
 	import Header from "@/components/Header.vue";
-	const model = {
-		id: "1",
-	};
-	const hell = reactive(model);
-	const worl = reactive(model);
+	import icons from "@/components/icons";
+	import { dateFormatter } from "@/utlis";
+	import moment from "moment";
 </script>
 
 <template>
 	<Header />
-	<input type="text" name="model" id="model" v-model="hell.id" />
-	{{ worl }}
+	{{ moment(new Date()).format('YYYY-MM-DDTHH:mm:ssZZ') }}
 </template>
 <style scoped></style>

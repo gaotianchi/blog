@@ -1,5 +1,6 @@
 import Ajv, { type JSONSchemaType } from "ajv";
 import moment from "moment";
+import type { Article, SerializedArticle } from "@/typing";
 
 const ajv = new Ajv();
 export function getLocalDatetime(dateString: string): Date {
@@ -62,4 +63,23 @@ function arraysHaveSameElements(arr1: any[], arr2: any[]) {
 		arr1.every((item) => arr2.includes(item)) &&
 		arr2.every((item) => arr1.includes(item))
 	);
+}
+function serializeDate(d: Date): string {
+	return moment(d).format("YYYY-MM-DDTHH:mm:ssZZ");
+}
+export function serializeArticle(a: Article): string {
+	const serializedArticle: SerializedArticle = {
+		id: a.id,
+		title: a.title,
+		body: a.body,
+		slug: a.slug,
+		createdAt: serializeDate(a.createdAt),
+		updatedAt: serializeDate(a.updatedAt),
+		publishedAt: serializeDate(a.publishedAt),
+		isPublished: a.isPublished,
+		authorId: a.authorId,
+		seriesId: a.seriesId,
+		tags: a.tags,
+	};
+	return JSON.stringify(serializedArticle);
 }
