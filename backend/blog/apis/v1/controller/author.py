@@ -74,7 +74,7 @@ def update_article(id: int):
     data_to_update["slug"] = data["slug"]
     data_to_update["is_published"] = data["isPublished"]
     data_to_update["published_at"] = datetime.strptime(
-        data["publishedAt"], "%Y-%m-%dT%H:%M:%S.%fZ"
+        data["publishedAt"], "%Y-%m-%dT%H:%M:%S%z"
     )
     if data["seriesId"]:
         series = Series.query.get(data["seriesId"])

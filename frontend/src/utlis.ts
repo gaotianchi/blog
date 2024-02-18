@@ -1,11 +1,10 @@
 import Ajv, { type JSONSchemaType } from "ajv";
-import moment from "moment";
+import moment from "moment-timezone";
 import type { Article, SerializedArticle } from "@/typing";
 
 const ajv = new Ajv();
 export function getLocalDatetime(dateString: string): Date {
-	const timezone = moment.tz.guess();
-	const localizedMoment = moment.tz(dateString, timezone);
+	const localizedMoment = moment.utc(dateString).local();
 	return localizedMoment.toDate();
 }
 export function dateFormatter(date: Date, format?: string): string {
@@ -65,9 +64,10 @@ function arraysHaveSameElements(arr1: any[], arr2: any[]) {
 	);
 }
 function serializeDate(d: Date): string {
-	return moment(d).format("YYYY-MM-DDTHH:mm:ssZZ");
+	const utcMoment = moment.utc(d);
+	return utcMoment.format("YYYY-MM-DDTHH:mm:ssZZ");
 }
-export function serializeArticle(a: Article): string {
+export function serializeArticle(a: Article): SerializedArticle {
 	const serializedArticle: SerializedArticle = {
 		id: a.id,
 		title: a.title,
@@ -81,5 +81,21 @@ export function serializeArticle(a: Article): string {
 		seriesId: a.seriesId,
 		tags: a.tags,
 	};
-	return JSON.stringify(serializedArticle);
+	return serializedArticle;
+}
+export function deserizalizeArticle(sa: SerializedArticle): Article {
+	const a: Article = {
+		id: sa.id,
+		title: sa.title,
+		body: sa.body,
+		slug: sa.slug,
+		createdAt: getLocalDatetime(sa.createdAt),
+		updatedAt: getLocalDatetime(sa.updatedAt),
+		publishedAt: getLocalDatetime(sa.publishedAt),
+		isPublished: sa.isPublished,
+		tags: sa.tags,
+		seriesId: sa.seriesId,
+		authorId: sa.authorId,
+	};
+	return a;
 }

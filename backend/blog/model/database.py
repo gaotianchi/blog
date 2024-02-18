@@ -188,9 +188,9 @@ class Article(db.Model):
             body=self.body,
             slug=self.slug,
             isPublished=self.is_published,
-            publishedAt=serialize_datetime(self.published_at.astimezone(timezone.utc)),
-            createdAt=serialize_datetime(self.created_at.astimezone(timezone.utc)),
-            updatedAt=serialize_datetime(self.updated_at.astimezone(timezone.utc)),
+            publishedAt=serialize_datetime(self.published_at),
+            createdAt=serialize_datetime(self.created_at),
+            updatedAt=serialize_datetime(self.updated_at),
             seriesId=self.series_id or 0,
             authorId=self.author_id,
             tags=[tag.name for tag in self.tags],  # type: ignore

@@ -1,19 +1,28 @@
 <script setup lang="ts">
 	import "md-editor-v3/lib/style.css";
 	import { MdEditor } from "md-editor-v3";
-	import { reactive, ref, watch } from "vue";
+	import { onMounted, reactive, ref, watch } from "vue";
 	import type { Article } from "@/typing";
 	import { isShallowEqual, serializeArticle } from "@/utlis";
 	import { propConfirm, propMessage, localArticle } from "@/api/local";
-	import { remoteArticle } from "@/api/remote";
+	import {
+		remoteArticle,
+		getArticleItem,
+		patchArticleItem,
+	} from "@/api/remote";
 	import icons from "@/components/icons";
+	import Header from "../Header.vue";
 	import Message from "../Message.vue";
 	import Confirm from "../Confirm.vue";
 	import SettingBar from "./SettingBar.vue";
+	const props = defineProps<{
+		articleId: number | string;
+	}>();
 	const elementsStatus = reactive({
 		settingBtn: false,
 		downBtn: false,
 		sync: true,
+		update: false,
 	});
 	watch(localArticle, () => {
 		if (isShallowEqual(localArticle, remoteArticle)) {
@@ -22,26 +31,56 @@
 			elementsStatus.sync = false;
 		}
 	});
-	function decideToPublishArticle(): void {
-		if (elementsStatus.sync) {
-			propMessage("Changes saved.");
-			return;
+	onMounted(() => {
+		initArticleData();
+	});
+	async function initArticleData(): Promise<void> {
+		try {
+			const articleData: Article = await getArticleItem(props.articleId);
+			Object.assign(localArticle, articleData);
+			Object.assign(remoteArticle, articleData);
+		} catch (error) {
+			console.error(error);
 		}
+	}
+	function decideToPublishArticle(): void {
 		propConfirm({
 			header: "Publish Article",
 			body: `Are you sure you want to pulish article 《${localArticle.title}》`,
 			yesMessage: "Publish",
 			noMessage: "Cancel",
-			callback: patchArticleItem,
+			callback: publishArticleItem,
 		});
 	}
-	async function patchArticleItem(): Promise<void> {
-		console.log("Update article");
+	async function updateArticleItem(): Promise<void> {
+		propMessage("Updating article...");
+		if (elementsStatus.sync) {
+			propMessage("Changes saved.");
+			return;
+		}
+		elementsStatus.update = true;
+		try {
+			const response = await patchArticleItem(
+				props.articleId,
+				serializeArticle(localArticle)
+			);
+			Object.assign(remoteArticle, response);
+			Object.assign(localArticle, response);
+			propMessage("Changes saved.");
+			elementsStatus.update = false;
+		} catch (error) {
+			console.error(error);
+		}
+	}
+	async function publishArticleItem(): Promise<void> {
+		localArticle.isPublished = true;
+		updateArticleItem();
 	}
 </script>
 <template>
 	<Message />
 	<Confirm />
+	<Header />
 	<form>
 		<div class="parent-NJU0QvKikx">
 			<input
@@ -173,7 +212,11 @@
 				<button
 					type="button"
 					class="parent-VJ2zVvYsyg"
-					@click="decideToPublishArticle"
+					@click="
+						localArticle.isPublished
+							? updateArticleItem()
+							: decideToPublishArticle()
+					"
 				>
 					<component
 						v-if="!remoteArticle.isPublished"
@@ -184,6 +227,7 @@
 						v-else
 						:is="icons.update"
 						class="parent-E1rPWqYsye icon white"
+						:class="{ active: elementsStatus.update }"
 					/>
 					<span
 						class="parent-4ygQ4PKikg"
@@ -348,5 +392,8 @@
 	}
 	.parent-4k6nVctskl {
 		min-height: calc(100vh -110px);
+	}
+	.parent-E1rPWqYsye.active {
+		animation: rotateAnimation 2s linear infinite;
 	}
 </style>

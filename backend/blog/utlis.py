@@ -16,7 +16,7 @@ def deserialize_datetime(date_string: str) -> datetime:
 
 
 def serialize_datetime(date_object: datetime) -> str:
-    return date_object.strftime("%Y-%m-%dT%H:%M:%S%z")
+    return date_object.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
 
 
 def validator(data: Any, schema: dict[str, Any]) -> str | None:

@@ -5,11 +5,13 @@ import type {
 	Series,
 	RegisterResponseData,
 	LoginResponseData,
+	SerializedArticle,
 } from "@/typing";
 import { rootUrl } from "@/confit";
 import { defaultArticle, defaultSeries } from "@/defaults";
 import type { APIError } from "@/api/errors";
 import { getAccessToken } from "@/api/local";
+import { deserizalizeArticle } from "@/utlis";
 
 export const remoteArticle: Article = reactive({ ...defaultArticle });
 export const remoteSeries: Series = reactive({ ...defaultSeries });
@@ -138,6 +140,41 @@ export async function postSeriesItem(seriesData: Series): Promise<Series> {
 	if (response.status === 201) {
 		const seriesData = await response.json();
 		return seriesData;
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error;
+	}
+}
+export async function getArticleItem(
+	articleId: number | string
+): Promise<Article> {
+	const url = rootUrl + "/author/article/" + articleId;
+	const response = await fetch(url);
+	if (response.status === 200) {
+		const articleData: SerializedArticle = await response.json();
+		return deserizalizeArticle(articleData);
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error;
+	}
+}
+export async function patchArticleItem(
+	articleId: number | string,
+	serializedarticle: SerializedArticle
+): Promise<Article> {
+	const url = rootUrl + "/author/article/" + articleId;
+	const tokenData = getAccessToken();
+	const response = await fetch(url, {
+		method: "PATCH",
+		headers: {
+			Authorization: tokenData?.tokenType + " " + tokenData?.accessToken,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(serializedarticle),
+	});
+	if (response.status === 200) {
+		const sa: SerializedArticle = await response.json();
+		return deserizalizeArticle(sa);
 	} else {
 		const errorResponse = await response.json();
 		throw errorResponse.error;

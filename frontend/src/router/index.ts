@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Hello from "@/views/Hello.vue";
 import World from "@/views/World.vue";
 import { validateUser } from "@/api/remote";
+import EditorVue from "@/components/articleEditor/Editor.vue";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,6 +19,13 @@ const router = createRouter({
 			name: "world",
 			component: World,
 			meta: { loginRequired: false },
+		},
+		{
+			path: "/edit/article/:articleId",
+			name: "EditArticle",
+			component: EditorVue,
+			props: true,
+			meta: { loginRequired: true },
 		},
 		{
 			path: "/auth",
