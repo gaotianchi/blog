@@ -12,29 +12,6 @@
 	import Datetime from "./Datetime.vue";
 	import Permalink from "./Permalink.vue";
 	import Series from "./Series.vue";
-	onMounted(() => {
-		initSeriesItems();
-	});
-	async function initSeriesItems(): Promise<void> {
-		if (remoteArticle.seriesId === 0) {
-			console.log("No series found.");
-			return;
-		}
-		if (remoteSeries.id === localSeries.id) {
-			console.log("Series has been load.");
-			return;
-		}
-		try {
-			const seriesData = await getRemoteSeriesItem(
-				remoteArticle.seriesId
-			);
-			Object.assign(localSeries, seriesData);
-			Object.assign(remoteSeries, seriesData);
-			return;
-		} catch (error) {
-			console.error(error);
-		}
-	}
 </script>
 <template>
 	<div class="parent-NJJFyG_jJx">

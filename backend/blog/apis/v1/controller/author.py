@@ -100,7 +100,7 @@ def get_article_data(id: int):
     return jsonify(response_data), 200
 
 
-@author.route("/series/<int:id>")
+@author.route("/series/<int:id>", methods=["GET"])
 def get_series_data(id: int):
     current_series = cast(Series, Series.query.get(id))
     if not current_series:

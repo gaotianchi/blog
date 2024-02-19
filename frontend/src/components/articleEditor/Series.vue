@@ -2,7 +2,8 @@
 	import { onMounted, reactive, ref, type Ref } from "vue";
 	import type { PreviewCover, Series } from "@/typing";
 	import { defaultPreviewCover, defaultSeries } from "@/defaults";
-	import { dateFormatter } from "@/utlis";
+	import { getRenamedFile, getPreviewUrl } from "@/utlis";
+	import { rootUrl } from "@/confit";
 	import {
 		localArticle,
 		localSeries,
@@ -47,28 +48,7 @@
 	function triggerFileInput(): void {
 		uploadImageArea?.value?.click();
 	}
-	function getRenamedFile(originalFile: File): File {
-		const nameArr = originalFile.name.split(".");
-		const newFilename =
-			"image-" +
-			dateFormatter(new Date(), "YYYYMMDDhhmmss") +
-			"." +
-			nameArr[nameArr.length - 1];
-		const renameFile = new File([originalFile], newFilename, {
-			type: originalFile.type,
-		});
-		return renameFile;
-	}
-	function getPreviewUrl(file: File): Promise<string> {
-		return new Promise((resolve) => {
-			const reader = new FileReader();
-			reader.onload = () => {
-				const url = reader.result as string;
-				resolve(url);
-			};
-			reader.readAsDataURL(file);
-		});
-	}
+
 	async function handleFileUpload(e: Event): Promise<void> {
 		const selectedFile = (e.target as HTMLInputElement).files?.[0];
 		if (selectedFile) {
@@ -177,7 +157,11 @@
 				@click="selectSeries(s)"
 			>
 				<div class="parent-4kGYZF-qJl child-4yb5kK-9yx">
-					<img :src="s.cover" v-if="s.cover" />
+					<img
+						class="child-V1EH5nisJl"
+						:src="rootUrl + '/media/uploads/' + s.cover"
+						v-if="s.cover"
+					/>
 				</div>
 				<div class="parent-41Bi-YbqJe child-4yb5kK-9yx">
 					{{ s.name }}
@@ -272,7 +256,10 @@
 	.child-EJRV0dWq1e:hover {
 		background-color: aliceblue;
 	}
-
+	.child-V1EH5nisJl {
+		width: 50px;
+		height: 50px;
+	}
 	.parent-4kGYZF-qJl {
 		height: 50px;
 		min-width: 50px;

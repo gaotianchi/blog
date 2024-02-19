@@ -3,7 +3,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import Hello from "@/views/Hello.vue";
 import World from "@/views/World.vue";
 import { validateUser } from "@/api/remote";
-import EditorVue from "@/components/articleEditor/Editor.vue";
+import EditorHeader from "@/components/articleEditor/EditorHeader.vue";
+import EditorVue from "@/views/Editor.vue";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),

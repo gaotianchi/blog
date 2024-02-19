@@ -31,7 +31,7 @@ export async function getAllRemoteTags(): Promise<Tag[]> {
 export async function getRemoteSeriesItem(
 	seriesId: number | string
 ): Promise<Series> {
-	const url = rootUrl + "/author/serise/" + seriesId;
+	const url = rootUrl + "/author/series/" + seriesId;
 	const response = await fetch(url);
 	if (response.status === 200) {
 		const seriesData = await response.json();
@@ -104,7 +104,7 @@ export async function validateUser(): Promise<boolean> {
 		return false;
 	}
 }
-export async function postMediaItem(file: File): Promise<any> {
+export async function postMediaItem(file: File): Promise<{ url: string }> {
 	const url = "http://localhost:5000/v1/media/uploads";
 	const formData = new FormData();
 	formData.append("file", file);
@@ -119,8 +119,6 @@ export async function postMediaItem(file: File): Promise<any> {
 	if (response.status === 201) {
 		const data = await response.json();
 		return data;
-	} else if (response.status === 200) {
-		return;
 	} else {
 		const errorResponse = await response.json();
 		throw errorResponse.error;

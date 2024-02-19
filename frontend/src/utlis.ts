@@ -99,3 +99,29 @@ export function deserizalizeArticle(sa: SerializedArticle): Article {
 	};
 	return a;
 }
+export function getRenamedFile(
+	originalFile: File,
+	profix: string = "image"
+): File {
+	const nameArr = originalFile.name.split(".");
+	const newFilename =
+		profix +
+		"-" +
+		dateFormatter(new Date(), "YYYYMMDDhhmmss") +
+		"." +
+		nameArr[nameArr.length - 1];
+	const renameFile = new File([originalFile], newFilename, {
+		type: originalFile.type,
+	});
+	return renameFile;
+}
+export function getPreviewUrl(file: File): Promise<string> {
+	return new Promise((resolve) => {
+		const reader = new FileReader();
+		reader.onload = () => {
+			const url = reader.result as string;
+			resolve(url);
+		};
+		reader.readAsDataURL(file);
+	});
+}

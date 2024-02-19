@@ -1,48 +1,32 @@
 <script setup lang="ts">
-	import "md-editor-v3/lib/style.css";
-	import { MdEditor } from "md-editor-v3";
-	import { onMounted, reactive, ref, watch } from "vue";
-	import type { Article } from "@/typing";
+	import { inject, reactive, watch } from "vue";
 	import { isShallowEqual, serializeArticle } from "@/utlis";
 	import { propConfirm, propMessage, localArticle } from "@/api/local";
-	import {
-		remoteArticle,
-		getArticleItem,
-		patchArticleItem,
-	} from "@/api/remote";
+	import { remoteArticle, patchArticleItem } from "@/api/remote";
 	import icons from "@/components/icons";
-	import Header from "../Header.vue";
 	import Message from "../Message.vue";
 	import Confirm from "../Confirm.vue";
 	import SettingBar from "./SettingBar.vue";
-	const props = defineProps<{
-		articleId: number | string;
-	}>();
+	const articleId = inject("articleId");
 	const elementsStatus = reactive({
 		settingBtn: false,
 		downBtn: false,
 		sync: true,
 		update: false,
 	});
-	watch(localArticle, () => {
-		if (isShallowEqual(localArticle, remoteArticle)) {
-			elementsStatus.sync = true;
-		} else {
-			elementsStatus.sync = false;
+	watch(
+		localArticle,
+		() => {
+			if (isShallowEqual(localArticle, remoteArticle)) {
+				elementsStatus.sync = true;
+			} else {
+				elementsStatus.sync = false;
+			}
+		},
+		{
+			immediate: true,
 		}
-	});
-	onMounted(() => {
-		initArticleData();
-	});
-	async function initArticleData(): Promise<void> {
-		try {
-			const articleData: Article = await getArticleItem(props.articleId);
-			Object.assign(localArticle, articleData);
-			Object.assign(remoteArticle, articleData);
-		} catch (error) {
-			console.error(error);
-		}
-	}
+	);
 	function decideToPublishArticle(): void {
 		propConfirm({
 			header: "Publish Article",
@@ -61,7 +45,7 @@
 		elementsStatus.update = true;
 		try {
 			const response = await patchArticleItem(
-				props.articleId,
+				articleId as string,
 				serializeArticle(localArticle)
 			);
 			Object.assign(remoteArticle, response);
@@ -72,15 +56,20 @@
 			console.error(error);
 		}
 	}
-	async function publishArticleItem(): Promise<void> {
+	function publishArticleItem(): void {
 		localArticle.isPublished = true;
+		elementsStatus.sync = false;
+		updateArticleItem();
+	}
+	function convertToDraft(): void {
+		localArticle.isPublished = false;
+		elementsStatus.sync = false;
 		updateArticleItem();
 	}
 </script>
 <template>
 	<Message />
 	<Confirm />
-	<Header />
 	<form>
 		<div class="parent-NJU0QvKikx">
 			<input
@@ -166,6 +155,7 @@
 								type="button"
 								class="child-E1C_VtYskl"
 								v-if="remoteArticle.isPublished"
+								@click="convertToDraft"
 							>
 								<component
 									:is="icons.draft"
@@ -179,6 +169,7 @@
 								type="button"
 								class="child-E1C_VtYskl"
 								v-if="remoteArticle.isPublished"
+								@click="updateArticleItem"
 							>
 								<component
 									:is="icons.update"
@@ -190,6 +181,7 @@
 								type="button"
 								class="child-E1C_VtYskl"
 								v-if="!remoteArticle.isPublished"
+								@click="decideToPublishArticle"
 							>
 								<component
 									:is="icons.publish"
@@ -238,162 +230,6 @@
 				</button>
 			</div>
 		</div>
-		<MdEditor v-model="localArticle.body" class="parent-4k6nVctskl" />
 	</form>
 </template>
-<style scoped>
-	@keyframes rotateAnimation {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(-360deg);
-		}
-	}
-	button {
-		cursor: pointer;
-		height: 45px;
-		border: none;
-	}
-	#article-title {
-		width: 100%;
-		height: 45px;
-		line-height: 20px;
-		font-size: 20px;
-		font-weight: bold;
-		padding: 24px 5px 0 5px;
-		border: none;
-		border-bottom: var(--second-color) solid 1px;
-		flex-grow: 1;
-	}
-	.parent-NJU0QvKikx {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 5px;
-	}
-	.parent-4ypeVvYsyl {
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-	}
-	.parent-EJWZ4DKoJe {
-		width: 40px;
-		border-radius: 5px;
-		margin-left: 10px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-	.parent-VJIb4Ptokl {
-		width: fit-content;
-		height: fit-content;
-		display: flex;
-		margin-left: 10px;
-	}
-	.parent-NyNzVwYjkx {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 5px 0 0 5px;
-		width: 100px;
-		border-right: #80808040 solid 1px;
-	}
-	.parent-4J6jDDFjyl {
-		font-size: larger;
-		margin-left: 5px;
-	}
-	.parent-VJ2zVvYsyg {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100px;
-		background-color: var(--second-color);
-		border-radius: 5px;
-		margin: 0 10px;
-	}
-	.parent-4yuzEwtsJx {
-		border-radius: 0 5px 5px 0;
-	}
-	.parent-E1mV4vKj1g {
-		padding: 5px;
-		transform: rotate(0deg);
-		transition: transform 0.3s ease;
-	}
-	.parent-E1mV4vKj1g.active {
-		transform: rotate(180deg);
-	}
-	.parent-4ygQ4PKikg {
-		color: white;
-		font-weight: bold;
-		font-size: larger;
-		margin-left: 5px;
-	}
-	.parent-Ey5UgdKiyx {
-		position: relative;
-		width: 45px;
-		height: 45px;
-	}
-	.parent-V1RmedFs1x {
-		position: absolute;
-		z-index: 999;
-		width: 320px;
-		height: calc(100vh - 120px);
-		padding: 10px;
-		top: 50px;
-		right: -148px;
-		box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
-		background: rgb(255, 255, 255);
-		overflow-y: auto;
-		border-radius: 5px;
-	}
-	.parent-Nk360OYjke {
-		margin-bottom: 10px;
-		font-weight: 500;
-		padding-left: 6px;
-		color: grey;
-	}
-	.parent-Ny-WMwFjJx:hover {
-		animation: rotateAnimation 1s linear;
-	}
-	.parent-NyxhQYFsyg {
-		width: 36px;
-		height: 45px;
-		position: relative;
-	}
-	.parent-VkiMVtYsJe {
-		position: absolute;
-		width: 245px;
-		height: fit-content;
-		display: flex;
-		flex-direction: column;
-		right: -110px;
-		top: 50px;
-		box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
-		background: rgb(255, 255, 255);
-		padding: 5px 0;
-		z-index: 999;
-	}
-	.child-E1C_VtYskl {
-		display: flex;
-		align-items: center;
-		height: 40px;
-		cursor: pointer;
-		padding: 5px 0 5px 25px;
-		background-color: transparent;
-	}
-	.child-E1C_VtYskl:hover {
-		background-color: #f0f0f0;
-	}
-	.child-EkIWUFYsJg {
-		margin-left: 10px;
-		font-size: 17px;
-		line-height: 17px;
-	}
-	.parent-4k6nVctskl {
-		min-height: calc(100vh -110px);
-	}
-	.parent-E1rPWqYsye.active {
-		animation: rotateAnimation 2s linear infinite;
-	}
-</style>
+<style src="@/assets/editor-style.css"></style>
