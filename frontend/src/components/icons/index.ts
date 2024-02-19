@@ -15,6 +15,11 @@ import UploadImageVue from "./UploadImage.vue";
 import CancelVue from "./Cancel.vue";
 import DefaultImageVue from "./DefaultImage.vue";
 import LogoVue from "./Logo.vue";
+import AddVue from "./Add.vue";
+import ArticleVue from "./Article.vue";
+import SeriesVue from "./Series.vue";
+import DeleteVue from "./Delete.vue";
+import AuthorVue from "./Author.vue";
 
 export default {
 	fail: FailVue,
@@ -34,4 +39,9 @@ export default {
 	cancel: CancelVue,
 	defaultImage: DefaultImageVue,
 	logo: LogoVue,
+	add: AddVue,
+	article: ArticleVue,
+	series: SeriesVue,
+	delete: DeleteVue,
+	author: AuthorVue,
 };

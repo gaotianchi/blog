@@ -51,4 +51,3 @@
 		outline-width: 3px;
 	}
 </style>
-../../../../.trash/auth/typing

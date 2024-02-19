@@ -3,8 +3,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import Hello from "@/views/Hello.vue";
 import World from "@/views/World.vue";
 import { validateUser } from "@/api/remote";
-import EditorHeader from "@/components/articleEditor/EditorHeader.vue";
 import EditorVue from "@/views/Editor.vue";
+import AdminPanelVue from "@/views/AdminPanel.vue";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +27,20 @@ const router = createRouter({
 			component: EditorVue,
 			props: true,
 			meta: { loginRequired: true },
+		},
+		{
+			path: "/admin-pancel",
+			name: "AdminPancel",
+			component: AdminPanelVue,
+			meta: { loginRequired: true },
+			children: [
+				{
+					path: "articles",
+					name: "ArticlesPanel",
+					component: () =>
+						import("@/components/adminPanel/ArticlesPanel.vue"),
+				},
+			],
 		},
 		{
 			path: "/auth",

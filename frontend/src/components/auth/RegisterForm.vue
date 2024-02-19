@@ -238,6 +238,4 @@
 		</div>
 	</form>
 </template>
-<style src="./style.css"></style>
-../../../../.trash/defaults ../../../../.trash/auth/remoteApi
-../../../../.trash/auth/typing
+

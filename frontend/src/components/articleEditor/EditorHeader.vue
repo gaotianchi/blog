@@ -232,4 +232,3 @@
 		</div>
 	</form>
 </template>
-<style src="@/assets/editor-style.css"></style>

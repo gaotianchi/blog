@@ -30,4 +30,3 @@
 		:toolbarsExclude="['github', 'save']"
 	/>
 </template>
-<style src="@/assets/editor-style.css"></style>

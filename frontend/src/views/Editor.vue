@@ -45,3 +45,4 @@
 	<EditorHeader />
 	<EditorBody />
 </template>
+<style scoped src="@/assets/editor.css"></style>

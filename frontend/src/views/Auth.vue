@@ -112,3 +112,4 @@
 		margin-top: 100px;
 	}
 </style>
+<style src="@/assets/auth-form.css"></style>
