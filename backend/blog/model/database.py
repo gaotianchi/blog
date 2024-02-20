@@ -26,7 +26,7 @@ def filter_string(input_string: str):
 
 
 def get_auto_slug(prefix: str = "Blog_article_") -> str:
-    return prefix + datetime.now().strftime("%Y%m%d%H%m")
+    return prefix + datetime.now().strftime("%Y%m%d%H%M%S")
 
 
 class User(db.Model):
@@ -40,6 +40,8 @@ class User(db.Model):
     token_validity_period: Mapped[int] = mapped_column(Integer, default=604800)
     articles = relationship("Article", back_populates="author")
     series = relationship("Series", back_populates="author")
+    tags = relationship("Tag", back_populates="author")
+    medias = relationship("Media", back_populates="author")
 
     @classmethod
     def create(cls, username: str, password: str) -> "User":
@@ -76,20 +78,36 @@ class User(db.Model):
         )
 
 
+class Media(db.Model):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    filename: Mapped[str] = mapped_column(String(255), unique=True)
+    author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
+    author: Mapped["User"] = relationship("User", back_populates="medias")
+
+    @classmethod
+    def create(cls, author: User, filename: str) -> "Media":  # type:ignore
+        new_media = Media(author=author, filename=filename)  # type:ignore
+        db.session.add(new_media)
+        db.session.commit()
+        return Media.query.get(new_media.id)  # type:ignore
+
+
 class Tag(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255), unique=True)
     articles: Mapped[Set["Article"]] = relationship(
         secondary=article_tag_association, back_populates="tags"
     )
+    author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
+    author: Mapped["User"] = relationship("User", back_populates="tags")
 
     @classmethod
-    def create(cls, *names: str) -> list["Tag"]:
+    def create(cls, author: User, *names: str) -> list["Tag"]:
         tags = set(names)
         for tag in tags:
             if Tag.query.filter_by(name=tag).first():
                 continue
-            new_tag = Tag(name=tag)  # type: ignore
+            new_tag = Tag(author=author, name=tag)  # type: ignore
             db.session.add(new_tag)
         db.session.commit()
         return [Tag.query.filter_by(name=name).first() for name in tags]  # type: ignore
@@ -135,7 +153,7 @@ class Series(db.Model):
 class Article(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(255), default="")
-    slug: Mapped[str] = mapped_column(String(255), default=get_auto_slug(), unique=True)
+    slug: Mapped[str] = mapped_column(String(255), unique=True)
     body: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
@@ -153,7 +171,8 @@ class Article(db.Model):
 
     @classmethod
     def create(cls, author: User) -> "Article":
-        new_article = Article(author=author)  # type: ignore
+        slug = get_auto_slug()
+        new_article = Article(author=author, slug=slug)  # type: ignore
         db.session.add(new_article)
         db.session.commit()
         return Article.query.get(new_article.id)  # type: ignore

@@ -21,8 +21,6 @@
 	import Radio from "@/components/Radio.vue";
 	import InputA from "@/components/InputA.vue";
 	import icons from "@/components/icons";
-	import Message from "@/components/Message.vue";
-	import Confirm from "@/components/Confirm.vue";
 	const previewCover: PreviewCover = reactive({ ...defaultPreviewCover });
 	const uploadImageArea: Ref<HTMLInputElement | null> = ref(null);
 	const newSeries: Series = reactive({ ...defaultSeries });
@@ -101,8 +99,6 @@
 	}
 </script>
 <template>
-	<Message />
-	<Confirm />
 	<div class="parent-4JxPgYb9Jl">
 		<div class="parent-EJ5IqDbqkl child-N1IGDObcye">
 			{{

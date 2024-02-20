@@ -4,8 +4,6 @@
 	import { propConfirm, propMessage, localArticle } from "@/api/local";
 	import { remoteArticle, patchArticleItem } from "@/api/remote";
 	import icons from "@/components/icons";
-	import Message from "../Message.vue";
-	import Confirm from "../Confirm.vue";
 	import SettingBar from "./SettingBar.vue";
 	const articleId = inject("articleId");
 	const elementsStatus = reactive({
@@ -68,8 +66,6 @@
 	}
 </script>
 <template>
-	<Message />
-	<Confirm />
 	<form>
 		<div class="parent-NJU0QvKikx">
 			<input

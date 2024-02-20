@@ -20,7 +20,7 @@ export type SerializedArticle = {
 	authorId: number;
 	tags: string[];
 	seriesId: number;
-}
+};
 export type Article = {
 	id: number;
 	title: string;
@@ -104,4 +104,12 @@ export type APIError = {
 export type SettingItem = {
 	open: boolean;
 	mode?: string;
-}
+};
+export type ArticleCard = {
+	id: number;
+	title: string;
+	createdAt: string;
+	isPublished: boolean;
+	tags: string[];
+	seriesId: number;
+};

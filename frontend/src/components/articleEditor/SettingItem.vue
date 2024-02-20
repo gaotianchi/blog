@@ -1,6 +1,5 @@
 <script setup lang="ts">
-	import { reactive, ref, type Ref } from "vue";
-	import type { SettingItem } from "@/typing";
+	import { ref } from "vue";
 	import icons from "@/components/icons";
 	const props = defineProps<{
 		initStatus: boolean;

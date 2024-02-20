@@ -1,12 +1,34 @@
 <script setup lang="ts">
-	import icons from "@/components/icons";
 	import { useRouter } from "vue-router";
+	import { postArticleItem } from "@/api/remote";
+	import icons from "@/components/icons";
+	import { propMessage } from "@/api/local";
 	const router = useRouter();
+	async function createArticleItem(): Promise<void> {
+		propMessage("Creating article ...");
+		try {
+			const response = await postArticleItem();
+			propMessage("Successfully create new article.");
+			router.push({
+				name: "EditArticle",
+				params: {
+					articleId: response.id,
+				},
+			});
+		} catch (error) {
+			console.error(error);
+			propMessage("Please try again.");
+		}
+	}
 </script>
 <template>
 	<div class="parent-E14b-ehs1g">
 		<div class="parent-4kLzWxnokg">
-			<button type="button" class="parent-Nk17rx3sJe">
+			<button
+				type="button"
+				class="parent-Nk17rx3sJe"
+				@click="createArticleItem"
+			>
 				<component
 					:is="icons.add"
 					class="icon big parent-NkmPfl2iyx white"
@@ -15,7 +37,10 @@
 			</button>
 		</div>
 		<div class="parent-NyqMZg3jkl">
-			<div class="child-E17jXe3okl" @click="router.push({name: 'ArticlesPanel'})">
+			<div
+				class="child-E17jXe3okl"
+				@click="router.push({ name: 'ArticlesPanel' })"
+			>
 				<component :is="icons.article" class="icon child-41G37ensyx" />
 				<span class="child-VkvsQehjyg">Article</span>
 			</div>

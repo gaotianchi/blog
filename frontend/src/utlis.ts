@@ -83,6 +83,7 @@ export function serializeArticle(a: Article): SerializedArticle {
 	};
 	return serializedArticle;
 }
+
 export function deserizalizeArticle(sa: SerializedArticle): Article {
 	const a: Article = {
 		id: sa.id,
@@ -107,7 +108,7 @@ export function getRenamedFile(
 	const newFilename =
 		profix +
 		"-" +
-		dateFormatter(new Date(), "YYYYMMDDhhmmss") +
+		dateFormatter(new Date(), "YYYYMMDDhhmmssSSSSSS") +
 		"." +
 		nameArr[nameArr.length - 1];
 	const renameFile = new File([originalFile], newFilename, {

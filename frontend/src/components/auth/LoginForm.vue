@@ -1,5 +1,6 @@
 <script setup lang="ts">
 	import { reactive, ref, watch, type Ref } from "vue";
+	import { useRouter } from "vue-router";
 	import type { AuthStatus, LoginStatus } from "@/typing";
 	import { defaultLoginStatus } from "@/defaults";
 	import { login } from "@/api/remote";
@@ -19,6 +20,7 @@
 	const loginStatus: LoginStatus = reactive({
 		...defaultLoginStatus,
 	});
+	const router = useRouter();
 	watch(status, () => {
 		if (status.value === "fail") {
 			setTimeout(() => {
@@ -69,6 +71,9 @@
 			loginStatus.username.status = "success";
 			loginStatus.password.status = "success";
 			status.value = "success";
+			router.push({
+				name: "ArticlesPanel",
+			});
 		} catch (error) {
 			status.value = "fail";
 			console.error(error);

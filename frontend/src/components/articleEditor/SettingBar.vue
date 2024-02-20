@@ -1,10 +1,4 @@
 <script setup lang="ts">
-	import { onMounted } from "vue";
-	import {
-		getRemoteSeriesItem,
-		remoteArticle,
-		remoteSeries,
-	} from "@/api/remote";
 	import { localArticle, localSeries, settingStatus } from "@/api/local";
 	import { dateFormatter, limString } from "@/utlis";
 	import SettingItem from "./SettingItem.vue";

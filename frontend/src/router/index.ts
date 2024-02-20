@@ -29,8 +29,8 @@ const router = createRouter({
 			meta: { loginRequired: true },
 		},
 		{
-			path: "/admin-pancel",
-			name: "AdminPancel",
+			path: "/admin-panel",
+			name: "AdminPanel",
 			component: AdminPanelVue,
 			meta: { loginRequired: true },
 			children: [

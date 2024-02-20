@@ -6,6 +6,7 @@ import type {
 	RegisterResponseData,
 	LoginResponseData,
 	SerializedArticle,
+	ArticleCard,
 } from "@/typing";
 import { rootUrl } from "@/confit";
 import { defaultArticle, defaultSeries } from "@/defaults";
@@ -15,10 +16,20 @@ import { deserizalizeArticle } from "@/utlis";
 
 export const remoteArticle: Article = reactive({ ...defaultArticle });
 export const remoteSeries: Series = reactive({ ...defaultSeries });
+export const allRemoteArticleCards: ArticleCard[] = reactive([]);
 export const allRemoteSeries: Series[] = reactive([]);
 export async function getAllRemoteTags(): Promise<Tag[]> {
 	const url = rootUrl + "/author/tags";
-	const response = await fetch(url);
+	const loginResponseData = getAccessToken();
+	const response = await fetch(url, {
+		method: "GET",
+		headers: {
+			Authorization:
+				loginResponseData?.tokenType +
+				" " +
+				loginResponseData?.accessToken,
+		},
+	});
 	if (response.status === 200) {
 		const tagsData = await response.json();
 		return tagsData as Tag[];
@@ -43,7 +54,16 @@ export async function getRemoteSeriesItem(
 }
 export async function getAllRemoteSeriesItem(): Promise<Series[]> {
 	const url = rootUrl + "/author/series";
-	const response = await fetch(url);
+	const loginResponseData = getAccessToken();
+	const response = await fetch(url, {
+		method: "GET",
+		headers: {
+			Authorization:
+				loginResponseData?.tokenType +
+				" " +
+				loginResponseData?.accessToken,
+		},
+	});
 	if (response.status === 200) {
 		const seriesData = await response.json();
 		return seriesData as Series[];
@@ -173,6 +193,40 @@ export async function patchArticleItem(
 	if (response.status === 200) {
 		const sa: SerializedArticle = await response.json();
 		return deserizalizeArticle(sa);
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error;
+	}
+}
+export async function postArticleItem(): Promise<Article> {
+	const url = rootUrl + "/author/articles";
+	const tokenData = getAccessToken();
+	const response = await fetch(url, {
+		method: "POST",
+		headers: {
+			Authorization: tokenData?.tokenType + " " + tokenData?.accessToken,
+		},
+	});
+	if (response.status === 201) {
+		const articleData = await response.json();
+		return articleData;
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error;
+	}
+}
+export async function getAllArticles(): Promise<ArticleCard[]> {
+	const url = rootUrl + "/author/articles";
+	const tokenData = getAccessToken();
+	const response = await fetch(url, {
+		method: "GET",
+		headers: {
+			Authorization: tokenData?.tokenType + " " + tokenData?.accessToken,
+		},
+	});
+	if (response.status === 200) {
+		const cardData = await response.json();
+		return cardData;
 	} else {
 		const errorResponse = await response.json();
 		throw errorResponse.error;

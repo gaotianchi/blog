@@ -23,7 +23,9 @@
 			const articleData: Article = await getArticleItem(props.articleId);
 			Object.assign(localArticle, articleData);
 			Object.assign(remoteArticle, articleData);
-			await initSeriesItems();
+			if (articleData.seriesId != 0) {
+				await initSeriesItems();
+			}
 		} catch (error) {
 			console.error(error);
 		}
@@ -45,4 +47,4 @@
 	<EditorHeader />
 	<EditorBody />
 </template>
-<style scoped src="@/assets/editor.css"></style>
+<style src="@/assets/editor.css"></style>

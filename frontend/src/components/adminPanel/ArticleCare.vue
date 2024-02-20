@@ -3,11 +3,15 @@
 </script>
 <template>
 	<div class="parent-NJQTAg2j1g">
-		<div class="parent-Vy7GxWhi1x"></div>
+		<div class="parent-Vy7GxWhi1x">
+			<slot name="cover"></slot>
+		</div>
 		<div class="parent-EJbXxWnjke">
 			<div class="parent-V1C7xb3syx">
 				<div class="parent-Ek3X-WnsJx">
-					Iriure nonummy vero sea facilisi feugiat takimata.
+					<slot name="title">
+						Iriure nonummy vero sea facilisi feugiat takimata.
+					</slot>
 				</div>
 				<div class="parent-4ke4Z-hjyl">
 					<div class="parent-4JePW-2ike">
@@ -51,11 +55,11 @@
 					<div class="parent-Vk5DLW2jJl">Tue May 12 2020</div>
 					<div class="parent-4J0P8-hsJl">
 						<div class="child-EyLCwWno1l">
-                            <span class="child-Ek0bDMhsJe">love</span>
-                        </div>
+							<span class="child-Ek0bDMhsJe">love</span>
+						</div>
 						<div class="child-EyLCwWno1l">
-                            <span class="child-Ek0bDMhsJe">you</span>
-                        </div>
+							<span class="child-Ek0bDMhsJe">you</span>
+						</div>
 					</div>
 				</div>
 				<div class="parent-41hBWb2ikx"></div>
@@ -151,26 +155,26 @@
 		line-height: 14px;
 		color: grey;
 	}
-    .parent-4J0P8-hsJl {
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-    }
-    .child-EyLCwWno1l {
-        height: 25px;
-        width: fit-content;
-        border-radius: 20px;
-        margin-left: 10px;
-        outline: lightgrey solid 1px;
-        padding: 0 10px;
-    }
-    .child-Ek0bDMhsJe {
-        font-size: 14px;
-        font-weight: lighter;
-    }
-    .parent-Vk5DLW2jJl {
-        font-size: 14px;
-        line-height: 14px;
-        font-weight: lighter;
-    }
+	.parent-4J0P8-hsJl {
+		display: flex;
+		justify-content: space-evenly;
+		align-items: center;
+	}
+	.child-EyLCwWno1l {
+		height: 25px;
+		width: fit-content;
+		border-radius: 20px;
+		margin-left: 10px;
+		outline: lightgrey solid 1px;
+		padding: 0 10px;
+	}
+	.child-Ek0bDMhsJe {
+		font-size: 14px;
+		font-weight: lighter;
+	}
+	.parent-Vk5DLW2jJl {
+		font-size: 14px;
+		line-height: 14px;
+		font-weight: lighter;
+	}
 </style>

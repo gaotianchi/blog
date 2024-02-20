@@ -10,6 +10,7 @@ from blog.apis.v1.schemas import (  # type: ignore
     schema_06,
     schema_07,
     schema_08,
+    schema_09,
 )
 from blog.model.database import Article, Series, Tag, User
 from blog.utlis import validator
@@ -24,7 +25,10 @@ author = Blueprint("author", __name__, url_prefix="/author")
 def new_article():
     current_user = cast(User, g.current_user)
     new_article = Article.create(author=current_user)
-    return jsonify(f"Successfully create article {new_article}."), 201
+    response_data = new_article.to_dict()
+    if validator(response_data, schema_04):
+        return abort()
+    return jsonify(response_data), 201
 
 
 @author.route("/series", methods=["POST"])
@@ -68,6 +72,7 @@ def update_article(id: int):
     data = cast(dict[str, Any], request.json)
     if validator(data, schema_04):  # type: ignore
         return abort()
+    current_user = cast(User, g.current_user)
     data_to_update = {}
     data_to_update["title"] = data["title"]
     data_to_update["body"] = data["body"]
@@ -80,7 +85,7 @@ def update_article(id: int):
         series = Series.query.get(data["seriesId"])
         data_to_update["series"] = series
     tags: list[str] = data["tags"]
-    data_to_update["tags"] = Tag.create(*tags)
+    data_to_update["tags"] = Tag.create(current_user, *tags)
     new_article = current_article.update(**data_to_update)  # type: ignore
     response_data = new_article.to_dict()
     if validator(response_data, schema_04):  # type: ignore
@@ -112,8 +117,10 @@ def get_series_data(id: int):
 
 
 @author.route("/tags", methods=["GET"])
+@auth_required
 def get_all_tags():
-    tags = cast(list[Tag], Tag.query.all())
+    current_user = cast(User, g.current_user)
+    tags = cast(list[Tag], Tag.query.with_parent(current_user).all())
     tagsData = [dict(**tag.to_dict()) for tag in tags]  # type: ignore
     if validator(tagsData, schema_07):
         return abort()
@@ -121,9 +128,32 @@ def get_all_tags():
 
 
 @author.route("/series", methods=["GET"])
+@auth_required
 def get_all_series():
-    series = cast(list[Series], Series.query.all())
+    current_user = cast(User, g.current_user)
+    series = cast(list[Series], Series.query.with_parent(current_user).all())
     seriesData = [dict(**s.to_dict()) for s in series]  # type: ignore
     if validator(seriesData, schema_08):
         return abort()
     return jsonify(seriesData), 200
+
+
+@author.route("/articles", methods=["GET"])
+@auth_required
+def get_all_articles():
+    current_user = cast(User, g.current_user)
+    articles = cast(list[Article], Article.query.with_parent(current_user).all())
+    response_data: list[dict[str, str | bool | list[str] | int]] = []
+    for a in articles:
+        data = a.to_dict()
+        article_data: dict[str, str | bool | list[str] | int] = {}
+        article_data["id"] = data["id"]
+        article_data["title"] = data["title"]
+        article_data["isPublished"] = data["isPublished"]
+        article_data["createdAt"] = data["createdAt"]
+        article_data["tags"] = data["tags"]
+        article_data["seriesId"] = data["seriesId"]
+        response_data.append(article_data)
+    if validator(response_data, schema_09):
+        return abort()
+    return jsonify(response_data), 200

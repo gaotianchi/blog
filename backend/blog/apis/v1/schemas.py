@@ -74,7 +74,7 @@ schema_04 = {  # type: ignore
         "tags",
         "title",
         "updatedAt",
-        "seriesId"
+        "seriesId",
     ],
 }
 
@@ -135,6 +135,30 @@ schema_08 = {
             "authorId",
             "name",
             "cover",
+        ],
+    },
+}
+
+schema_09 = {
+    "$schema": SCHEMA,
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "id": {"type": "integer"},
+            "title": {"type": "string"},
+            "createdAt": {"type": "string", "pattern": DATETIMEPATTERN},
+            "isPublished": {"type": "boolean"},
+            "tags": {"type": "array", "items": {"type": "string"}},
+            "seriesId": {"type": "integer"},
+        },
+        "required": [
+            "id",
+            "title",
+            "createdAt",
+            "isPublished",
+            "tags",
+            "seriesId",
         ],
     },
 }
