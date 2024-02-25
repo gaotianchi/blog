@@ -6,6 +6,7 @@ import type {
 	RegisterResponseData,
 	LoginResponseData,
 	SerializedArticle,
+	SerializedArticleCard,
 	ArticleCard,
 } from "@/typing";
 import { rootUrl } from "@/confit";
@@ -223,6 +224,28 @@ export async function getAllArticles(): Promise<ArticleCard[]> {
 		headers: {
 			Authorization: tokenData?.tokenType + " " + tokenData?.accessToken,
 		},
+	});
+	if (response.status === 200) {
+		const cardData = await response.json();
+		return cardData;
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error;
+	}
+}
+export async function patchArticleCardItem(
+	articleId: number | string,
+	serializedArticleCard: SerializedArticleCard
+): Promise<Article> {
+	const url = rootUrl + "/author/article-card/" + articleId;
+	const tokenData = getAccessToken();
+	const response = await fetch(url, {
+		method: "PATCH",
+		headers: {
+			Authorization: tokenData?.tokenType + " " + tokenData?.accessToken,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(serializedArticleCard),
 	});
 	if (response.status === 200) {
 		const cardData = await response.json();

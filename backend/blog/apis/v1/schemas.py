@@ -150,6 +150,7 @@ schema_09 = {
             "createdAt": {"type": "string", "pattern": DATETIMEPATTERN},
             "isPublished": {"type": "boolean"},
             "tags": {"type": "array", "items": {"type": "string"}},
+            "images": {"type": "array", "items": {"type": "string"}},
             "seriesId": {"type": "integer"},
         },
         "required": [
@@ -158,7 +159,19 @@ schema_09 = {
             "createdAt",
             "isPublished",
             "tags",
+            "images",
             "seriesId",
         ],
     },
+}
+
+schema_10 = {
+    "$schema": SCHEMA,
+    "type": "object",
+    "properties": {
+        "id": {"type": "integer"},
+        "isPublished": {"type": "boolean"},
+        "tags": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["id"],
 }

@@ -1,0 +1,32 @@
+.parent-VyJIlVgcyg {
+    width: 100%;
+}
+
+.parent-VJtrsOlqye {
+    width: 100%;
+    line-height: 20px;
+    padding: 0 5px;
+    border: none;
+    border-bottom: var(--second-color) solid 1px;
+}
+
+.parent-NJcl-4gqyg {
+    width: 100%;
+    height: 150px;
+    padding-left: 20px;
+    overflow-y: auto;
+}
+
+.child-VysQ-Vx9kg {
+    height: 25px;
+    text-align: left;
+    padding: 2px 0 2px 2px;
+    font-size: medium;
+    cursor: pointer;
+    font-weight: 600;
+    border-bottom: gainsboro solid 1px;
+}
+
+.child-VysQ-Vx9kg:hover {
+    background-color: gainsboro;
+}

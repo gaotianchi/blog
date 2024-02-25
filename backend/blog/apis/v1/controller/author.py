@@ -11,9 +11,10 @@ from blog.apis.v1.schemas import (  # type: ignore
     schema_07,
     schema_08,
     schema_09,
+    schema_10,
 )
 from blog.model.database import Article, Series, Tag, User
-from blog.utlis import validator
+from blog.utlis import get_all_image_url, validator
 
 from .account import auth_required
 
@@ -152,8 +153,35 @@ def get_all_articles():
         article_data["isPublished"] = data["isPublished"]
         article_data["createdAt"] = data["createdAt"]
         article_data["tags"] = data["tags"]
+        article_data["images"] = get_all_image_url(data["body"])  # type: ignore
         article_data["seriesId"] = data["seriesId"]
         response_data.append(article_data)
     if validator(response_data, schema_09):
         return abort()
     return jsonify(response_data), 200
+
+
+@author.route("/article-card/<int:id>", methods=["PATCH"])
+@auth_required
+def update_article_card(id: int):
+    current_article = cast(Article, Article.query.get(id))
+    if not current_article:
+        return abort(message="No article found.")
+    data = cast(dict[str, Any], request.json)
+    if validator(data, schema_10):
+        return abort()
+    if id != data["id"]:
+        return abort()
+    current_user = cast(User, g.current_user)
+    data_to_update = {}
+    if data.get("isPublished"):
+        data_to_update["is_published"] = data["isPublished"]
+    if data.get("tags"):
+        tags: list[str] = data["tags"]
+        data_to_update["tags"] = Tag.create(current_user, *tags)
+    new_article = current_article.update_card(**data_to_update)  # type: ignore
+    response_data = new_article.to_dict()
+    if validator(response_data, schema_04):  # type: ignore
+        return abort()
+
+    return jsonify(response_data), 200  # type: ignore

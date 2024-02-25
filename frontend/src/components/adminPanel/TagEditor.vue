@@ -1,11 +1,16 @@
 <script setup lang="ts">
-	import { onMounted, ref, type Ref, computed, watch } from "vue";
+	import { onMounted, ref, type Ref, computed, watch, reactive } from "vue";
 	import { Index } from "flexsearch";
 	import type { Tag } from "@/typing";
 	import { getAllRemoteTags } from "@/api/remote";
-	import { localArticle } from "@/api/local";
 	import InputA from "@/components/InputA.vue";
-	const model: Ref<string> = ref(localArticle.tags.join(","));
+	import { allRemoteArticleCards } from "@/api/remote";
+	const props = defineProps<{ articleIndex: number }>();
+	const emits = defineEmits<{
+		getLocalTags: [tags: string[]];
+	}>();
+	const articles = reactive(allRemoteArticleCards);
+	const model: Ref<string> = ref(articles[props.articleIndex].tags.join(","));
 	const allTags: Ref<Tag[]> = ref([]);
 	const index = new Index({ tokenize: "forward" });
 	const typedTags = computed<string[]>(() => {
@@ -43,7 +48,7 @@
 		}
 	});
 	watch(currentTags, () => {
-		localArticle.tags = currentTags.value;
+		emits("getLocalTags", currentTags.value);
 	});
 	async function initTagSearchEngine(): Promise<void> {
 		allTags.value = await getAllRemoteTags();

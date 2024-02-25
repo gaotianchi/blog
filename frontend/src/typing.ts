@@ -21,6 +21,11 @@ export type SerializedArticle = {
 	tags: string[];
 	seriesId: number;
 };
+export type SerializedArticleCard = {
+	id: number;
+	isPublished?: boolean;
+	tags?: string[];
+};
 export type Article = {
 	id: number;
 	title: string;
@@ -111,5 +116,6 @@ export type ArticleCard = {
 	createdAt: string;
 	isPublished: boolean;
 	tags: string[];
+	images: string[];
 	seriesId: number;
 };

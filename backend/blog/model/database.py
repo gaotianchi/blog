@@ -41,7 +41,6 @@ class User(db.Model):
     articles = relationship("Article", back_populates="author")
     series = relationship("Series", back_populates="author")
     tags = relationship("Tag", back_populates="author")
-    medias = relationship("Media", back_populates="author")
 
     @classmethod
     def create(cls, username: str, password: str) -> "User":
@@ -76,20 +75,6 @@ class User(db.Model):
             lastLoginAt=serialize_datetime(self.last_login_at.astimezone(timezone.utc)),
             tokenValidityPeriod=self.token_validity_period,
         )
-
-
-class Media(db.Model):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    filename: Mapped[str] = mapped_column(String(255), unique=True)
-    author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
-    author: Mapped["User"] = relationship("User", back_populates="medias")
-
-    @classmethod
-    def create(cls, author: User, filename: str) -> "Media":  # type:ignore
-        new_media = Media(author=author, filename=filename)  # type:ignore
-        db.session.add(new_media)
-        db.session.commit()
-        return Media.query.get(new_media.id)  # type:ignore
 
 
 class Tag(db.Model):
@@ -196,6 +181,19 @@ class Article(db.Model):
             self.series = series
         self.tags = set(tags)
         self.updated_at = datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
+        return Article.query.get(self.id)  # type: ignore
+
+    def update_card(
+        self,
+        is_published: bool | None = None,
+        tags: list[Tag] | None = None,
+    ) -> "Article":  # type: ignore
+        if not (is_published is None):
+            self.is_published = is_published
+        if not (tags is None):
+            self.tags = set(tags)
         db.session.add(self)
         db.session.commit()
         return Article.query.get(self.id)  # type: ignore

@@ -1,36 +1,41 @@
 <script setup lang="ts">
-	import { confirmProp } from "@/api/local";
-	import { defaultConfirm } from "@/defaults";
+	const props = defineProps<{
+		status: boolean;
+		callback: CallableFunction;
+	}>();
+	const emits = defineEmits(["close"]);
 	function submitDecision(decision: boolean): void {
+		emits("close");
 		if (decision) {
-			confirmProp.callback();
+			props.callback();
 		}
-		Object.assign(confirmProp, { ...defaultConfirm });
 	}
 </script>
 <template>
 	<Teleport to="body">
 		<Transition>
-			<div class="parent-N1J4Cd-iJg" v-if="confirmProp.body.length > 0">
+			<div class="parent-N1J4Cd-iJg" v-if="status">
 				<div class="parent-V1UVAObiyl">
 					<div class="parent-NyoVCdZoJg">
-						{{ confirmProp.header ?? "Message" }}
+						<slot name="header">Message</slot>
 					</div>
-					<div class="parent-E1JrCd-sye">{{ confirmProp.body }}</div>
+					<div class="parent-E1JrCd-sye">
+						<slot name="body"></slot>
+					</div>
 					<div class="parent-VJVBCOZokg">
 						<button
 							type="button"
 							class="parent-VkKBAOWsJg child-N1SU0_-jyg"
 							@click="submitDecision(false)"
 						>
-							{{ confirmProp.noMessage ?? "No" }}
+							<slot name="noMessage">No</slot>
 						</button>
 						<button
 							type="button"
 							class="parent-N1yLCdbike child-N1SU0_-jyg"
 							@click="submitDecision(true)"
 						>
-							{{ confirmProp.yesMessage ?? "Yes" }}
+							<slot name="yesMessage">Yes</slot>
 						</button>
 					</div>
 				</div>

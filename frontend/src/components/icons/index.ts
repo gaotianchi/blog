@@ -20,6 +20,7 @@ import ArticleVue from "./Article.vue";
 import SeriesVue from "./Series.vue";
 import DeleteVue from "./Delete.vue";
 import AuthorVue from "./Author.vue";
+import TagsVue from "./Tags.vue";
 
 export default {
 	fail: FailVue,
@@ -44,4 +45,5 @@ export default {
 	series: SeriesVue,
 	delete: DeleteVue,
 	author: AuthorVue,
+	tags: TagsVue,
 };

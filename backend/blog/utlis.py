@@ -1,5 +1,6 @@
+import re
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, cast
 
 from jsonschema import validate
 from jsonschema.exceptions import SchemaError, ValidationError
@@ -35,3 +36,9 @@ def allowed_image(filename: str):
         "." in filename
         and filename.rsplit(".", 1)[1].lower() in CONFIG.ALLOWED_EXTENSIONS
     )
+
+
+def get_all_image_url(text: str) -> list[str]:
+    pattern = re.compile(r"!\[.*?\]\((.*?)\)", re.MULTILINE)
+    search_results = cast(list[str], re.findall(pattern, text))
+    return search_results
