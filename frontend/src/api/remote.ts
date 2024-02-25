@@ -255,3 +255,21 @@ export async function patchArticleCardItem(
 		throw errorResponse.error;
 	}
 }
+export async function deleteArticleItem(
+	articleId: number | string
+): Promise<void> {
+	const url = rootUrl + "/author/article/" + articleId;
+	const tokenData = getAccessToken();
+	const response = await fetch(url, {
+		method: "DELETE",
+		headers: {
+			Authorization: tokenData?.tokenType + " " + tokenData?.accessToken,
+		},
+	});
+	if (response.status === 204) {
+		return;
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error;
+	}
+}

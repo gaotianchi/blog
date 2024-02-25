@@ -16,7 +16,9 @@
 </script>
 <template>
 	<div class="parent-Eysk5zpi1e">
-		<div class="parent-4JqeqzTjyg">Filter</div>
+		<div class="parent-4JqeqzTjyg">
+			
+		</div>
 		<div class="parent-E1k-9G6ske">
 			<ArticleCard
 				v-for="(article, index) in allRemoteArticleCards"

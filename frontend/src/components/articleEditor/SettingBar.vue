@@ -10,6 +10,22 @@
 <template>
 	<div class="parent-NJJFyG_jJx">
 		<SettingItem
+			:init-status="settingStatus.datetime.open"
+			@change-status="
+				(s) => {
+					settingStatus.datetime.open = s;
+				}
+			"
+		>
+			<template #title>Publish Date</template>
+			<template #preview>{{
+				dateFormatter(localArticle.publishedAt)
+			}}</template>
+			<template #detail>
+				<Datetime />
+			</template>
+		</SettingItem>
+		<SettingItem
 			:init-status="settingStatus.tags.open"
 			@change-status="
 				(s) => {
@@ -28,22 +44,6 @@
 			}}</template>
 			<template #detail>
 				<Tags />
-			</template>
-		</SettingItem>
-		<SettingItem
-			:init-status="settingStatus.datetime.open"
-			@change-status="
-				(s) => {
-					settingStatus.datetime.open = s;
-				}
-			"
-		>
-			<template #title>Publish Date</template>
-			<template #preview>{{
-				dateFormatter(localArticle.publishedAt)
-			}}</template>
-			<template #detail>
-				<Datetime />
 			</template>
 		</SettingItem>
 		<SettingItem

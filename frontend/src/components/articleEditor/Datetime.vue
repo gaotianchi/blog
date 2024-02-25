@@ -1,13 +1,12 @@
 <script setup lang="ts">
 	import type { DatePickerInstance } from "@vuepic/vue-datepicker";
 	import "@vuepic/vue-datepicker/dist/main.css";
-	import { reactive, ref, type Ref } from "vue";
+	import { reactive, ref, watch, type Ref } from "vue";
 	import DatePicker from "@vuepic/vue-datepicker";
 	import { localArticle, settingStatus } from "@/api/local";
 	import { remoteArticle } from "@/api/remote";
 	import { dateFormatter } from "@/utlis";
 	import Radio from "@/components/Radio.vue";
-	const currentArticle = reactive(localArticle);
 	const datepicker: Ref<DatePickerInstance> = ref(null);
 	function openPicker(): void {
 		if (datepicker.value) {
@@ -15,7 +14,7 @@
 		}
 	}
 	function resetDate(): void {
-		currentArticle.publishedAt = remoteArticle.publishedAt;
+		localArticle.publishedAt = remoteArticle.publishedAt;
 	}
 </script>
 <template>
@@ -30,7 +29,7 @@
 			/>
 			<DatePicker
 				v-show="settingStatus.datetime.mode === 'custom'"
-				v-model="currentArticle.publishedAt"
+				v-model="localArticle.publishedAt"
 				:alt-position="() => ({ top: 88, left: 18 })"
 				@cleared="resetDate"
 				:format="dateFormatter"

@@ -118,4 +118,6 @@ export type ArticleCard = {
 	tags: string[];
 	images: string[];
 	seriesId: number;
+	author: string;
+	planned: boolean;
 };

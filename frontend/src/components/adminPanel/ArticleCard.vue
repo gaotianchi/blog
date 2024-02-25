@@ -2,7 +2,11 @@
 	import icons from "@/components/icons";
 	import { reactive, ref } from "vue";
 	import { useRouter } from "vue-router";
-	import { allRemoteArticleCards, patchArticleCardItem } from "@/api/remote";
+	import {
+		allRemoteArticleCards,
+		patchArticleCardItem,
+		deleteArticleItem,
+	} from "@/api/remote";
 	import { propConfirm, propMessage } from "@/api/local";
 	import type { SerializedArticleCard } from "@/typing";
 	import { getLocalDatetime, dateFormatter } from "@/utlis";
@@ -13,6 +17,7 @@
 	}>();
 	const status = reactive({
 		tags: false,
+		card: false,
 	});
 	const router = useRouter();
 	const articles = reactive(allRemoteArticleCards);
@@ -35,6 +40,29 @@
 			noMessage: "Cancel",
 			callback: publishArticleItem,
 		});
+	}
+	function decideToDeleteArticle(): void {
+		propConfirm({
+			header: "Delete Article",
+			body: `Are you sure you want to delete article 《${
+				articles[props.articleIndex].title
+			}》`,
+			yesMessage: "Delete",
+			noMessage: "Cancel",
+			callback: deleteArticle,
+		});
+	}
+	function deleteArticle(): void {
+		try {
+			propMessage("Deleting article ...");
+			deleteArticleItem(articles[props.articleIndex].id).then(() => {
+				propMessage("Article deleted successfully.");
+				articles.splice(props.articleIndex, 1);
+			});
+		} catch (error) {
+			console.error(error);
+			propMessage("Please try again.");
+		}
 	}
 	async function updateArticleItem(
 		serializedArticleCard: SerializedArticleCard
@@ -90,6 +118,15 @@
 			propMessage("Please try again.");
 		}
 	}
+	function getCurrentArticleStatus(): string {
+		if (articles[props.articleIndex].planned) {
+			return "Planned";
+		} else if (articles[props.articleIndex].isPublished) {
+			return "Published";
+		} else {
+			return "Draft";
+		}
+	}
 </script>
 <template>
 	<ConfirmSlot
@@ -111,7 +148,11 @@
 		<template #noMessage>Cancel</template>
 		<template #yesMessage>Apply</template>
 	</ConfirmSlot>
-	<div class="parent-NJQTAg2j1g">
+	<div
+		class="parent-NJQTAg2j1g"
+		@mouseenter="status.card = true"
+		@mouseleave="status.card = false"
+	>
 		<div class="parent-Vy7GxWhi1x" @click="toEditPage">
 			<slot name="cover"></slot>
 		</div>
@@ -123,7 +164,10 @@
 					</slot>
 				</div>
 				<div class="parent-4ke4Z-hjyl">
-					<div class="parent-4JePW-2ike">
+					<div class="parent-NJaMdZ43Jl" v-if="!status.card">
+						{{ articles[props.articleIndex].author }}
+					</div>
+					<div class="parent-4JePW-2ike" v-if="status.card">
 						<div
 							class="child-41BOZ-2sJx"
 							v-if="
@@ -150,7 +194,10 @@
 								class="icon child-NkE1rZnskl black"
 							/>
 						</div>
-						<div class="child-41BOZ-2sJx">
+						<div
+							class="child-41BOZ-2sJx"
+							@click="decideToDeleteArticle"
+						>
 							<component
 								:is="icons.delete"
 								class="icon child-NkE1rZnskl"
@@ -186,13 +233,10 @@
 						class="parent-N1rwLZ3jyl"
 						:class="{
 							published: articles[props.articleIndex].isPublished,
+							planned: articles[props.articleIndex].planned,
 						}"
 					>
-						{{
-							articles[props.articleIndex].isPublished
-								? "Published"
-								: "Unpublished"
-						}}
+						{{ getCurrentArticleStatus() }}
 					</div>
 					<div class="parent-VJ3zvZ2ske">·</div>
 					<div class="parent-Vk5DLW2jJl">
@@ -224,128 +268,4 @@
 		</div>
 	</div>
 </template>
-<style scoped>
-	.parent-NJQTAg2j1g {
-		width: 100%;
-		height: 100px;
-		display: flex;
-		align-items: center;
-		padding: 10px;
-		border-radius: 10px;
-		outline: lightgrey solid 1px;
-		margin-bottom: 15px;
-	}
-	.parent-NJQTAg2j1g:hover {
-		outline: none;
-		box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
-		background: rgb(255, 255, 255);
-	}
-	.parent-Vy7GxWhi1x {
-		min-width: 80px;
-		min-height: 80px;
-		max-width: 80px;
-		max-height: 80px;
-		background-color: grey;
-		cursor: pointer;
-	}
-	.parent-EJbXxWnjke {
-		flex-grow: 1;
-		display: flex;
-		width: 100%;
-		height: 100%;
-		flex-direction: column;
-		justify-content: space-between;
-		padding: 10px;
-	}
-	.parent-V1C7xb3syx {
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-	}
-	.parent-Ek3X-WnsJx {
-		flex-grow: 1;
-		font-size: 17px;
-		line-height: 17px;
-		cursor: pointer;
-	}
-	.parent-4ke4Z-hjyl {
-		display: flex;
-		justify-content: flex-end;
-	}
-	.parent-4JePW-2ike {
-		display: flex;
-		justify-content: center;
-	}
-	.parent-N1GNlb3oke {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-	.parent-Nkzrbbnike {
-		display: flex;
-		align-items: center;
-	}
-	.child-NkE1rZnskl {
-		width: 20px;
-		height: 20px;
-	}
-	.child-41BOZ-2sJx {
-		margin-left: 5px;
-		cursor: pointer;
-		height: 30px;
-		width: 30px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-	.child-41BOZ-2sJx:hover {
-		background-color: #cacaca8e;
-		border-radius: 50%;
-	}
-	.parent-N1rwLZ3jyl {
-		font-size: 16px;
-		line-height: 16px;
-		font-weight: bold;
-		color: var(--first-color);
-	}
-	.parent-N1rwLZ3jyl.published {
-		color: var(--second-color);
-	}
-	.parent-VJ3zvZ2ske {
-		margin: 0 5px;
-		font-size: 16px;
-		font-weight: 1000;
-		line-height: 14px;
-		color: grey;
-	}
-	.parent-4J0P8-hsJl {
-		display: flex;
-		justify-content: flex-start;
-		align-items: center;
-		overflow: auto;
-	}
-	.child-EyLCwWno1l {
-		height: 24px;
-		width: fit-content;
-		border-radius: 20px;
-		margin: 1px 3px;
-		outline: lightgrey solid 1px;
-		padding: 0 10px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-	.child-Ek0bDMhsJe {
-		font-size: 12px;
-		line-height: 12px;
-		color: rgb(174, 174, 174);
-		font-weight: lighter;
-	}
-	.parent-Vk5DLW2jJl {
-		font-size: 14px;
-		line-height: 14px;
-		font-weight: lighter;
-		width: max-content;
-		margin-right: 10px;
-	}
-</style>
+<style src="@/assets/article-card.css"></style>

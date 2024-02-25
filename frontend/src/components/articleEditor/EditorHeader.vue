@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { inject, reactive, watch } from "vue";
-	import { isShallowEqual, serializeArticle } from "@/utlis";
+	import { isSameArticle, isShallowEqual, serializeArticle } from "@/utlis";
 	import { propConfirm, propMessage, localArticle } from "@/api/local";
 	import { remoteArticle, patchArticleItem } from "@/api/remote";
 	import icons from "@/components/icons";
@@ -12,19 +12,13 @@
 		sync: true,
 		update: false,
 	});
-	watch(
-		localArticle,
-		() => {
-			if (isShallowEqual(localArticle, remoteArticle)) {
-				elementsStatus.sync = true;
-			} else {
-				elementsStatus.sync = false;
-			}
-		},
-		{
-			immediate: true,
+	watch(localArticle, () => {
+		if (isSameArticle(localArticle, remoteArticle)) {
+			elementsStatus.sync = true;
+		} else {
+			elementsStatus.sync = false;
 		}
-	);
+	});
 	function decideToPublishArticle(): void {
 		propConfirm({
 			header: "Publish Article",

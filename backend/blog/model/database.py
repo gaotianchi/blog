@@ -198,6 +198,10 @@ class Article(db.Model):
         db.session.commit()
         return Article.query.get(self.id)  # type: ignore
 
+    def delete(self) -> None:
+        db.session.delete(self)
+        db.session.commit()
+
     def to_dict(self):
         return dict(
             id=self.id,

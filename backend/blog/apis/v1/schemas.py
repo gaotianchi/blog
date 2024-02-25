@@ -152,6 +152,8 @@ schema_09 = {
             "tags": {"type": "array", "items": {"type": "string"}},
             "images": {"type": "array", "items": {"type": "string"}},
             "seriesId": {"type": "integer"},
+            "author": {"type": "string"},
+            "planned": {"type": "boolean"},
         },
         "required": [
             "id",
@@ -161,6 +163,8 @@ schema_09 = {
             "tags",
             "images",
             "seriesId",
+            "author",
+            "planned",
         ],
     },
 }

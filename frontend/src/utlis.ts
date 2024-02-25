@@ -23,6 +23,43 @@ export function validator(data: any, schema: JSONSchemaType<any>): boolean {
 	return validate(data);
 }
 
+export function isSameArticle(a: Article, b: Article): boolean {
+	if (a.id !== b.id) {
+		return false;
+	}
+	if (a.title !== b.title) {
+		return false;
+	}
+	if (a.body !== b.body) {
+		return false;
+	}
+	if (a.slug !== b.slug) {
+		return false;
+	}
+	if (serializeDate(a.createdAt) !== serializeDate(b.createdAt)) {
+		return false;
+	}
+	if (serializeDate(a.updatedAt) !== serializeDate(b.updatedAt)) {
+		return false;
+	}
+	if (serializeDate(a.publishedAt) !== serializeDate(b.publishedAt)) {
+		return false;
+	}
+	if (a.isPublished !== b.isPublished) {
+		return false;
+	}
+	if (a.authorId !== b.authorId) {
+		return false;
+	}
+	if (!arraysHaveSameElements(a.tags, b.tags)) {
+		return false;
+	}
+	if (a.seriesId !== b.seriesId) {
+		return false;
+	}
+	return true;
+}
+
 export function isShallowEqual(a: any, b: any): boolean {
 	const aProps = Object.getOwnPropertyNames(a);
 	const bProps = Object.getOwnPropertyNames(b);
@@ -37,16 +74,24 @@ export function isShallowEqual(a: any, b: any): boolean {
 		const propA = a[propName];
 		const propB = b[propName];
 
+		if (propA instanceof Date && propB instanceof Date) {
+			console.log(propName);
+			console.log(serializeDate(propA));
+			console.log(serializeDate(propB));
+			return serializeDate(propA) === serializeDate(propB);
+		}
 		if (typeof propA === "object") {
 			if (!isShallowEqual(propA, propB)) {
 				return false;
 			}
-		} else if (propA !== propB) {
-			return false;
-		} else if (Array.isArray(propA)) {
+		}
+		if (Array.isArray(propA) && Array.isArray(propB)) {
 			if (!arraysHaveSameElements(propA, propB)) {
 				return false;
 			}
+		}
+		if (propA !== propB) {
+			return false;
 		}
 	}
 

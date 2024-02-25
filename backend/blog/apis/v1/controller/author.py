@@ -155,6 +155,10 @@ def get_all_articles():
         article_data["tags"] = data["tags"]
         article_data["images"] = get_all_image_url(data["body"])  # type: ignore
         article_data["seriesId"] = data["seriesId"]
+        article_data["author"] = cast(User, a.author).nickname
+        article_data["planned"] = data["isPublished"] and (
+            a.published_at > datetime.now()
+        )
         response_data.append(article_data)
     if validator(response_data, schema_09):
         return abort()
@@ -185,3 +189,13 @@ def update_article_card(id: int):
         return abort()
 
     return jsonify(response_data), 200  # type: ignore
+
+
+@author.route("/article/<int:id>", methods=["DELETE"])
+@auth_required
+def delete_ariticle(id: int):
+    current_article = cast(Article, Article.query.get(id))
+    if not current_article:
+        return abort(message="No article found.")
+    current_article.delete()
+    return jsonify("Deleted"), 204
