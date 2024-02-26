@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import icons from "@/components/icons";
-	import { reactive, ref } from "vue";
+	import { computed, reactive, ref } from "vue";
 	import { useRouter } from "vue-router";
 	import {
 		allRemoteArticleCards,
@@ -22,6 +22,18 @@
 	const router = useRouter();
 	const articles = reactive(allRemoteArticleCards);
 	const localTags = ref(articles[props.articleIndex].tags);
+	const currentPubishStatus = computed<string>(() => {
+		if (
+			articles[props.articleIndex].planned &&
+			articles[props.articleIndex].isPublished
+		) {
+			return "Planned";
+		} else if (articles[props.articleIndex].isPublished) {
+			return "Published";
+		} else {
+			return "Draft";
+		}
+	});
 	function toEditPage(): void {
 		router.push({
 			name: "EditArticle",
@@ -124,7 +136,10 @@
 		}
 	}
 	function getCurrentArticleStatus(): string {
-		if (articles[props.articleIndex].planned) {
+		if (
+			articles[props.articleIndex].planned &&
+			articles[props.articleIndex].isPublished
+		) {
 			return "Planned";
 		} else if (articles[props.articleIndex].isPublished) {
 			return "Published";
@@ -241,7 +256,7 @@
 							planned: articles[props.articleIndex].planned,
 						}"
 					>
-						{{ getCurrentArticleStatus() }}
+						{{ currentPubishStatus }}
 					</div>
 					<div class="parent-VJ3zvZ2ske">·</div>
 					<div class="parent-Vk5DLW2jJl">

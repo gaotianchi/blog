@@ -58,7 +58,7 @@
 		padding: 0 20px;
 	}
 	.parent-41nyyA43kg {
-		width: 300px;
+		width: 400px;
 		height: 45px;
 		display: flex;
 		align-items: center;

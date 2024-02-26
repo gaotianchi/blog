@@ -178,9 +178,9 @@ def update_article_card(id: int):
         return abort()
     current_user = cast(User, g.current_user)
     data_to_update = {}
-    if data.get("isPublished"):
+    if data.get("isPublished") is not None:
         data_to_update["is_published"] = data["isPublished"]
-    if data.get("tags"):
+    if data.get("tags") is not None:
         tags: list[str] = data["tags"]
         data_to_update["tags"] = Tag.create(current_user, *tags)
     new_article = current_article.update_card(**data_to_update)  # type: ignore
