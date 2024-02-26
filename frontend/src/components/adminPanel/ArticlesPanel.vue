@@ -10,20 +10,13 @@
 	onMounted(() => {
 		initAllRemoteArticleCards();
 	});
-	updateCurrentCards();
 	watch(
-		() => route.query.q,
+		() => route.query,
 		() => {
 			updateCurrentCards();
 		}
 	);
 	function updateCurrentCards(): void {
-		if (route.query.q) {
-			const q = route.query.q as string;
-			if (q.trim().length === 0) {
-				return;
-			}
-		}
 		const searchText = route.query.q as string;
 		const searchField = searchText.split(":")[0] as ArticleSearchField;
 		const query = searchText.split(":")[1] || searchText;
@@ -44,11 +37,12 @@
 			default:
 				searchResult = articleCardIndex.search(query, ["title"]);
 		}
-		const articleIds = searchResult.map((i) => i.result)[0];
+		const articleIds = searchResult.map((i) => i.result)[0] || [];
+		console.log(articleIds);
 		const resultArticles = allRemoteArticleCards.filter((articleCard) =>
 			articleIds.includes(articleCard.id)
 		);
-		return resultArticles;
+		return resultArticles || [];
 	}
 	async function initAllRemoteArticleCards(): Promise<void> {
 		try {

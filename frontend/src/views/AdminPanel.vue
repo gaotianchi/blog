@@ -1,17 +1,14 @@
 <script setup lang="ts">
-	import { useRoute, useRouter } from "vue-router";
+	import { useRouter } from "vue-router";
 	import NavigationBar from "@/components/adminPanel/NavigationBar.vue";
 	import BlogHeader from "@/components/BlogHeader.vue";
 	import icons from "@/components/icons";
 	import { ref } from "vue";
 	const query = ref("");
-	const route = useRoute();
 	const router = useRouter();
 	function search(): void {
-		if (query.value.length === 0) {
-			router.push({
-				name: "ArticlesPanel",
-			});
+		if (!query.value.trim()) {
+			return;
 		}
 		router.push({
 			name: "ArticlesPanel",

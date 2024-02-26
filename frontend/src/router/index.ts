@@ -1,10 +1,18 @@
-import { createRouter, createWebHistory } from "vue-router";
-
+import {
+	createRouter,
+	createWebHistory,
+	type RouteLocationNormalized,
+} from "vue-router";
 import Hello from "@/views/Hello.vue";
 import World from "@/views/World.vue";
 import { validateUser } from "@/api/remote";
 import EditorVue from "@/views/Editor.vue";
 import AdminPanelVue from "@/views/AdminPanel.vue";
+
+function removeQueryParams(to: RouteLocationNormalized) {
+	if (Object.keys(to.query).length)
+		return { path: to.path, query: {}, hash: to.hash };
+}
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +47,7 @@ const router = createRouter({
 					name: "ArticlesPanel",
 					component: () =>
 						import("@/components/adminPanel/ArticlesPanel.vue"),
+					beforeEnter: [removeQueryParams],
 				},
 			],
 		},
