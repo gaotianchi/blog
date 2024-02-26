@@ -81,11 +81,13 @@
 		serializedArticleCard: SerializedArticleCard
 	): Promise<void> {
 		try {
-			await patchArticleCardItem(
+			const response = await patchArticleCardItem(
 				articles[props.articleIndex].id,
 				serializedArticleCard
 			);
-			articleCardIndex.update(articles[props.articleIndex]);
+			articleCardIndex.update(response);
+			articles[props.articleIndex] = response;
+			propMessage("Changed saved.");
 		} catch (error) {
 			console.error(error);
 		}
@@ -94,13 +96,8 @@
 		try {
 			propMessage("Publishing article...");
 			updateArticleItem({
-				id: articles[props.articleIndex].id,
 				isPublished: true,
-			}).then(() => {
-				articles[props.articleIndex].isPublished = true;
-				propMessage("Changed saved.");
 			});
-			articleCardIndex.update(articles[props.articleIndex]);
 		} catch (error) {
 			propMessage("Please try again.");
 		}
@@ -109,13 +106,8 @@
 		try {
 			propMessage("Saving article as draft ...");
 			updateArticleItem({
-				id: articles[props.articleIndex].id,
 				isPublished: false,
-			}).then(() => {
-				articles[props.articleIndex].isPublished = false;
-				propMessage("Changed saved.");
 			});
-			articleCardIndex.update(articles[props.articleIndex]);
 		} catch (error) {
 			propMessage("Please try again.");
 		}
@@ -124,27 +116,10 @@
 		status.tags = false;
 		try {
 			updateArticleItem({
-				id: articles[props.articleIndex].id,
 				tags: localTags.value,
-			}).then(() => {
-				articles[props.articleIndex].tags = localTags.value;
-				propMessage("Changed saved.");
 			});
-			articleCardIndex.update(articles[props.articleIndex]);
 		} catch (error) {
 			propMessage("Please try again.");
-		}
-	}
-	function getCurrentArticleStatus(): string {
-		if (
-			articles[props.articleIndex].planned &&
-			articles[props.articleIndex].isPublished
-		) {
-			return "Planned";
-		} else if (articles[props.articleIndex].isPublished) {
-			return "Published";
-		} else {
-			return "Draft";
 		}
 	}
 </script>

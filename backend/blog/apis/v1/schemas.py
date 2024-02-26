@@ -151,7 +151,6 @@ schema_09 = {
             "isPublished": {"type": "boolean"},
             "tags": {"type": "array", "items": {"type": "string"}},
             "images": {"type": "array", "items": {"type": "string"}},
-            "seriesId": {"type": "integer"},
             "author": {"type": "string"},
             "planned": {"type": "boolean"},
         },
@@ -162,20 +161,43 @@ schema_09 = {
             "isPublished",
             "tags",
             "images",
-            "seriesId",
             "author",
             "planned",
         ],
     },
 }
 
-schema_10 = {
+schema_10 = {  # type: ignore
+    "$schema": SCHEMA,
+    "type": "object",
+    "properties": {
+        "isPublished": {"type": "boolean"},
+        "tags": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": [],
+}
+
+schema_11 = {
     "$schema": SCHEMA,
     "type": "object",
     "properties": {
         "id": {"type": "integer"},
+        "title": {"type": "string"},
+        "createdAt": {"type": "string", "pattern": DATETIMEPATTERN},
         "isPublished": {"type": "boolean"},
         "tags": {"type": "array", "items": {"type": "string"}},
+        "images": {"type": "array", "items": {"type": "string"}},
+        "author": {"type": "string"},
+        "planned": {"type": "boolean"},
     },
-    "required": ["id"],
+    "required": [
+        "id",
+        "title",
+        "createdAt",
+        "isPublished",
+        "tags",
+        "images",
+        "author",
+        "planned",
+    ],
 }

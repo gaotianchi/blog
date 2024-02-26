@@ -22,7 +22,6 @@ export type SerializedArticle = {
 	seriesId: number;
 };
 export type SerializedArticleCard = {
-	id: number;
 	isPublished?: boolean;
 	tags?: string[];
 };
@@ -117,8 +116,13 @@ export type ArticleCard = {
 	isPublished: boolean;
 	tags: string[];
 	images: string[];
-	seriesId: number;
 	author: string;
 	planned: boolean;
 };
-export type ArticleSearchField = "title" | "tag" | "author";
+export type ArticleCardMeta = "title" | "tag" | "author";
+export type ArticleSearchField = ArticleCardMeta | "status";
+export type ArticleCardStatus = "all" | "published" | "planned" | "draft";
+export type CardWithIndex = {
+	index: number;
+	article: ArticleCard;
+};

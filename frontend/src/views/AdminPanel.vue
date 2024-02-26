@@ -3,17 +3,22 @@
 	import NavigationBar from "@/components/adminPanel/NavigationBar.vue";
 	import BlogHeader from "@/components/BlogHeader.vue";
 	import icons from "@/components/icons";
+	import type { ArticleCardStatus } from "@/typing";
 	import { ref } from "vue";
-	const query = ref("");
+	const searchText = ref("");
 	const router = useRouter();
 	function search(): void {
-		if (!query.value.trim()) {
+		if (!searchText.value.trim()) {
 			return;
 		}
+		const strArray = searchText.value.trim().split(":");
+		const filter = strArray.length > 1 ? strArray[0] : "title";
+		const query = strArray[1] || searchText.value.trim();
 		router.push({
 			name: "ArticlesPanel",
 			query: {
-				q: query.value,
+				filter: filter,
+				query: query,
 			},
 		});
 	}
@@ -29,7 +34,7 @@
 					id="query"
 					class="parent-4kcSZ0Nh1g"
 					aria-label="query"
-					v-model="query"
+					v-model="searchText"
 				/>
 				<button type="submit" style="display: none"></button>
 			</form>

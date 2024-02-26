@@ -236,7 +236,7 @@ export async function getAllArticles(): Promise<ArticleCard[]> {
 export async function patchArticleCardItem(
 	articleId: number | string,
 	serializedArticleCard: SerializedArticleCard
-): Promise<Article> {
+): Promise<ArticleCard> {
 	const url = rootUrl + "/author/article-card/" + articleId;
 	const tokenData = getAccessToken();
 	const response = await fetch(url, {

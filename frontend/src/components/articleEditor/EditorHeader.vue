@@ -144,16 +144,19 @@
 							<button
 								type="button"
 								class="child-E1C_VtYskl"
-								v-if="remoteArticle.isPublished"
 								@click="convertToDraft"
 							>
 								<component
 									:is="icons.draft"
 									class="icon child-E14lIKto1x black"
 								/>
-								<span class="child-EkIWUFYsJg"
-									>Convert to draft</span
-								>
+								<span class="child-EkIWUFYsJg">
+									{{
+										localArticle.isPublished
+											? "Convert to draft"
+											: "Save as draft"
+									}}
+								</span>
 							</button>
 							<button
 								type="button"
