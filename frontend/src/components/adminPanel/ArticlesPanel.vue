@@ -1,14 +1,62 @@
 <script setup lang="ts">
+	import { onMounted, reactive, ref, watch } from "vue";
+	import { useRoute } from "vue-router";
 	import { getAllArticles, allRemoteArticleCards } from "@/api/remote";
-	import ArticleCard from "./ArticleCard.vue";
-	import { onMounted } from "vue";
+	import { articleCardIndex } from "@/api/local";
+	import ArticleCardVue from "./ArticleCard.vue";
+	import type { ArticleCard, ArticleSearchField } from "@/typing";
+	const route = useRoute();
+	const currentArticleCards = ref(allRemoteArticleCards);
 	onMounted(() => {
 		initAllRemoteArticleCards();
 	});
+	updateCurrentCards();
+	watch(
+		() => route.query.q,
+		() => {
+			updateCurrentCards();
+		}
+	);
+	function updateCurrentCards(): void {
+		if (route.query.q) {
+			const q = route.query.q as string;
+			if (q.trim().length === 0) {
+				return;
+			}
+		}
+		const searchText = route.query.q as string;
+		const searchField = searchText.split(":")[0] as ArticleSearchField;
+		const query = searchText.split(":")[1] || searchText;
+		currentArticleCards.value = getSearchResult(query, searchField);
+	}
+	function getSearchResult(
+		query: string,
+		field: ArticleSearchField
+	): ArticleCard[] {
+		let searchResult = [];
+		switch (field) {
+			case "author":
+				searchResult = articleCardIndex.search(query, ["author"]);
+			case "tag":
+				searchResult = articleCardIndex.search({
+					tag: query.split(",").map((i) => i.trim()) || [],
+				});
+			default:
+				searchResult = articleCardIndex.search(query, ["title"]);
+		}
+		const articleIds = searchResult.map((i) => i.result)[0];
+		const resultArticles = allRemoteArticleCards.filter((articleCard) =>
+			articleIds.includes(articleCard.id)
+		);
+		return resultArticles;
+	}
 	async function initAllRemoteArticleCards(): Promise<void> {
 		try {
 			const response = await getAllArticles();
 			Object.assign(allRemoteArticleCards, response);
+			allRemoteArticleCards.forEach((articleCard) => {
+				articleCardIndex.add(articleCard);
+			});
 		} catch (error) {
 			console.error(error);
 		}
@@ -16,12 +64,10 @@
 </script>
 <template>
 	<div class="parent-Eysk5zpi1e">
-		<div class="parent-4JqeqzTjyg">
-			
-		</div>
+		<div class="parent-4JqeqzTjyg"></div>
 		<div class="parent-E1k-9G6ske">
-			<ArticleCard
-				v-for="(article, index) in allRemoteArticleCards"
+			<ArticleCardVue
+				v-for="(article, index) in currentArticleCards"
 				:article-index="index"
 			>
 				<template #cover>
@@ -30,7 +76,7 @@
 				<template #title>
 					{{ article.title }}
 				</template>
-			</ArticleCard>
+			</ArticleCardVue>
 		</div>
 	</div>
 </template>

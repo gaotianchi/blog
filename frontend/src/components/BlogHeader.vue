@@ -9,6 +9,12 @@
 			</div>
 			<div class="parent-V140QTUokg">Gao Tianchi's Blog</div>
 		</div>
+		<div class="parent-41DK3aE3Jx">
+			<slot name="search-field"> </slot>
+		</div>
+		<nav class="parent-4JG1naE21l">
+			<slot name="navbar"></slot>
+		</nav>
 	</header>
 </template>
 <style scoped>
@@ -35,5 +41,8 @@
 		font-size: x-large;
 		font-weight: 500;
 		margin-left: 15px;
+	}
+	.parent-4JG1naE21l {
+		min-width: 250px;
 	}
 </style>

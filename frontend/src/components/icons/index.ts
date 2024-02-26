@@ -21,6 +21,7 @@ import SeriesVue from "./Series.vue";
 import DeleteVue from "./Delete.vue";
 import AuthorVue from "./Author.vue";
 import TagsVue from "./Tags.vue";
+import SearchVue from "./Search.vue";
 
 export default {
 	fail: FailVue,
@@ -46,4 +47,5 @@ export default {
 	delete: DeleteVue,
 	author: AuthorVue,
 	tags: TagsVue,
+	search: SearchVue,
 };

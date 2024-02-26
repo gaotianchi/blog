@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { reactive, ref, type Ref } from "vue";
-	import Header from "@/components/Header.vue";
+	import BlogHeader from "@/components/BlogHeader.vue";
 	import icons from "@/components/icons";
 	import { dateFormatter } from "@/utlis";
 	import moment from "moment-timezone";
@@ -17,7 +17,7 @@
 </script>
 
 <template>
-	<Header />
+	<BlogHeader />
 	{{ getLocalDatetime(utcDateString) }}
 </template>
 <style scoped></style>

@@ -3,11 +3,10 @@
 	import { Index } from "flexsearch";
 	import type { Tag } from "@/typing";
 	import { getAllRemoteTags } from "@/api/remote";
-	import { localArticle } from "@/api/local";
+	import { localArticle, tagIndex } from "@/api/local";
 	import InputA from "@/components/InputA.vue";
 	const model: Ref<string> = ref(localArticle.tags.join(","));
 	const allTags: Ref<Tag[]> = ref([]);
-	const index = new Index({ tokenize: "forward" });
 	const typedTags = computed<string[]>(() => {
 		const tagArr = model.value?.split(",").map((i) => i.trim()) || [];
 		return tagArr.slice(0, tagArr.length - 1);
@@ -23,7 +22,9 @@
 			);
 			return result.slice(0, 10);
 		} else {
-			const searchResult = index.search(searchText.value, { limit: 10 });
+			const searchResult = tagIndex.search(searchText.value, {
+				limit: 10,
+			});
 			const tagsItems = allTags.value
 				.filter((tag) => searchResult.includes(tag.id))
 				.filter((i) => !typedTags.value.includes(i.name));
@@ -48,7 +49,7 @@
 	async function initTagSearchEngine(): Promise<void> {
 		allTags.value = await getAllRemoteTags();
 		allTags.value.forEach((tag) => {
-			index.add(tag.id, tag.name);
+			tagIndex.add(tag.id, tag.name);
 		});
 	}
 	function addTag(newTag: string): void {

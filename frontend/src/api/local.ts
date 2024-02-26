@@ -1,4 +1,5 @@
 import { reactive, type Ref, ref } from "vue";
+import { Index, Document } from "flexsearch";
 import type {
 	Article,
 	Series,
@@ -82,3 +83,20 @@ export function getAccessToken(): LoginResponseData | null {
 		return null;
 	}
 }
+export const tagIndex = new Index({ tokenize: "forward" });
+export const articleCardIndex = new Document({
+	document: {
+		id: "id",
+		tag: "tags",
+		index: [
+			{
+				field: "title",
+				tokenize: "full",
+			},
+			{
+				field: "author",
+				tokenize: "strict",
+			},
+		],
+	},
+});

@@ -7,7 +7,7 @@
 		patchArticleCardItem,
 		deleteArticleItem,
 	} from "@/api/remote";
-	import { propConfirm, propMessage } from "@/api/local";
+	import { propConfirm, propMessage, articleCardIndex } from "@/api/local";
 	import type { SerializedArticleCard } from "@/typing";
 	import { getLocalDatetime, dateFormatter } from "@/utlis";
 	import ConfirmSlot from "@/components/ConfirmSlot.vue";
@@ -59,6 +59,7 @@
 				propMessage("Article deleted successfully.");
 				articles.splice(props.articleIndex, 1);
 			});
+			articleCardIndex.remove(articles[props.articleIndex].id);
 		} catch (error) {
 			console.error(error);
 			propMessage("Please try again.");
@@ -72,6 +73,7 @@
 				articles[props.articleIndex].id,
 				serializedArticleCard
 			);
+			articleCardIndex.update(articles[props.articleIndex]);
 		} catch (error) {
 			console.error(error);
 		}
@@ -86,6 +88,7 @@
 				articles[props.articleIndex].isPublished = true;
 				propMessage("Changed saved.");
 			});
+			articleCardIndex.update(articles[props.articleIndex]);
 		} catch (error) {
 			propMessage("Please try again.");
 		}
@@ -100,6 +103,7 @@
 				articles[props.articleIndex].isPublished = false;
 				propMessage("Changed saved.");
 			});
+			articleCardIndex.update(articles[props.articleIndex]);
 		} catch (error) {
 			propMessage("Please try again.");
 		}
@@ -114,6 +118,7 @@
 				articles[props.articleIndex].tags = localTags.value;
 				propMessage("Changed saved.");
 			});
+			articleCardIndex.update(articles[props.articleIndex]);
 		} catch (error) {
 			propMessage("Please try again.");
 		}

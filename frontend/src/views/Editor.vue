@@ -8,7 +8,7 @@
 	} from "@/api/remote";
 	import type { Article } from "@/typing";
 	import { onMounted, provide } from "vue";
-	import Header from "@/components/Header.vue";
+	import BlogHeader from "@/components/BlogHeader.vue";
 	import EditorBody from "@/components/articleEditor/EditorBody.vue";
 	import EditorHeader from "@/components/articleEditor/EditorHeader.vue";
 	const props = defineProps<{
@@ -43,7 +43,7 @@
 	}
 </script>
 <template>
-	<Header></Header>
+	<BlogHeader></BlogHeader>
 	<EditorHeader />
 	<EditorBody />
 </template>

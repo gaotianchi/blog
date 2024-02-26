@@ -121,3 +121,4 @@ export type ArticleCard = {
 	author: string;
 	planned: boolean;
 };
+export type ArticleSearchField = "title" | "tag" | "author";

@@ -1,9 +1,43 @@
 <script setup lang="ts">
+	import { useRoute, useRouter } from "vue-router";
 	import NavigationBar from "@/components/adminPanel/NavigationBar.vue";
-	import Header from "@/components/Header.vue";
+	import BlogHeader from "@/components/BlogHeader.vue";
+	import icons from "@/components/icons";
+	import { ref } from "vue";
+	const query = ref("");
+	const route = useRoute();
+	const router = useRouter();
+	function search(): void {
+		if (query.value.length === 0) {
+			router.push({
+				name: "ArticlesPanel",
+			});
+		}
+		router.push({
+			name: "ArticlesPanel",
+			query: {
+				q: query.value,
+			},
+		});
+	}
 </script>
 <template>
-	<Header />
+	<BlogHeader>
+		<template #search-field>
+			<form @submit.prevent="search" class="parent-41nyyA43kg">
+				<component :is="icons.search" class="icon" />
+				<input
+					type="search"
+					name="query"
+					id="query"
+					class="parent-4kcSZ0Nh1g"
+					aria-label="query"
+					v-model="query"
+				/>
+				<button type="submit" style="display: none"></button>
+			</form>
+		</template>
+	</BlogHeader>
 	<div class="parent-E13eak3oyg">
 		<div class="parent-EJqWTJnjyg">
 			<NavigationBar />
@@ -25,5 +59,14 @@
 	}
 	.parent-Ny1f6Jhsye {
 		padding: 0 20px;
+	}
+	.parent-41nyyA43kg {
+		width: 300px;
+		height: 45px;
+		display: flex;
+		align-items: center;
+	}
+	.parent-4kcSZ0Nh1g {
+		width: 100%;
 	}
 </style>

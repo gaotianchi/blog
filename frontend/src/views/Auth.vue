@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { useRoute, useRouter } from "vue-router";
 	import type { AuthAction } from "@/typing";
-	import Header from "@/components/Header.vue";
+	import BlogHeader from "@/components/BlogHeader.vue";
 	import icons from "@/components/icons";
 	const route = useRoute();
 	const router = useRouter();
@@ -22,7 +22,7 @@
 	}
 </script>
 <template>
-	<Header />
+	<BlogHeader />
 	<div class="parent-N1WKCpLjyx">
 		<div class="parent-VJ9DyR8skl">
 			<div class="parent-NJPD3aUi1x">
