@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { onMounted, ref, watch, type Ref, computed } from "vue";
-	import { useRoute } from "vue-router";
+	import { useRoute, useRouter } from "vue-router";
 	import { getAllArticles, allRemoteArticleCards } from "@/api/remote";
 	import { articleCardIndex } from "@/api/local";
 	import ArticleCardVue from "./ArticleCard.vue";
@@ -12,6 +12,7 @@
 		CardWithIndex,
 	} from "@/typing";
 	const route = useRoute();
+	const router = useRouter();
 	const currentArticleCards = ref(allRemoteArticleCards);
 	const articleFilter: Ref<ArticleCardStatus> = ref("all");
 	const articlesWithIndex = computed<CardWithIndex[]>(() => {
@@ -63,7 +64,7 @@
 		switch (status) {
 			case "published":
 				return allRemoteArticleCards.filter(
-					(i) => i.isPublished === true
+					(i) => i.isPublished === true && i.planned === false
 				);
 			case "planned":
 				return allRemoteArticleCards.filter((i) => i.planned === true);
@@ -71,7 +72,7 @@
 				return allRemoteArticleCards.filter(
 					(i) => i.isPublished === false
 				);
-			case "all":
+			default:
 				return allRemoteArticleCards;
 		}
 	}
@@ -94,11 +95,14 @@
 		}
 	}
 	function updateCurrentCards(): void {
-		currentArticleCards.value = getFilteredCards(
-			route.query.filter as ArticleSearchField,
-			route.query.query as string
-		);
-		console.log(currentArticleCards.value);
+		if (route.query.filter && route.query.query) {
+			currentArticleCards.value = getFilteredCards(
+				route.query.filter as ArticleSearchField,
+				route.query.query as string
+			);
+		} else {
+			currentArticleCards.value = allRemoteArticleCards;
+		}
 	}
 	async function initAllRemoteArticleCards(): Promise<void> {
 		try {
@@ -111,6 +115,16 @@
 			console.error(error);
 		}
 	}
+	function updateWithStatus(status: ArticleCardStatus): void {
+		router.push({
+			name: "ArticlesPanel",
+			query: {
+				filter: "status",
+				query: status,
+			},
+		});
+		articleFilter.value = status;
+	}
 </script>
 <template>
 	<div class="parent-Eysk5zpi1e">
@@ -118,7 +132,7 @@
 			<div class="parent-NyBb9GHhyg">
 				<div
 					class="child-4yUMcMShJl"
-					@click=""
+					@click="updateWithStatus('all')"
 					:class="{ active: articleFilter === 'all' }"
 				>
 					<span class="child-4kw8qGH3yx">All</span>
@@ -131,7 +145,7 @@
 				</div>
 				<div
 					class="child-4yUMcMShJl"
-					@click=""
+					@click="updateWithStatus('published')"
 					:class="{ active: articleFilter === 'published' }"
 				>
 					<span class="child-4kw8qGH3yx">Published</span>
@@ -144,7 +158,7 @@
 				</div>
 				<div
 					class="child-4yUMcMShJl"
-					@click=""
+					@click="updateWithStatus('planned')"
 					:class="{ active: articleFilter === 'planned' }"
 				>
 					<span class="child-4kw8qGH3yx">Planned</span>
@@ -157,7 +171,7 @@
 				</div>
 				<div
 					class="child-4yUMcMShJl"
-					@click=""
+					@click="updateWithStatus('draft')"
 					:class="{ active: articleFilter === 'draft' }"
 				>
 					<span class="child-4kw8qGH3yx">Draft</span>
