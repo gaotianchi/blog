@@ -22,7 +22,7 @@
 	<BlogHeader>
 		<template #search-field>
 			<form @submit.prevent="search" class="parent-41nyyA43kg">
-				<component :is="icons.search" class="icon" />
+				<component :is="icons.search" class="icon big" />
 				<input
 					type="search"
 					name="query"
@@ -62,8 +62,28 @@
 		height: 45px;
 		display: flex;
 		align-items: center;
+		border-radius: 10px;
+		box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
+		padding: 0 10px;
+		background: rgb(255, 255, 255);
 	}
 	.parent-4kcSZ0Nh1g {
 		width: 100%;
+		height: 100%;
+		outline: none;
+		border: none;
+		font-size: 17px;
+		line-height: 17px;
+		padding-left: 10px;
+	}
+	.parent-4kcSZ0Nh1g::-webkit-search-cancel-button {
+		/* -webkit-appearance: none; */
+		height: 16px;
+		width: 16px;
+		cursor: pointer;
+	}
+	.parent-4kcSZ0Nh1g:focus-visible {
+		border: none;
+		outline: none;
 	}
 </style>

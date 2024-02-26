@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { onMounted, reactive, ref, watch } from "vue";
+	import { onMounted, ref, watch } from "vue";
 	import { useRoute } from "vue-router";
 	import { getAllArticles, allRemoteArticleCards } from "@/api/remote";
 	import { articleCardIndex } from "@/api/local";
@@ -27,22 +27,34 @@
 		field: ArticleSearchField
 	): ArticleCard[] {
 		let searchResult = [];
+		let articleIds: number[] = [];
+		let resultArticles: ArticleCard[] = [];
 		switch (field) {
 			case "author":
 				searchResult = articleCardIndex.search(query, ["author"]);
+				articleIds = (searchResult[0]?.result as number[]) || [];
+				resultArticles = allRemoteArticleCards.filter((articleCard) =>
+					articleIds.includes(articleCard.id)
+				);
+				return resultArticles || [];
 			case "tag":
+				const tags = query.split(",").map((i) => i.trim()) || [];
 				searchResult = articleCardIndex.search({
-					tag: query.split(",").map((i) => i.trim()) || [],
+					tag: tags,
 				});
+				articleIds = (searchResult[0]?.result as number[]) || [];
+				resultArticles = allRemoteArticleCards.filter((articleCard) =>
+					articleIds.includes(articleCard.id)
+				);
+				return resultArticles || [];
 			default:
 				searchResult = articleCardIndex.search(query, ["title"]);
+				articleIds = (searchResult[0]?.result as number[]) || [];
+				resultArticles = allRemoteArticleCards.filter((articleCard) =>
+					articleIds.includes(articleCard.id)
+				);
+				return resultArticles || [];
 		}
-		const articleIds = searchResult.map((i) => i.result)[0] || [];
-		console.log(articleIds);
-		const resultArticles = allRemoteArticleCards.filter((articleCard) =>
-			articleIds.includes(articleCard.id)
-		);
-		return resultArticles || [];
 	}
 	async function initAllRemoteArticleCards(): Promise<void> {
 		try {
