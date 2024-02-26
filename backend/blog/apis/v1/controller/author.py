@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, cast
 
-from flask import Blueprint, g, jsonify, request
+from flask import Blueprint, g, jsonify, request, url_for
 
 from blog.apis.v1.errors import abort
 from blog.apis.v1.schemas import schema_10  # type: ignore
@@ -13,6 +13,7 @@ from blog.apis.v1.schemas import (  # type: ignore
     schema_08,
     schema_09,
     schema_11,
+    schema_12,
 )
 from blog.model.database import Article, Series, Tag, User
 from blog.utlis import get_all_image_url, serialize_datetime, validator
@@ -138,6 +139,28 @@ def get_all_series():
     if validator(seriesData, schema_08):
         return abort()
     return jsonify(seriesData), 200
+
+
+def get_series_card_data(s: Series) -> dict[str, int | str]:
+    result: dict[str, int | str] = {}
+    result["id"] = s.id
+    result["name"] = s.name
+    result["cover"] = url_for("v1.media.download", filename=s.cover, _external=True)
+    result["author"] = s.author.nickname
+    return result
+
+
+@author.route("/series-cards", methods=["GET"])
+@auth_required
+def get_series_cards():
+    current_user = cast(User, g.current_user)
+    series = cast(list[Series], Series.query.with_parent(current_user).all())
+    response_data: list[dict[str, int | str]] = []
+    for s in series:
+        response_data.append(get_series_card_data(s))
+    if validator(response_data, schema_12):
+        return abort()
+    return jsonify(response_data), 200
 
 
 def get_article_card(a: Article) -> dict[str, str | bool | list[str] | int]:

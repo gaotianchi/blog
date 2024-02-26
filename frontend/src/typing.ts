@@ -122,7 +122,17 @@ export type ArticleCard = {
 export type ArticleCardMeta = "title" | "tag" | "author";
 export type ArticleSearchField = ArticleCardMeta | "status";
 export type ArticleCardStatus = "all" | "published" | "planned" | "draft";
-export type CardWithIndex = {
+export type ArticleCardWithIndex = {
 	index: number;
 	article: ArticleCard;
+};
+export type SeriesCard = {
+	id: number;
+	name: string;
+	cover: string;
+	author: string;
+};
+export type SeriesCardWithIndex = {
+	index: number;
+	series: SeriesCard;
 };

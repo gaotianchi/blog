@@ -214,7 +214,21 @@
 							/>
 						</div>
 					</div>
-					<div class="child-41BOZ-2sJx">
+					<div
+						class="child-41BOZ-2sJx"
+						@click="
+							() => {
+								router.push({
+									name: 'ArticlesPanel',
+									query: {
+										filter: 'author',
+										query: articles[props.articleIndex]
+											.author,
+									},
+								});
+							}
+						"
+					>
 						<component
 							:is="icons.author"
 							class="icon child-NkE1rZnskl"
@@ -251,6 +265,17 @@
 						<div
 							class="child-EyLCwWno1l"
 							v-for="tag in articles[props.articleIndex].tags"
+							@click="
+								() => {
+									router.push({
+										name: 'ArticlesPanel',
+										query: {
+											filter: 'tag',
+											query: tag,
+										},
+									});
+								}
+							"
 						>
 							<span class="child-Ek0bDMhsJe">
 								{{ tag }}

@@ -9,14 +9,14 @@
 		ArticleCardStatus,
 		ArticleSearchField,
 		ArticleCardMeta,
-		CardWithIndex,
+		ArticleCardWithIndex,
 	} from "@/typing";
 	const route = useRoute();
 	const router = useRouter();
 	const currentArticleCards = ref(allRemoteArticleCards);
 	const articleFilter: Ref<ArticleCardStatus> = ref("all");
-	const articlesWithIndex = computed<CardWithIndex[]>(() => {
-		const result: CardWithIndex[] = [];
+	const articlesWithIndex = computed<ArticleCardWithIndex[]>(() => {
+		const result: ArticleCardWithIndex[] = [];
 		currentArticleCards.value.forEach((card) => {
 			const index = allRemoteArticleCards.findIndex(
 				(i) => i.id === card.id
@@ -138,7 +138,10 @@
 					<span class="child-4kw8qGH3yx">All</span>
 					<span
 						class="child-NyINgmrhkl"
-						v-if="articleFilter === 'all'"
+						v-if="
+							articleFilter === 'all' &&
+							route.query?.filter === 'status'
+						"
 					>
 						{{ currentArticleCards.length }}
 					</span>
@@ -151,7 +154,10 @@
 					<span class="child-4kw8qGH3yx">Published</span>
 					<span
 						class="child-NyINgmrhkl"
-						v-if="articleFilter === 'published'"
+						v-if="
+							articleFilter === 'published' &&
+							route.query?.filter === 'status'
+						"
 					>
 						{{ currentArticleCards.length }}
 					</span>
@@ -164,7 +170,10 @@
 					<span class="child-4kw8qGH3yx">Planned</span>
 					<span
 						class="child-NyINgmrhkl"
-						v-if="articleFilter === 'planned'"
+						v-if="
+							articleFilter === 'planned' &&
+							route.query?.filter === 'status'
+						"
 					>
 						{{ currentArticleCards.length }}
 					</span>
@@ -177,7 +186,10 @@
 					<span class="child-4kw8qGH3yx">Draft</span>
 					<span
 						class="child-NyINgmrhkl"
-						v-if="articleFilter === 'draft'"
+						v-if="
+							articleFilter === 'draft' &&
+							route.query?.filter === 'status'
+						"
 					>
 						{{ currentArticleCards.length }}
 					</span>

@@ -49,6 +49,13 @@ const router = createRouter({
 						import("@/components/adminPanel/ArticlesPanel.vue"),
 					beforeEnter: [removeQueryParams],
 				},
+				{
+					path: "series",
+					name: "SeriesPanel",
+					component: () =>
+						import("@/components/adminPanel/SeriesPanel.vue"),
+					beforeEnter: [removeQueryParams],
+				},
 			],
 		},
 		{

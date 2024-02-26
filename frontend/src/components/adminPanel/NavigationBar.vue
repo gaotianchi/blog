@@ -44,7 +44,10 @@
 				<component :is="icons.article" class="icon child-41G37ensyx" />
 				<span class="child-VkvsQehjyg">Article</span>
 			</div>
-			<div class="child-E17jXe3okl">
+			<div
+				class="child-E17jXe3okl"
+				@click="router.push({ name: 'SeriesPanel' })"
+			>
 				<component :is="icons.series" class="icon child-41G37ensyx" />
 				<span class="child-VkvsQehjyg">Series</span>
 			</div>

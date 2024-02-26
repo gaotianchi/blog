@@ -201,3 +201,23 @@ schema_11 = {
         "planned",
     ],
 }
+
+schema_12 = {
+    "$schema": SCHEMA,
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "id": {"type": "integer"},
+            "author": {"type": "string"},
+            "name": {"type": "string"},
+            "cover": {"type": "string"},
+        },
+        "required": [
+            "id",
+            "author",
+            "name",
+            "cover",
+        ],
+    },
+}

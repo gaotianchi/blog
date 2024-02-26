@@ -8,6 +8,7 @@ import type {
 	SerializedArticle,
 	SerializedArticleCard,
 	ArticleCard,
+	SeriesCard,
 } from "@/typing";
 import { rootUrl } from "@/confit";
 import { defaultArticle, defaultSeries } from "@/defaults";
@@ -18,6 +19,7 @@ import { deserizalizeArticle } from "@/utlis";
 export const remoteArticle: Article = reactive({ ...defaultArticle });
 export const remoteSeries: Series = reactive({ ...defaultSeries });
 export const allRemoteArticleCards: ArticleCard[] = reactive([]);
+export const allRemoteSeriesCards: SeriesCard[] = reactive([]);
 export const allRemoteSeries: Series[] = reactive([]);
 export async function getAllRemoteTags(): Promise<Tag[]> {
 	const url = rootUrl + "/author/tags";
@@ -268,6 +270,22 @@ export async function deleteArticleItem(
 	});
 	if (response.status === 204) {
 		return;
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error;
+	}
+}
+export async function getAllRemoteSeriesCards(): Promise<SeriesCard[]> {
+	const url = rootUrl + "/author/series-cards";
+	const tokenData = getAccessToken();
+	const response = await fetch(url, {
+		headers: {
+			Authorization: tokenData?.tokenType + " " + tokenData?.accessToken,
+		},
+	});
+	if (response.status === 200) {
+		const cardData = await response.json();
+		return cardData;
 	} else {
 		const errorResponse = await response.json();
 		throw errorResponse.error;
