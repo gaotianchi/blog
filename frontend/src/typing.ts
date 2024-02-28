@@ -7,6 +7,7 @@ export type Series = {
 	name: string;
 	cover: string;
 	authorId: number;
+	createdAt: string;
 };
 export type SerializedArticle = {
 	id: number;
@@ -131,6 +132,7 @@ export type SeriesCard = {
 	name: string;
 	cover: string;
 	author: string;
+	createdAt: string;
 };
 export type SeriesCardWithIndex = {
 	index: number;

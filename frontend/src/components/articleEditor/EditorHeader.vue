@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { inject, reactive, watch } from "vue";
-	import { isSameArticle, isShallowEqual, serializeArticle } from "@/utlis";
+	import { isSameArticle, serializeArticle } from "@/utlis";
 	import { propConfirm, propMessage, localArticle } from "@/api/local";
 	import { remoteArticle, patchArticleItem } from "@/api/remote";
 	import icons from "@/components/icons";

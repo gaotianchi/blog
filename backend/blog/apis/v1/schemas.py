@@ -86,13 +86,9 @@ schema_05 = {
         "authorId": {"type": "integer"},
         "name": {"type": "string"},
         "cover": {"type": "string"},
+        "createdAt": {"type": "string", "pattern": DATETIMEPATTERN},
     },
-    "required": [
-        "id",
-        "authorId",
-        "name",
-        "cover",
-    ],
+    "required": ["id", "authorId", "name", "cover", "createdAt"],
 }
 
 schema_06 = {
@@ -129,13 +125,9 @@ schema_08 = {
             "authorId": {"type": "integer"},
             "name": {"type": "string"},
             "cover": {"type": "string"},
+            "createdAt": {"type": "string", "pattern": DATETIMEPATTERN},
         },
-        "required": [
-            "id",
-            "authorId",
-            "name",
-            "cover",
-        ],
+        "required": ["id", "authorId", "name", "cover", "createdAt"],
     },
 }
 
@@ -212,12 +204,20 @@ schema_12 = {
             "author": {"type": "string"},
             "name": {"type": "string"},
             "cover": {"type": "string"},
+            "createdAt": {"type": "string", "pattern": DATETIMEPATTERN},
         },
-        "required": [
-            "id",
-            "author",
-            "name",
-            "cover",
-        ],
+        "required": ["id", "author", "name", "cover", "createdAt"],
     },
+}
+schema_13 = {
+    "$schema": SCHEMA,
+    "type": "object",
+    "properties": {
+        "id": {"type": "integer"},
+        "author": {"type": "string"},
+        "name": {"type": "string"},
+        "cover": {"type": "string"},
+        "createdAt": {"type": "string", "pattern": DATETIMEPATTERN},
+    },
+    "required": ["id", "author", "name", "cover", "createdAt"],
 }

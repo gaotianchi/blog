@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, cast
+from typing import Any, Union, cast
 
 from flask import Blueprint, g, jsonify, request, url_for
 
@@ -14,6 +14,7 @@ from blog.apis.v1.schemas import (  # type: ignore
     schema_09,
     schema_11,
     schema_12,
+    schema_13,
 )
 from blog.model.database import Article, Series, Tag, User
 from blog.utlis import get_all_image_url, serialize_datetime, validator
@@ -57,13 +58,16 @@ def update_series(id: int):
     if not current_series:
         return abort(message="No series found", status_code=404)
     data = cast(dict[str, Any], request.json)
-    if validator(data, schema_05):
+    if validator(data, schema_06):
         return abort()
     data_to_update = {}
     data_to_update["name"] = data["name"]
     data_to_update["cover"] = data["cover"]
-    new_series = Series.update(**data_to_update)  # type: ignore
-    return jsonify(new_series.to_dict()), 200
+    new_series = current_series.update(**data_to_update)  # type: ignore
+    response_data = get_series_card_data(new_series)
+    if validator(response_data, schema_13):
+        return abort()
+    return jsonify(response_data), 200
 
 
 @author.route("/article/<int:id>", methods=["PATCH"])
@@ -147,6 +151,7 @@ def get_series_card_data(s: Series) -> dict[str, int | str]:
     result["name"] = s.name
     result["cover"] = url_for("v1.media.download", filename=s.cover, _external=True)
     result["author"] = s.author.nickname
+    result["createdAt"] = serialize_datetime(s.created_at)
     return result
 
 
@@ -219,4 +224,28 @@ def delete_ariticle(id: int):
     if not current_article:
         return abort(message="No article found.")
     current_article.delete()
+    return jsonify("Deleted"), 204
+
+
+@author.route("/series-articles-count/<int:series_id>", methods=["GET"])  # type: ignore
+def get_series_articles_count(series_id: int):
+    current_series = cast(Series, Series.query.get(series_id))
+    if not current_series:
+        return abort(message="No series found.", status_code=404)
+    articles = cast(Union[None | Article, list[Article]], current_series.articles)
+    if isinstance(articles, Article):
+        return jsonify(1), 200
+    elif articles is None:
+        return jsonify(0), 200
+    else:
+        return jsonify(len(articles)), 200
+
+
+@author.route("/series/<int:id>", methods=["DELETE"])
+@auth_required
+def delete_series(id: int):
+    current_series = cast(Series, Series.query.get(id))
+    if not current_series:
+        return abort(message="No series found.", status_code=404)
+    current_series.delete()
     return jsonify("Deleted"), 204

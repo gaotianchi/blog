@@ -22,7 +22,8 @@ import DeleteVue from "./Delete.vue";
 import AuthorVue from "./Author.vue";
 import TagsVue from "./Tags.vue";
 import SearchVue from "./Search.vue";
-
+import CountVue from "./Count.vue";
+import MoreVue from "./More.vue";
 export default {
 	fail: FailVue,
 	loading: LoadingVue,
@@ -48,4 +49,6 @@ export default {
 	author: AuthorVue,
 	tags: TagsVue,
 	search: SearchVue,
+	count: CountVue,
+	more: MoreVue,
 };

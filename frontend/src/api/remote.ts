@@ -128,7 +128,7 @@ export async function validateUser(): Promise<boolean> {
 	}
 }
 export async function postMediaItem(file: File): Promise<{ url: string }> {
-	const url = "http://localhost:5000/v1/media/uploads";
+	const url = rootUrl + "/media/uploads";
 	const formData = new FormData();
 	formData.append("file", file);
 	const tokenData = getAccessToken();
@@ -286,6 +286,56 @@ export async function getAllRemoteSeriesCards(): Promise<SeriesCard[]> {
 	if (response.status === 200) {
 		const cardData = await response.json();
 		return cardData;
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error;
+	}
+}
+export async function getSeriesArticlesCount(
+	seriesId: number | string
+): Promise<number> {
+	const url = rootUrl + "/author/series-articles-count/" + seriesId;
+	const response = await fetch(url);
+	if (response.status === 200) {
+		const count = await response.json();
+		return count;
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error;
+	}
+}
+export async function deleteSeriesItem(
+	seriesId: number | string
+): Promise<void> {
+	const url = rootUrl + "/author/series/" + seriesId;
+	const tokenData = getAccessToken();
+	const response = await fetch(url, {
+		method: "DELETE",
+		headers: {
+			Authorization: tokenData?.tokenType + " " + tokenData?.accessToken,
+		},
+	});
+	if (response.status === 204) {
+		return;
+	} else {
+		const errorResponse = await response.json();
+		throw errorResponse.error;
+	}
+}
+export async function patchSeriesCard(card: SeriesCard): Promise<SeriesCard> {
+	const url = rootUrl + "/author/series/" + card.id;
+	const tokenData = getAccessToken();
+	const response = await fetch(url, {
+		method: "PATCH",
+		headers: {
+			Authorization: tokenData?.tokenType + " " + tokenData?.accessToken,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(card),
+	});
+	if (response.status === 200) {
+		const card = await response.json();
+		return card;
 	} else {
 		const errorResponse = await response.json();
 		throw errorResponse.error;

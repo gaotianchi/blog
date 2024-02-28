@@ -60,43 +60,6 @@ export function isSameArticle(a: Article, b: Article): boolean {
 	return true;
 }
 
-export function isShallowEqual(a: any, b: any): boolean {
-	const aProps = Object.getOwnPropertyNames(a);
-	const bProps = Object.getOwnPropertyNames(b);
-
-	if (aProps.length !== bProps.length) {
-		return false;
-	}
-
-	for (let i = 0; i < aProps.length; i++) {
-		const propName = aProps[i];
-
-		const propA = a[propName];
-		const propB = b[propName];
-
-		if (propA instanceof Date && propB instanceof Date) {
-			console.log(propName);
-			console.log(serializeDate(propA));
-			console.log(serializeDate(propB));
-			return serializeDate(propA) === serializeDate(propB);
-		}
-		if (typeof propA === "object") {
-			if (!isShallowEqual(propA, propB)) {
-				return false;
-			}
-		}
-		if (Array.isArray(propA) && Array.isArray(propB)) {
-			if (!arraysHaveSameElements(propA, propB)) {
-				return false;
-			}
-		}
-		if (propA !== propB) {
-			return false;
-		}
-	}
-
-	return true;
-}
 
 function arraysHaveSameElements(arr1: any[], arr2: any[]) {
 	if (arr1.length !== arr2.length) {
@@ -108,7 +71,7 @@ function arraysHaveSameElements(arr1: any[], arr2: any[]) {
 		arr2.every((item) => arr1.includes(item))
 	);
 }
-function serializeDate(d: Date): string {
+export function serializeDate(d: Date): string {
 	const utcMoment = moment.utc(d);
 	return utcMoment.format("YYYY-MM-DDTHH:mm:ssZZ");
 }

@@ -76,7 +76,6 @@ class User(db.Model):
             tokenValidityPeriod=self.token_validity_period,
         )
 
-
 class Tag(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255), unique=True)
@@ -105,6 +104,7 @@ class Series(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255))
     cover: Mapped[str] = mapped_column(String(255))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow())
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     author: Mapped["User"] = relationship("User", back_populates="series")
     articles: Mapped["list[Article]"] = relationship("Article", back_populates="series")
@@ -123,16 +123,21 @@ class Series(db.Model):
         db.session.commit()
         return Series.query.get(self.id)  # type:ignore
 
+    def delete(self) -> None:
+        db.session.delete(self)
+        db.session.commit()
+
     def to_dict(self):
         return dict(
             id=self.id,
             name=self.name,
             cover=self.cover,
             authorId=self.author_id,
+            createdAt=serialize_datetime(self.created_at),
         )
 
     def __repr__(self) -> str:
-        return f"Series <{self.name}>"
+        return f"Series <{self.id}>"
 
 
 class Article(db.Model):

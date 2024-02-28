@@ -9,7 +9,7 @@ import type {
 	Confirm,
 	PreviewCover,
 } from "@/typing";
-import { dateFormatter } from "@/utlis";
+import { dateFormatter, serializeDate } from "@/utlis";
 export const defaultTag: Tag = {
 	id: 0,
 	name: "",
@@ -19,6 +19,7 @@ export const defaultSeries: Series = {
 	name: "",
 	cover: "",
 	authorId: 0,
+	createdAt: serializeDate(new Date()),
 };
 export const defaultArticle: Article = {
 	id: 0,
