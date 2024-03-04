@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { confirmProp } from "@/api/local";
+	import { confirmProp } from "@/store";
 	import { defaultConfirm } from "@/defaults";
 	function submitDecision(decision: boolean): void {
 		if (decision) {

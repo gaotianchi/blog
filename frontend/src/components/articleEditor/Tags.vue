@@ -1,11 +1,14 @@
 <script setup lang="ts">
-	import { onMounted, ref, type Ref, computed, watch } from "vue";
-	import { Index } from "flexsearch";
+	import { onMounted, ref, type Ref, computed, watch, inject } from "vue";
 	import type { Tag } from "@/typing";
 	import { getAllRemoteTags } from "@/api/remote";
-	import { localArticle, tagIndex } from "@/api/local";
+	import { tagIndex } from "@/store";
 	import InputA from "@/components/InputA.vue";
-	const model: Ref<string> = ref(localArticle.tags.join(","));
+	import { editorLocalAndRemote } from "@/store";
+	const articleId = inject("articleId") as number;
+	const model: Ref<string> = ref(
+		editorLocalAndRemote[articleId].local.tags.join(",")
+	);
 	const allTags: Ref<Tag[]> = ref([]);
 	const typedTags = computed<string[]>(() => {
 		const tagArr = model.value?.split(",").map((i) => i.trim()) || [];
@@ -44,7 +47,7 @@
 		}
 	});
 	watch(currentTags, () => {
-		localArticle.tags = currentTags.value;
+		editorLocalAndRemote[articleId].local.tags = currentTags.value;
 	});
 	async function initTagSearchEngine(): Promise<void> {
 		allTags.value = await getAllRemoteTags();

@@ -13,8 +13,6 @@ from blog.apis.v1.schemas import (  # type: ignore
     schema_08,
     schema_09,
     schema_11,
-    schema_12,
-    schema_13,
 )
 from blog.model.database import Article, Series, Tag, User
 from blog.utlis import get_all_image_url, serialize_datetime, validator
@@ -26,7 +24,7 @@ author = Blueprint("author", __name__, url_prefix="/author")
 
 @author.route("/articles", methods=["POST"])
 @auth_required
-def new_article():
+def post_article():
     current_user = cast(User, g.current_user)
     new_article = Article.create(author=current_user)
     response_data = new_article.to_dict()
@@ -35,44 +33,9 @@ def new_article():
     return jsonify(response_data), 201
 
 
-@author.route("/series", methods=["POST"])
-@auth_required
-def new_series():
-    data = cast(dict[str, Any], request.json)
-    if validator(data, schema_06):
-        return abort()
-    current_user = cast(User, g.current_user)
-    new_series = Series.create(
-        author=current_user, name=data["name"], cover=data["cover"]
-    )
-    response_data = new_series.to_dict()
-    if validator(response_data, schema_05):
-        return abort()
-    return jsonify(response_data), 201
-
-
-@author.route("/series/<int:id>", methods=["PATCH"])
-@auth_required
-def update_series(id: int):
-    current_series = cast(Series, Series.query.get(id))
-    if not current_series:
-        return abort(message="No series found", status_code=404)
-    data = cast(dict[str, Any], request.json)
-    if validator(data, schema_06):
-        return abort()
-    data_to_update = {}
-    data_to_update["name"] = data["name"]
-    data_to_update["cover"] = data["cover"]
-    new_series = current_series.update(**data_to_update)  # type: ignore
-    response_data = get_series_card_data(new_series)
-    if validator(response_data, schema_13):
-        return abort()
-    return jsonify(response_data), 200
-
-
 @author.route("/article/<int:id>", methods=["PATCH"])
 @auth_required
-def update_article(id: int):
+def patch_article(id: int):
     current_article = cast(Article, Article.query.get(id))
     if not current_article:
         return abort(message="No article found.")
@@ -89,7 +52,7 @@ def update_article(id: int):
         data["publishedAt"], "%Y-%m-%dT%H:%M:%S%z"
     )
     if data["seriesId"]:
-        series = Series.query.get(data["seriesId"])
+        series = cast(Series, Series.query.get(data["seriesId"]))
         data_to_update["series"] = series
     tags: list[str] = data["tags"]
     data_to_update["tags"] = Tag.create(current_user, *tags)
@@ -99,73 +62,6 @@ def update_article(id: int):
         return abort()
 
     return jsonify(response_data), 200  # type: ignore
-
-
-@author.route("/article/<int:id>", methods=["GET"])
-def get_article_data(id: int):
-    current_article = cast(Article, Article.query.get(id))
-    if not current_article:
-        return abort(message="No article found.", status_code=404)
-    response_data = current_article.to_dict()  # type: ignore
-    if validator(response_data, schema_04):  # type: ignore
-        return abort()
-    return jsonify(response_data), 200
-
-
-@author.route("/series/<int:id>", methods=["GET"])
-def get_series_data(id: int):
-    current_series = cast(Series, Series.query.get(id))
-    if not current_series:
-        return abort(message="No series fount", status_code=404)
-    data = current_series.to_dict()
-    if validator(data, schema_05):
-        return abort()
-    return jsonify(data), 200
-
-
-@author.route("/tags", methods=["GET"])
-@auth_required
-def get_all_tags():
-    current_user = cast(User, g.current_user)
-    tags = cast(list[Tag], Tag.query.with_parent(current_user).all())
-    tagsData = [dict(**tag.to_dict()) for tag in tags]  # type: ignore
-    if validator(tagsData, schema_07):
-        return abort()
-    return jsonify(tagsData), 200
-
-
-@author.route("/series", methods=["GET"])
-@auth_required
-def get_all_series():
-    current_user = cast(User, g.current_user)
-    series = cast(list[Series], Series.query.with_parent(current_user).all())
-    seriesData = [dict(**s.to_dict()) for s in series]  # type: ignore
-    if validator(seriesData, schema_08):
-        return abort()
-    return jsonify(seriesData), 200
-
-
-def get_series_card_data(s: Series) -> dict[str, int | str]:
-    result: dict[str, int | str] = {}
-    result["id"] = s.id
-    result["name"] = s.name
-    result["cover"] = url_for("v1.media.download", filename=s.cover, _external=True)
-    result["author"] = s.author.nickname
-    result["createdAt"] = serialize_datetime(s.created_at)
-    return result
-
-
-@author.route("/series-cards", methods=["GET"])
-@auth_required
-def get_series_cards():
-    current_user = cast(User, g.current_user)
-    series = cast(list[Series], Series.query.with_parent(current_user).all())
-    response_data: list[dict[str, int | str]] = []
-    for s in series:
-        response_data.append(get_series_card_data(s))
-    if validator(response_data, schema_12):
-        return abort()
-    return jsonify(response_data), 200
 
 
 def get_article_card(a: Article) -> dict[str, str | bool | list[str] | int]:
@@ -181,9 +77,9 @@ def get_article_card(a: Article) -> dict[str, str | bool | list[str] | int]:
     return card_data
 
 
-@author.route("/articles", methods=["GET"])
+@author.route("/article-cards", methods=["GET"])
 @auth_required
-def get_all_articles():
+def get_all_article_cards():
     current_user = cast(User, g.current_user)
     articles = cast(list[Article], Article.query.with_parent(current_user).all())
     response_data: list[dict[str, str | bool | list[str] | int]] = []
@@ -196,7 +92,7 @@ def get_all_articles():
 
 @author.route("/article-card/<int:id>", methods=["PATCH"])
 @auth_required
-def update_article_card(id: int):
+def patch_article_card(id: int):
     current_article = cast(Article, Article.query.get(id))
     if not current_article:
         return abort(message="No article found.")
@@ -227,18 +123,65 @@ def delete_ariticle(id: int):
     return jsonify("Deleted"), 204
 
 
-@author.route("/series-articles-count/<int:series_id>", methods=["GET"])  # type: ignore
-def get_series_articles_count(series_id: int):
-    current_series = cast(Series, Series.query.get(series_id))
+@author.route("/series", methods=["POST"])
+@auth_required
+def post_series():
+    data = cast(dict[str, Any], request.json)
+    if validator(data, schema_06):
+        return abort()
+    current_user = cast(User, g.current_user)
+    new_series = Series.create(
+        author=current_user,
+        name=data["name"],
+        cover=url_for("v1.media.download", filename=data["cover"], _external=True),
+    )
+    response_data = new_series.to_dict()
+    if validator(response_data, schema_05):
+        return abort()
+    return jsonify(response_data), 201
+
+
+@author.route("/series/<int:id>", methods=["PATCH"])
+@auth_required
+def patch_series(id: int):
+    current_series = cast(Series, Series.query.get(id))
     if not current_series:
-        return abort(message="No series found.", status_code=404)
-    articles = cast(Union[None | Article, list[Article]], current_series.articles)
-    if isinstance(articles, Article):
-        return jsonify(1), 200
-    elif articles is None:
-        return jsonify(0), 200
-    else:
-        return jsonify(len(articles)), 200
+        return abort(message="No series found", status_code=404)
+    data = cast(dict[str, Any], request.json)
+    if validator(data, schema_06):
+        return abort()
+    data_to_update = {}
+    data_to_update["name"] = data["name"]
+    data_to_update["cover"] = url_for(
+        "v1.media.download", filename=data["cover"], _external=True
+    )
+    new_series = current_series.update(**data_to_update)  # type: ignore
+    response_data = new_series.to_dict()
+    if validator(response_data, schema_05):
+        return abort()
+    return jsonify(response_data), 200
+
+
+@author.route("/series/<int:id>", methods=["GET"])
+def get_series_item(id: int):
+    current_series = cast(Series, Series.query.get(id))
+    if not current_series:
+        return abort(message="No series fount", status_code=404)
+    data = current_series.to_dict()
+    if validator(data, schema_05):
+        return abort()
+    return jsonify(data), 200
+
+
+@author.route("/series", methods=["GET"])
+@auth_required
+def get_all_series():
+    current_user = cast(User, g.current_user)
+    series = cast(list[Series], Series.query.with_parent(current_user).all())
+    seriesData = [dict(**s.to_dict()) for s in series]  # type: ignore
+    if validator(seriesData, schema_08):
+        return abort()
+    return jsonify(seriesData), 200
 
 
 @author.route("/series/<int:id>", methods=["DELETE"])
@@ -249,3 +192,52 @@ def delete_series(id: int):
         return abort(message="No series found.", status_code=404)
     current_series.delete()
     return jsonify("Deleted"), 204
+
+
+@author.route("/series-articles-count/<int:series_id>", methods=["GET"])  # type: ignore
+def get_series_articles_count(series_id: int):
+    current_series = cast(Series, Series.query.get(series_id))
+    if not current_series:
+        return abort(message="No series found.", status_code=404)
+    count = Article.query.with_parent(current_series).count()
+    return jsonify(count), 200
+
+
+@author.route("/articles/<int:series_id>", methods=["GET"])
+@auth_required
+def get_articles_by_series(series_id: int):
+    current_series = cast(Series, Series.query.get(series_id))
+    if not current_series:
+        return abort(message="No series found.", status_code=404)
+    articles = cast(Union[None | Article, list[Article]], current_series.articles)
+    results: list[Article] = []
+    if isinstance(articles, Article):
+        results = [articles]
+    elif articles is None:
+        results = []
+    else:
+        results = articles
+    response_data = [get_article_card(a) for a in results]
+    return jsonify(response_data), 200
+
+
+@author.route("/article/<int:id>", methods=["GET"])
+def get_article_data(id: int):
+    current_article = cast(Article, Article.query.get(id))
+    if not current_article:
+        return abort(message="No article found.", status_code=404)
+    response_data = current_article.to_dict()  # type: ignore
+    if validator(response_data, schema_04):  # type: ignore
+        return abort()
+    return jsonify(response_data), 200
+
+
+@author.route("/tags", methods=["GET"])
+@auth_required
+def get_all_tags():
+    current_user = cast(User, g.current_user)
+    tags = cast(list[Tag], Tag.query.with_parent(current_user).all())
+    tagsData = [dict(**tag.to_dict()) for tag in tags]  # type: ignore
+    if validator(tagsData, schema_07):
+        return abort()
+    return jsonify(tagsData), 200

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { watch } from "vue";
-	import { messageProp } from "@/api/local";
+	import { messageProp } from "@/store";
 	watch(messageProp, () => {
 		if (messageProp.value.length > 0) {
 			setTimeout(() => {

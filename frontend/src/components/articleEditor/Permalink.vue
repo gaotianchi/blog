@@ -1,19 +1,20 @@
 <script setup lang="ts">
-	import { ref, watch } from "vue";
-	import { localArticle, settingStatus } from "@/api/local";
-	import { remoteArticle } from "@/api/remote";
+	import { inject, ref, watch } from "vue";
 	import Radio from "@/components/Radio.vue";
+	import { editorLocalAndRemote, settingStatus } from "@/store";
 	import InputA from "@/components/InputA.vue";
 	const customSlug = ref("");
+	const articleId = inject("articleId") as number;
 	watch(customSlug, () => {
 		customSlug.value = cleanSlug(customSlug.value);
 		if (
 			settingStatus.permalink.mode === "custom" &&
 			customSlug.value.length > 0
 		) {
-			localArticle.slug = customSlug.value;
+			editorLocalAndRemote[articleId].local.slug = customSlug.value;
 		} else {
-			localArticle.slug = remoteArticle.slug;
+			editorLocalAndRemote[articleId].local.slug =
+				editorLocalAndRemote[articleId].remote.slug;
 		}
 	});
 	function cleanSlug(str: string): string {
@@ -26,7 +27,10 @@
 <template>
 	<div class="parent-V1Qz5vW5yl">
 		<div class="child-4J9WMcl9Je parent-EJ5IqDbqkl">
-			{{ "https://gaotianchi.com/" + localArticle.slug }}
+			{{
+				"https://gaotianchi.com/" +
+				editorLocalAndRemote[articleId].local.slug
+			}}
 		</div>
 		<div class="child-4J9WMcl9Je parent-VyzXfqx9Je">
 			<Radio
@@ -35,7 +39,8 @@
 				v-model="settingStatus.permalink.mode"
 				@selected="
 					() => {
-						localArticle.slug = remoteArticle.slug;
+						editorLocalAndRemote[articleId].local.slug =
+							editorLocalAndRemote[articleId].remote.slug;
 					}
 				"
 				>Auto</Radio
@@ -46,7 +51,9 @@
 				v-model="settingStatus.permalink.mode"
 				@selected="
 					() => {
-						localArticle.slug = customSlug || remoteArticle.slug;
+						editorLocalAndRemote[articleId].local.slug =
+							customSlug ||
+							editorLocalAndRemote[articleId].remote.slug;
 					}
 				"
 				>Custom</Radio

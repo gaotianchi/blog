@@ -127,14 +127,15 @@ export type ArticleCardWithIndex = {
 	index: number;
 	article: ArticleCard;
 };
-export type SeriesCard = {
-	id: number;
-	name: string;
-	cover: string;
-	author: string;
-	createdAt: string;
+export type ArticleEditorLocalAndRemote = {
+	[key: number]: {
+		remote: Article;
+		local: Article;
+	};
 };
-export type SeriesCardWithIndex = {
-	index: number;
-	series: SeriesCard;
+export type ArticleSeriesLocalAndRemote = {
+	[key: number]: {
+		remote: Series;
+		local: Series;
+	};
 };

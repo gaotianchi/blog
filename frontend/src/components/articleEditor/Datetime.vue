@@ -1,12 +1,12 @@
 <script setup lang="ts">
 	import type { DatePickerInstance } from "@vuepic/vue-datepicker";
 	import "@vuepic/vue-datepicker/dist/main.css";
-	import { reactive, ref, watch, type Ref } from "vue";
+	import { ref, type Ref, inject } from "vue";
 	import DatePicker from "@vuepic/vue-datepicker";
-	import { localArticle, settingStatus } from "@/api/local";
-	import { remoteArticle } from "@/api/remote";
 	import { dateFormatter } from "@/utlis";
 	import Radio from "@/components/Radio.vue";
+	import { editorLocalAndRemote, settingStatus } from "@/store";
+	const articleId = inject("articleId") as number;
 	const datepicker: Ref<DatePickerInstance> = ref(null);
 	function openPicker(): void {
 		if (datepicker.value) {
@@ -14,7 +14,8 @@
 		}
 	}
 	function resetDate(): void {
-		localArticle.publishedAt = remoteArticle.publishedAt;
+		editorLocalAndRemote[articleId].local.publishedAt =
+			editorLocalAndRemote[articleId].remote.publishedAt;
 	}
 </script>
 <template>
@@ -22,14 +23,14 @@
 		<div class="parent-NJtmK6vs1g">
 			<DatePicker
 				v-if="settingStatus.datetime.mode === 'default'"
-				v-model="remoteArticle.publishedAt"
+				v-model="editorLocalAndRemote[articleId].remote.publishedAt"
 				:format="dateFormatter"
 				input-class-name="dp-readonly-input"
 				readonly
 			/>
 			<DatePicker
 				v-show="settingStatus.datetime.mode === 'custom'"
-				v-model="localArticle.publishedAt"
+				v-model="editorLocalAndRemote[articleId].local.publishedAt"
 				:alt-position="() => ({ top: 88, left: 18 })"
 				@cleared="resetDate"
 				:format="dateFormatter"

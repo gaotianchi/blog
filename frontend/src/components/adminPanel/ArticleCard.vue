@@ -2,33 +2,26 @@
 	import icons from "@/components/icons";
 	import { computed, reactive, ref } from "vue";
 	import { useRouter } from "vue-router";
-	import {
-		allRemoteArticleCards,
-		patchArticleCardItem,
-		deleteArticleItem,
-	} from "@/api/remote";
-	import { propConfirm, propMessage, articleCardIndex } from "@/api/local";
-	import type { SerializedArticleCard } from "@/typing";
+	import { patchArticleCardItem, deleteArticleItem } from "@/api/remote";
+	import { propConfirm, propMessage } from "@/api/local";
+	import { allRemoteArticleCards, articleCardIndex } from "@/store";
+	import type { ArticleCard, SerializedArticleCard } from "@/typing";
 	import { getLocalDatetime, dateFormatter } from "@/utlis";
 	import ConfirmSlot from "@/components/ConfirmSlot.vue";
 	import TagEditor from "./TagEditor.vue";
 	const props = defineProps<{
-		articleIndex: number;
+		articleCard: ArticleCard;
 	}>();
 	const status = reactive({
 		tags: false,
 		card: false,
 	});
 	const router = useRouter();
-	const articles = reactive(allRemoteArticleCards);
-	const localTags = ref(articles[props.articleIndex].tags);
+	const localTags = ref(props.articleCard.tags);
 	const currentPubishStatus = computed<string>(() => {
-		if (
-			articles[props.articleIndex].planned &&
-			articles[props.articleIndex].isPublished
-		) {
+		if (props.articleCard.planned && props.articleCard.isPublished) {
 			return "Planned";
-		} else if (articles[props.articleIndex].isPublished) {
+		} else if (props.articleCard.isPublished) {
 			return "Published";
 		} else {
 			return "Draft";
@@ -38,16 +31,14 @@
 		router.push({
 			name: "EditArticle",
 			params: {
-				articleId: articles[props.articleIndex].id,
+				articleId: props.articleCard.id,
 			},
 		});
 	}
 	function decideToPublishArticle(): void {
 		propConfirm({
 			header: "Publish Article",
-			body: `Are you sure you want to pulish article 《${
-				articles[props.articleIndex].title
-			}》`,
+			body: `Are you sure you want to pulish article 《${props.articleCard.title}》`,
 			yesMessage: "Publish",
 			noMessage: "Cancel",
 			callback: publishArticleItem,
@@ -56,9 +47,7 @@
 	function decideToDeleteArticle(): void {
 		propConfirm({
 			header: "Delete Article",
-			body: `Are you sure you want to delete article 《${
-				articles[props.articleIndex].title
-			}》`,
+			body: `Are you sure you want to delete article 《${props.articleCard.title}》`,
 			yesMessage: "Delete",
 			noMessage: "Cancel",
 			callback: deleteArticle,
@@ -67,11 +56,13 @@
 	function deleteArticle(): void {
 		try {
 			propMessage("Deleting article ...");
-			deleteArticleItem(articles[props.articleIndex].id).then(() => {
+			deleteArticleItem(props.articleCard.id).then(() => {
 				propMessage("Article deleted successfully.");
-				articles.splice(props.articleIndex, 1);
+				const index = allRemoteArticleCards.findIndex(
+					(i) => i.id === props.articleCard.id
+				);
+				allRemoteArticleCards.splice(index, 1);
 			});
-			articleCardIndex.remove(articles[props.articleIndex].id);
 		} catch (error) {
 			console.error(error);
 			propMessage("Please try again.");
@@ -82,11 +73,14 @@
 	): Promise<void> {
 		try {
 			const response = await patchArticleCardItem(
-				articles[props.articleIndex].id,
+				props.articleCard.id,
 				serializedArticleCard
 			);
 			articleCardIndex.update(response);
-			articles[props.articleIndex] = response;
+			const index = allRemoteArticleCards.findIndex(
+				(i) => i.id === props.articleCard.id
+			);
+			allRemoteArticleCards[index] = response;
 			propMessage("Changed saved.");
 		} catch (error) {
 			console.error(error);
@@ -113,7 +107,6 @@
 		}
 	}
 	function updateTags(): void {
-		status.tags = false;
 		try {
 			updateArticleItem({
 				tags: localTags.value,
@@ -132,7 +125,7 @@
 		<template #header>Editor tags</template>
 		<template #body>
 			<TagEditor
-				:article-index="props.articleIndex"
+				:article-card="props.articleCard"
 				@getLocalTags="
 					(tags) => {
 						localTags = tags;
@@ -160,15 +153,12 @@
 				</div>
 				<div class="parent-4ke4Z-hjyl">
 					<div class="parent-NJaMdZ43Jl" v-if="!status.card">
-						{{ articles[props.articleIndex].author }}
+						{{ props.articleCard.author }}
 					</div>
 					<div class="parent-4JePW-2ike" v-if="status.card">
 						<div
 							class="child-41BOZ-2sJx"
-							v-if="
-								articles[props.articleIndex].isPublished ===
-								true
-							"
+							v-if="props.articleCard.isPublished === true"
 							@click="convertToDraft"
 						>
 							<component
@@ -178,10 +168,7 @@
 						</div>
 						<div
 							class="child-41BOZ-2sJx"
-							v-if="
-								articles[props.articleIndex].isPublished ===
-								false
-							"
+							v-if="props.articleCard.isPublished === false"
 							@click="decideToPublishArticle"
 						>
 							<component
@@ -222,8 +209,7 @@
 									name: 'ArticlesPanel',
 									query: {
 										filter: 'author',
-										query: articles[props.articleIndex]
-											.author,
+										query: props.articleCard.author,
 									},
 								});
 							}
@@ -241,8 +227,8 @@
 					<div
 						class="parent-N1rwLZ3jyl"
 						:class="{
-							published: articles[props.articleIndex].isPublished,
-							planned: articles[props.articleIndex].planned,
+							published: props.articleCard.isPublished,
+							planned: props.articleCard.planned,
 						}"
 					>
 						{{ currentPubishStatus }}
@@ -251,20 +237,18 @@
 					<div class="parent-Vk5DLW2jJl">
 						{{
 							dateFormatter(
-								getLocalDatetime(
-									articles[props.articleIndex].createdAt
-								),
+								getLocalDatetime(props.articleCard.createdAt),
 								"ddd MMM DD YYYY"
 							)
 						}}
 					</div>
 					<div
 						class="parent-4J0P8-hsJl"
-						v-if="articles[props.articleIndex].tags.length > 0"
+						v-if="props.articleCard.tags.length > 0"
 					>
 						<div
 							class="child-EyLCwWno1l"
-							v-for="tag in articles[props.articleIndex].tags"
+							v-for="tag in props.articleCard.tags"
 							@click="
 								() => {
 									router.push({

@@ -1,6 +1,6 @@
 import type { APIError } from "@/api/errors";
 import type { Article, Tag, Series } from "./typing";
-import { rootUrl } from "@/confit";
+import { rootUrl } from "@/config";
 import { reactive } from "vue";
 import { defaultArticle, defaultSeries } from "@/defaults";
 

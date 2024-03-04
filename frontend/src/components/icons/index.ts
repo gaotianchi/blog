@@ -24,6 +24,7 @@ import TagsVue from "./Tags.vue";
 import SearchVue from "./Search.vue";
 import CountVue from "./Count.vue";
 import MoreVue from "./More.vue";
+import Add2Vue from "./Add2.vue";
 export default {
 	fail: FailVue,
 	loading: LoadingVue,
@@ -51,4 +52,5 @@ export default {
 	search: SearchVue,
 	count: CountVue,
 	more: MoreVue,
+	add2: Add2Vue,
 };

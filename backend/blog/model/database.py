@@ -76,6 +76,7 @@ class User(db.Model):
             tokenValidityPeriod=self.token_validity_period,
         )
 
+
 class Tag(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255), unique=True)
@@ -183,7 +184,7 @@ class Article(db.Model):
         self.published_at = published_at
         self.is_published = is_published
         if series:
-            self.series = series
+            self.series_id = series.id
         self.tags = set(tags)
         self.updated_at = datetime.utcnow()
         db.session.add(self)

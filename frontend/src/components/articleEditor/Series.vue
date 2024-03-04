@@ -1,27 +1,21 @@
 <script setup lang="ts">
-	import { onMounted, reactive, ref, type Ref } from "vue";
+	import { inject, onMounted, reactive, ref, type Ref } from "vue";
 	import type { PreviewCover, Series } from "@/typing";
 	import { defaultPreviewCover, defaultSeries } from "@/defaults";
 	import { getRenamedFile, getPreviewUrl } from "@/utlis";
-	import { rootUrl } from "@/confit";
-	import {
-		localArticle,
-		localSeries,
-		settingStatus,
-		propConfirm,
-		propMessage,
-	} from "@/api/local";
-	import {
-		remoteArticle,
-		getAllRemoteSeriesItem,
-		allRemoteSeries,
-		postMediaItem,
-		postSeriesItem,
-	} from "@/api/remote";
+	import { propConfirm, propMessage } from "@/api/local";
+	import { getAllSeries, postMediaItem, postSeriesItem } from "@/api/remote";
 	import Radio from "@/components/Radio.vue";
 	import InputA from "@/components/InputA.vue";
 	import icons from "@/components/icons";
 	const previewCover: PreviewCover = reactive({ ...defaultPreviewCover });
+	import {
+		editorLocalAndRemote,
+		articleSerieLocalAndRemote,
+		allRemoteSeries,
+		settingStatus,
+	} from "@/store";
+	const articleId = inject("articleId") as number;
 	const uploadImageArea: Ref<HTMLInputElement | null> = ref(null);
 	const newSeries: Series = reactive({ ...defaultSeries });
 	onMounted(() => {
@@ -33,20 +27,19 @@
 			return;
 		}
 		try {
-			const seriesData = await getAllRemoteSeriesItem();
+			const seriesData = await getAllSeries();
 			Object.assign(allRemoteSeries, seriesData);
 		} catch (error) {
 			console.error(error);
 		}
 	}
 	function selectSeries(s: Series): void {
-		localArticle.seriesId = s.id;
-		Object.assign(localSeries, s);
+		editorLocalAndRemote[articleId].local.seriesId = s.id;
+		Object.assign(articleSerieLocalAndRemote[articleId].local, s);
 	}
 	function triggerFileInput(): void {
 		uploadImageArea?.value?.click();
 	}
-
 	async function handleFileUpload(e: Event): Promise<void> {
 		const selectedFile = (e.target as HTMLInputElement).files?.[0];
 		if (selectedFile) {
@@ -74,8 +67,11 @@
 		}
 		try {
 			const seriesData = await postSeriesItem(newSeries);
-			Object.assign(localSeries, seriesData);
-			localArticle.seriesId = seriesData.id;
+			Object.assign(
+				articleSerieLocalAndRemote[articleId].local,
+				seriesData
+			);
+			editorLocalAndRemote[articleId].local.seriesId = seriesData.id;
 			allRemoteSeries.push(seriesData);
 			propMessage("Successfully create new series.");
 		} catch (error) {
@@ -102,8 +98,8 @@
 	<div class="parent-4JxPgYb9Jl">
 		<div class="parent-EJ5IqDbqkl child-N1IGDObcye">
 			{{
-				localSeries.name.length > 0
-					? localSeries.name
+				articleSerieLocalAndRemote[articleId].local.name.length > 0
+					? articleSerieLocalAndRemote[articleId].local.name
 					: "No series selected."
 			}}
 		</div>
@@ -114,7 +110,8 @@
 				v-model="settingStatus.series.mode"
 				@selected="
 					() => {
-						localArticle.seriesId = remoteArticle.seriesId;
+						editorLocalAndRemote[articleId].local.seriesId =
+							editorLocalAndRemote[articleId].remote.seriesId;
 					}
 				"
 				>Default</Radio
@@ -125,7 +122,8 @@
 				v-model="settingStatus.series.mode"
 				@selected="
 					() => {
-						localArticle.seriesId = remoteArticle.seriesId;
+						editorLocalAndRemote[articleId].local.seriesId =
+							editorLocalAndRemote[articleId].remote.seriesId;
 					}
 				"
 				>Select another</Radio
@@ -136,7 +134,8 @@
 				v-model="settingStatus.series.mode"
 				@selected="
 					() => {
-						localArticle.seriesId = remoteArticle.seriesId;
+						editorLocalAndRemote[articleId].local.seriesId =
+							editorLocalAndRemote[articleId].remote.seriesId;
 					}
 				"
 				>New</Radio
@@ -155,7 +154,7 @@
 				<div class="parent-4kGYZF-qJl child-4yb5kK-9yx">
 					<img
 						class="child-V1EH5nisJl"
-						:src="rootUrl + '/media/uploads/' + s.cover"
+						:src="s.cover"
 						v-if="s.cover"
 					/>
 				</div>

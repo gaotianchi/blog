@@ -11,8 +11,7 @@
 }
 
 .parent-V1UVAObiyl {
-    min-width: 300px;
-    max-width: 500px;
+    width: 300px;
     margin: auto;
     padding: 20px 30px;
     background-color: #fff;

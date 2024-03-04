@@ -1,29 +1,29 @@
 <script setup lang="ts">
 	import { reactive, ref, watch, type Ref } from "vue";
 	import icons from "@/components/icons";
-	import type { PreviewCover, SeriesCard } from "@/typing";
+	import type { PreviewCover, Series } from "@/typing";
 	import InputA from "@/components/InputA.vue";
 	import { getRenamedFile, getPreviewUrl } from "@/utlis";
 	const props = defineProps<{
-		seriesCard: SeriesCard;
+		series: Series;
 	}>();
 	const emits = defineEmits<{
-		updateSeriesCard: [card: SeriesCard, coverImg: File | null];
+		updateSeries: [series: Series, coverImg: File | null];
 	}>();
-	const newSeriesCard: SeriesCard = reactive({
-		id: props.seriesCard.id,
-		name: props.seriesCard.name,
-		cover: props.seriesCard.cover.split("/").pop() ?? "",
-		author: props.seriesCard.author,
-		createdAt: props.seriesCard.createdAt,
+	const newSeries: Series = reactive({
+		id: props.series.id,
+		name: props.series.name,
+		cover: props.series.cover.split("/").pop() ?? "",
+		authorId: props.series.authorId,
+		createdAt: props.series.createdAt,
 	});
 	const previewCover: PreviewCover = reactive({
-		url: props.seriesCard.cover,
+		url: props.series.cover,
 		file: null,
 	});
 	const uploadImageArea: Ref<HTMLInputElement | null> = ref(null);
-	watch(newSeriesCard, () => {
-		emits("updateSeriesCard", newSeriesCard, previewCover.file);
+	watch(newSeries, () => {
+		emits("updateSeries", newSeries, previewCover.file);
 	});
 	function triggerFileInput(): void {
 		uploadImageArea?.value?.click();
@@ -34,12 +34,12 @@
 			const renamedFile = getRenamedFile(selectedFile);
 			previewCover.file = renamedFile;
 			previewCover.url = await getPreviewUrl(renamedFile);
-			newSeriesCard.cover = renamedFile.name;
+			newSeries.cover = renamedFile.name;
 		}
 	}
 	function resetCover(): void {
 		previewCover.url = "";
-		newSeriesCard.cover = "";
+		newSeries.cover = "";
 		if (uploadImageArea.value) {
 			uploadImageArea.value.value = "";
 		}
@@ -80,7 +80,7 @@
 			<InputA
 				name="new-series-area"
 				:max-length="300"
-				v-model="newSeriesCard.name"
+				v-model="newSeries.name"
 				class="child-4kK6OY-cJl"
 				placeholder="Please enter new series name"
 				auto-focus

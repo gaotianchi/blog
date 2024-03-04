@@ -2,25 +2,25 @@
 	import icons from "@/components/icons";
 	import { onMounted, reactive, ref, type Ref } from "vue";
 	import {
-		allRemoteSeriesCards,
 		getSeriesArticlesCount,
 		deleteSeriesItem,
-		patchSeriesCard,
+		patchSeriesItem,
 		postMediaItem,
 	} from "@/api/remote";
 	import { dateFormatter, getLocalDatetime } from "@/utlis";
-	import type { SeriesCard } from "@/typing";
+	import type { Series } from "@/typing";
+	import { allRemoteSeries } from "@/store";
 	import { propConfirm, propMessage } from "@/api/local";
 	import ConfirmSlot from "@/components/ConfirmSlot.vue";
 	import SeriesEditor from "./SeriesEditor.vue";
 	const props = defineProps<{
-		seriesCard: SeriesCard;
+		series: Series;
 	}>();
 	const status = reactive({
 		actionMenu: false,
-		confirmSlot: false,
+		updateSeries: false,
 	});
-	const newSeriesCard: Ref<SeriesCard> = ref(props.seriesCard);
+	const newSeries: Ref<Series> = ref(props.series);
 	const newCoverImg: Ref<File | null> = ref(null);
 	const count = ref(0);
 	onMounted(() => {
@@ -28,7 +28,7 @@
 	});
 	async function initCount(): Promise<void> {
 		try {
-			const response = await getSeriesArticlesCount(props.seriesCard.id);
+			const response = await getSeriesArticlesCount(props.series.id);
 			count.value = response;
 		} catch (error) {
 			console.error(error);
@@ -38,8 +38,8 @@
 		status.actionMenu = false;
 		propConfirm({
 			header: "Delete series",
-			body: `Are you sure you want to delete series 《${props.seriesCard.name}》`,
-			yesMessage: "Publish",
+			body: `Are you sure you want to delete series 《${props.series.name}》`,
+			yesMessage: "Delete",
 			noMessage: "Cancel",
 			callback: deleteSeries,
 		});
@@ -48,12 +48,12 @@
 		status.actionMenu = false;
 		try {
 			propMessage("Deleting series ...");
-			deleteSeriesItem(props.seriesCard.id).then(() => {
+			deleteSeriesItem(props.series.id).then(() => {
 				propMessage("Successfully delete series.");
-				const index = allRemoteSeriesCards.findIndex(
-					(i) => i.id === props.seriesCard.id
+				const index = allRemoteSeries.findIndex(
+					(i) => i.id === props.series.id
 				);
-				allRemoteSeriesCards.splice(index, 1);
+				allRemoteSeries.splice(index, 1);
 			});
 		} catch (error) {
 			console.error(error);
@@ -62,7 +62,12 @@
 	}
 	function updateSeries(): void {
 		propMessage("Updating series ...");
-		status.confirmSlot = false;
+		if (!newSeries.value.name.trim()) {
+			alert("Series name cannot be empty.");
+			propMessage("Please try again.");
+			status.updateSeries = true;
+			return;
+		}
 		if (newCoverImg.value) {
 			console.log(newCoverImg.value);
 			try {
@@ -71,16 +76,16 @@
 				console.error(error);
 			}
 		} else {
-			console.log(newSeriesCard.value.cover);
+			console.log(newSeries.value.cover);
 		}
 		try {
-			patchSeriesCard(newSeriesCard.value).then((card) => {
-				const index = allRemoteSeriesCards.findIndex(
-					(i) => i.id === props.seriesCard.id
+			patchSeriesItem(newSeries.value).then((card) => {
+				const index = allRemoteSeries.findIndex(
+					(i) => i.id === props.series.id
 				);
 				console.log(card);
-				allRemoteSeriesCards[index] = card;
-				console.log(allRemoteSeriesCards[index]);
+				allRemoteSeries[index] = card;
+				console.log(allRemoteSeries[index]);
 				propMessage("Change saved.");
 			});
 		} catch (error) {
@@ -91,17 +96,17 @@
 </script>
 <template>
 	<ConfirmSlot
-		:status="status.confirmSlot"
+		:status="status.updateSeries"
 		:callback="updateSeries"
-		@close="status.confirmSlot = false"
+		@close="status.updateSeries = false"
 	>
 		<template #header>Editor series</template>
 		<template #body>
 			<SeriesEditor
-				:series-card="props.seriesCard"
-				@updateSeriesCard="
-					(card, coverImg) => {
-						newSeriesCard = card;
+				:series="props.series"
+				@update-series="
+					(series, coverImg) => {
+						newSeries = series;
 						newCoverImg = coverImg;
 					}
 				"
@@ -113,7 +118,7 @@
 	<div class="parent-EytiXaw31g">
 		<div class="parent-4khhQ6D3ke">
 			<img
-				:src="seriesCard.cover ?? '/default-cover.jpg'"
+				:src="series.cover ?? '/default-cover.jpg'"
 				alt="series cover"
 				class="parent-NJXiS6wnJx"
 			/>
@@ -128,13 +133,13 @@
 			</div>
 		</div>
 		<div class="parent-EkmamTwnyg">
-			{{ seriesCard.name }}
+			{{ series.name }}
 		</div>
 		<div class="parent-Vy_p7pw2yx">
 			<div class="parent-EkKaj6whkg">
 				{{
 					dateFormatter(
-						getLocalDatetime(seriesCard.createdAt),
+						getLocalDatetime(series.createdAt),
 						"ddd MMM DD YYYY"
 					)
 				}}
@@ -150,7 +155,7 @@
 						class="child-E1aa2TvhJx"
 						@click="
 							() => {
-								status.confirmSlot = true;
+								status.updateSeries = true;
 								status.actionMenu = false;
 							}
 						"

@@ -1,19 +1,25 @@
 <script setup lang="ts">
 	import { inject, reactive, watch } from "vue";
 	import { isSameArticle, serializeArticle } from "@/utlis";
-	import { propConfirm, propMessage, localArticle } from "@/api/local";
-	import { remoteArticle, patchArticleItem } from "@/api/remote";
+	import { propConfirm, propMessage } from "@/api/local";
+	import { patchArticleItem } from "@/api/remote";
 	import icons from "@/components/icons";
 	import SettingBar from "./SettingBar.vue";
-	const articleId = inject("articleId");
+	import { editorLocalAndRemote } from "@/store";
+	const articleId = inject("articleId") as number;
 	const elementsStatus = reactive({
 		settingBtn: false,
 		downBtn: false,
 		sync: true,
 		update: false,
 	});
-	watch(localArticle, () => {
-		if (isSameArticle(localArticle, remoteArticle)) {
+	watch(editorLocalAndRemote, () => {
+		if (
+			isSameArticle(
+				editorLocalAndRemote[articleId].local,
+				editorLocalAndRemote[articleId].remote
+			)
+		) {
 			elementsStatus.sync = true;
 		} else {
 			elementsStatus.sync = false;
@@ -22,7 +28,7 @@
 	function decideToPublishArticle(): void {
 		propConfirm({
 			header: "Publish Article",
-			body: `Are you sure you want to pulish article 《${localArticle.title}》`,
+			body: `Are you sure you want to pulish article 《${editorLocalAndRemote[articleId].local.title}》`,
 			yesMessage: "Publish",
 			noMessage: "Cancel",
 			callback: publishArticleItem,
@@ -37,11 +43,11 @@
 		elementsStatus.update = true;
 		try {
 			const response = await patchArticleItem(
-				articleId as string,
-				serializeArticle(localArticle)
+				articleId,
+				serializeArticle(editorLocalAndRemote[articleId].local)
 			);
-			Object.assign(remoteArticle, response);
-			Object.assign(localArticle, response);
+			Object.assign(editorLocalAndRemote[articleId].remote, response);
+			Object.assign(editorLocalAndRemote[articleId].local, response);
 			propMessage("Changes saved.");
 			elementsStatus.update = false;
 		} catch (error) {
@@ -49,12 +55,12 @@
 		}
 	}
 	function publishArticleItem(): void {
-		localArticle.isPublished = true;
+		editorLocalAndRemote[articleId].local.isPublished = true;
 		elementsStatus.sync = false;
 		updateArticleItem();
 	}
 	function convertToDraft(): void {
-		localArticle.isPublished = false;
+		editorLocalAndRemote[articleId].local.isPublished = false;
 		elementsStatus.sync = false;
 		updateArticleItem();
 	}
@@ -67,19 +73,21 @@
 				name="article-title"
 				id="article-title"
 				placeholder="Article title 100 words or less."
-				aria-label="article-ttile"
-				v-model="localArticle.title"
+				aria-label="article-title"
+				v-model="editorLocalAndRemote[articleId].local.title"
 			/>
 			<div class="parent-Vk3CQPKoJg">
 				<component
 					v-if="elementsStatus.sync"
 					:is="icons.sync"
 					class="parent-41MyNwFoJg icon"
+					@click="() => console.log(editorLocalAndRemote)"
 				/>
 				<component
 					v-else
 					:is="icons.unsync"
 					class="parent-EkdyNPKiyl icon"
+					@click="() => console.log(editorLocalAndRemote)"
 				/>
 			</div>
 			<div class="parent-4ypeVvYsyl">
@@ -152,7 +160,8 @@
 								/>
 								<span class="child-EkIWUFYsJg">
 									{{
-										localArticle.isPublished
+										editorLocalAndRemote[articleId].local
+											.isPublished
 											? "Convert to draft"
 											: "Save as draft"
 									}}
@@ -161,7 +170,10 @@
 							<button
 								type="button"
 								class="child-E1C_VtYskl"
-								v-if="remoteArticle.isPublished"
+								v-if="
+									editorLocalAndRemote[articleId].remote
+										.isPublished
+								"
 								@click="updateArticleItem"
 							>
 								<component
@@ -173,7 +185,10 @@
 							<button
 								type="button"
 								class="child-E1C_VtYskl"
-								v-if="!remoteArticle.isPublished"
+								v-if="
+									!editorLocalAndRemote[articleId].remote
+										.isPublished
+								"
 								@click="decideToPublishArticle"
 							>
 								<component
@@ -198,13 +213,15 @@
 					type="button"
 					class="parent-VJ2zVvYsyg"
 					@click="
-						localArticle.isPublished
+						editorLocalAndRemote[articleId].local.isPublished
 							? updateArticleItem()
 							: decideToPublishArticle()
 					"
 				>
 					<component
-						v-if="!remoteArticle.isPublished"
+						v-if="
+							!editorLocalAndRemote[articleId].remote.isPublished
+						"
 						:is="icons.publish"
 						class="parent-41VU4DYoke icon white"
 					/>
@@ -216,7 +233,9 @@
 					/>
 					<span
 						class="parent-4ygQ4PKikg"
-						v-if="!remoteArticle.isPublished"
+						v-if="
+							!editorLocalAndRemote[articleId].remote.isPublished
+						"
 						>Publish</span
 					>
 					<span class="parent-4ygQ4PKikg" v-else>Update</span>

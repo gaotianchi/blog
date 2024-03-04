@@ -1,16 +1,14 @@
 <script setup lang="ts">
 	import { onMounted, ref, type Ref, computed, watch, reactive } from "vue";
-	import type { Tag } from "@/typing";
+	import type { ArticleCard, Tag } from "@/typing";
 	import { getAllRemoteTags } from "@/api/remote";
 	import InputA from "@/components/InputA.vue";
-	import { allRemoteArticleCards } from "@/api/remote";
-	import { tagIndex } from "@/api/local";
-	const props = defineProps<{ articleIndex: number }>();
+	import { tagIndex } from "@/store";
+	const props = defineProps<{ articleCard: ArticleCard }>();
 	const emits = defineEmits<{
 		getLocalTags: [tags: string[]];
 	}>();
-	const articles = reactive(allRemoteArticleCards);
-	const model: Ref<string> = ref(articles[props.articleIndex].tags.join(","));
+	const model: Ref<string> = ref(props.articleCard.tags.join(","));
 	const allTags: Ref<Tag[]> = ref([]);
 	const typedTags = computed<string[]>(() => {
 		const tagArr = model.value?.split(",").map((i) => i.trim()) || [];

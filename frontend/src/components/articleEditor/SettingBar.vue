@@ -1,11 +1,17 @@
 <script setup lang="ts">
-	import { localArticle, localSeries, settingStatus } from "@/api/local";
 	import { dateFormatter, limString } from "@/utlis";
 	import SettingItem from "./SettingItem.vue";
 	import Tags from "./Tags.vue";
 	import Datetime from "./Datetime.vue";
 	import Permalink from "./Permalink.vue";
 	import Series from "./Series.vue";
+	import {
+		editorLocalAndRemote,
+		articleSerieLocalAndRemote,
+		settingStatus,
+	} from "@/store";
+	import { inject } from "vue";
+	const articleId = inject("articleId") as number;
 </script>
 <template>
 	<div class="parent-NJJFyG_jJx">
@@ -19,7 +25,7 @@
 		>
 			<template #title>Publish Date</template>
 			<template #preview>{{
-				dateFormatter(localArticle.publishedAt)
+				dateFormatter(editorLocalAndRemote[articleId].local.publishedAt)
 			}}</template>
 			<template #detail>
 				<Datetime />
@@ -36,8 +42,8 @@
 			<template #title>Tags</template>
 			<template #preview>{{
 				limString(
-					localArticle.tags.length > 0
-						? localArticle.tags.join(",")
+					editorLocalAndRemote[articleId].local.tags.length > 0
+						? editorLocalAndRemote[articleId].local.tags.join(",")
 						: "No tags",
 					40
 				)
@@ -56,7 +62,11 @@
 		>
 			<template #title>Permalink</template>
 			<template #preview>{{
-				limString("https://gaotianchi.com/" + localArticle.slug, 40)
+				limString(
+					"https://gaotianchi.com/" +
+						editorLocalAndRemote[articleId].local.slug,
+					40
+				)
 			}}</template>
 			<template #detail>
 				<Permalink />
@@ -72,7 +82,11 @@
 		>
 			<template #title>Series</template>
 			<template #preview>{{
-				limString(localSeries.name || "No series selected", 40)
+				limString(
+					articleSerieLocalAndRemote[articleId].local.name ||
+						"No series selected",
+					40
+				)
 			}}</template>
 			<template #detail>
 				<Series />

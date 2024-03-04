@@ -1,34 +1,12 @@
-import { reactive, type Ref, ref } from "vue";
-import { Index, Document } from "flexsearch";
-import type {
-	Article,
-	Series,
-	Confirm,
-	SettingStatus,
-	Tag,
-	LoginResponseData,
-} from "@/typing";
-import {
-	defaultArticle,
-	defaultSeries,
-	defaultConfirm,
-	defaultSettingStatus,
-} from "@/defaults";
+import type { Article, Confirm, Tag, LoginResponseData } from "@/typing";
+import { confirmProp, messageProp } from "@/store";
 
-export const localArticle: Article = reactive({ ...defaultArticle });
-export const messageProp: Ref<string> = ref("");
-export const localSeries: Series = reactive({ ...defaultSeries });
-export const confirmProp: Confirm = reactive({ ...defaultConfirm });
-export const settingStatus: SettingStatus = reactive({
-	...defaultSettingStatus,
-});
-export function propMessage(msg: string): void {
-	messageProp.value = msg;
-}
 export function propConfirm(cf: Confirm): void {
 	Object.assign(confirmProp, cf);
 }
-
+export function propMessage(msg: string): void {
+	messageProp.value = msg;
+}
 export function getArticle(type: "local" | "remote" = "local"): Article | null {
 	let article: Article | null = null;
 	switch (type) {
@@ -83,20 +61,3 @@ export function getAccessToken(): LoginResponseData | null {
 		return null;
 	}
 }
-export const tagIndex = new Index({ tokenize: "forward" });
-export const articleCardIndex = new Document({
-	document: {
-		id: "id",
-		tag: "tags",
-		index: [
-			{
-				field: "title",
-				tokenize: "full",
-			},
-			{
-				field: "author",
-				tokenize: "strict",
-			},
-		],
-	},
-});

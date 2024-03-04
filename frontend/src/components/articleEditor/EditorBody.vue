@@ -1,9 +1,11 @@
 <script setup lang="ts">
 	import "md-editor-v3/lib/style.css";
 	import { MdEditor } from "md-editor-v3";
-	import { localArticle } from "@/api/local";
+	import { inject } from "vue";
 	import { postMediaItem } from "@/api/remote";
 	import { getRenamedFile } from "@/utlis";
+	import { editorLocalAndRemote } from "@/store";
+	const articleId = inject("articleId") as number;
 	async function onUploadImg(
 		files: File[],
 		callback: CallableFunction
@@ -24,7 +26,7 @@
 </script>
 <template>
 	<MdEditor
-		v-model="localArticle.body"
+		v-model="editorLocalAndRemote[articleId].local.body"
 		class="parent-4k6nVctskl"
 		@onUploadImg="onUploadImg"
 		:toolbarsExclude="['github', 'save']"

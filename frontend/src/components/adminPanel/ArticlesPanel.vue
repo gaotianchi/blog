@@ -1,33 +1,19 @@
 <script setup lang="ts">
 	import { onMounted, ref, watch, type Ref, computed } from "vue";
 	import { useRoute, useRouter } from "vue-router";
-	import { getAllArticles, allRemoteArticleCards } from "@/api/remote";
-	import { articleCardIndex } from "@/api/local";
+	import { getAllArticleCards } from "@/api/remote";
+	import { allRemoteArticleCards, articleCardIndex } from "@/store";
 	import ArticleCardVue from "./ArticleCard.vue";
 	import type {
 		ArticleCard,
 		ArticleCardStatus,
 		ArticleSearchField,
 		ArticleCardMeta,
-		ArticleCardWithIndex,
 	} from "@/typing";
 	const route = useRoute();
 	const router = useRouter();
 	const currentArticleCards = ref(allRemoteArticleCards);
 	const articleFilter: Ref<ArticleCardStatus> = ref("all");
-	const articlesWithIndex = computed<ArticleCardWithIndex[]>(() => {
-		const result: ArticleCardWithIndex[] = [];
-		currentArticleCards.value.forEach((card) => {
-			const index = allRemoteArticleCards.findIndex(
-				(i) => i.id === card.id
-			);
-			result.push({
-				index: index,
-				article: card,
-			});
-		});
-		return result;
-	});
 	onMounted(() => {
 		initAllRemoteArticleCards();
 	});
@@ -106,7 +92,7 @@
 	}
 	async function initAllRemoteArticleCards(): Promise<void> {
 		try {
-			const response = await getAllArticles();
+			const response = await getAllArticleCards();
 			Object.assign(allRemoteArticleCards, response);
 			allRemoteArticleCards.forEach((articleCard) => {
 				articleCardIndex.add(articleCard);
@@ -199,18 +185,14 @@
 		</div>
 		<div class="parent-E1k-9G6ske">
 			<ArticleCardVue
-				v-for="item in articlesWithIndex"
-				:article-index="item.index"
+				v-for="item in currentArticleCards"
+				:article-card="item"
 			>
 				<template #cover>
-					<img
-						width="80px"
-						height="80px"
-						:src="item.article.images[0]"
-					/>
+					<img width="80px" height="80px" :src="item.images[0]" />
 				</template>
 				<template #title>
-					{{ item.article.title }}
+					{{ item.title }}
 				</template>
 			</ArticleCardVue>
 		</div>
