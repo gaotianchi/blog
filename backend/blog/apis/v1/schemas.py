@@ -126,8 +126,9 @@ schema_08 = {
             "name": {"type": "string"},
             "cover": {"type": "string"},
             "createdAt": {"type": "string", "pattern": DATETIMEPATTERN},
+            "seriesId": {"type": "integer"},
         },
-        "required": ["id", "authorId", "name", "cover", "createdAt"],
+        "required": ["id", "authorId", "name", "cover", "createdAt", "seriesId"],
     },
 }
 
@@ -181,6 +182,7 @@ schema_11 = {
         "images": {"type": "array", "items": {"type": "string"}},
         "author": {"type": "string"},
         "planned": {"type": "boolean"},
+        "seriesId": {"type": "integer"},
     },
     "required": [
         "id",
@@ -191,6 +193,7 @@ schema_11 = {
         "images",
         "author",
         "planned",
+        "seriesId",
     ],
 }
 

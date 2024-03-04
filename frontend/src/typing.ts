@@ -119,8 +119,9 @@ export type ArticleCard = {
 	images: string[];
 	author: string;
 	planned: boolean;
+	seriesId: number;
 };
-export type ArticleCardMeta = "title" | "tag" | "author";
+export type ArticleCardMeta = "title" | "tag" | "author" | "series";
 export type ArticleSearchField = ArticleCardMeta | "status";
 export type ArticleCardStatus = "all" | "published" | "planned" | "draft";
 export type ArticleCardWithIndex = {

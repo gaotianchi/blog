@@ -13,6 +13,7 @@
 	import { propConfirm, propMessage } from "@/api/local";
 	import ConfirmSlot from "@/components/ConfirmSlot.vue";
 	import SeriesEditor from "./SeriesEditor.vue";
+	import { useRouter } from "vue-router";
 	const props = defineProps<{
 		series: Series;
 	}>();
@@ -20,6 +21,7 @@
 		actionMenu: false,
 		updateSeries: false,
 	});
+	const router = useRouter();
 	const newSeries: Ref<Series> = ref(props.series);
 	const newCoverImg: Ref<File | null> = ref(null);
 	const count = ref(0);
@@ -93,6 +95,14 @@
 			propMessage("Please try again.");
 		}
 	}
+	function gotoArticles(): void {
+		router.push({
+			name: "ArticlesPanel",
+			query: {
+				filter: ""
+			}
+		})
+	}
 </script>
 <template>
 	<ConfirmSlot
@@ -116,7 +126,7 @@
 		<template #yesMessage>Apply</template>
 	</ConfirmSlot>
 	<div class="parent-EytiXaw31g">
-		<div class="parent-4khhQ6D3ke">
+		<div class="parent-4khhQ6D3ke" @click="gotoArticles">
 			<img
 				:src="series.cover ?? '/default-cover.jpg'"
 				alt="series cover"

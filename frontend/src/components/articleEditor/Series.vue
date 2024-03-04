@@ -93,6 +93,9 @@
 			callback: createSeries,
 		});
 	}
+	function resetSeries(): void {
+		editorLocalAndRemote[articleId].local.seriesId = 0;
+	}
 </script>
 <template>
 	<div class="parent-4JxPgYb9Jl">
@@ -102,6 +105,11 @@
 					? articleSerieLocalAndRemote[articleId].local.name
 					: "No series selected."
 			}}
+			<component
+				:is="icons.cancel"
+				class="icon small parent-VJYBnOR31g"
+				@click="resetSeries"
+			/>
 		</div>
 		<div class="parent- child-N1IGDObcye">
 			<Radio

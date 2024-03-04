@@ -62,7 +62,11 @@
 				return allRemoteArticleCards;
 		}
 	}
-
+	function filterBySeries(seriesId: string): ArticleCard[] {
+		return allRemoteArticleCards.filter(
+			(i) => i.seriesId.toString() === seriesId
+		);
+	}
 	function getFilteredCards(
 		filter: ArticleSearchField,
 		query: ArticleCardStatus | string
@@ -74,6 +78,8 @@
 				return filterByMeta(filter, query);
 			case "tag":
 				return filterByMeta(filter, query);
+			case "series":
+				return filterBySeries(query);
 			case "status":
 				return filterByStatus(query as ArticleCardStatus);
 			default:

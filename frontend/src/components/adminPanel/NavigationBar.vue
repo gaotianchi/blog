@@ -51,10 +51,6 @@
 				<component :is="icons.series" class="icon child-41G37ensyx" />
 				<span class="child-VkvsQehjyg">Series</span>
 			</div>
-			<!-- <div class="child-E17jXe3okl">
-				<component :is="" class="icon child-41G37ensyx" />
-				<span class="child-VkvsQehjyg"></span>
-			</div> -->
 		</div>
 	</div>
 </template>

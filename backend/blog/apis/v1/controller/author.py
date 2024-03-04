@@ -74,6 +74,7 @@ def get_article_card(a: Article) -> dict[str, str | bool | list[str] | int]:
     card_data["images"] = get_all_image_url(a.body)
     card_data["author"] = cast(User, a.author).nickname
     card_data["planned"] = a.is_published and (a.published_at > datetime.now())
+    card_data["seriesId"] = a.series_id
     return card_data
 
 
