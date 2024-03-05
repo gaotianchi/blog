@@ -9,7 +9,7 @@
 	} from "@/api/remote";
 	import { dateFormatter, getLocalDatetime } from "@/utlis";
 	import type { Series } from "@/typing";
-	import { allRemoteSeries } from "@/store";
+	import { allRemoteSeries, seriesArticleCount } from "@/store";
 	import { propConfirm, propMessage } from "@/api/local";
 	import ConfirmSlot from "@/components/ConfirmSlot.vue";
 	import SeriesEditor from "./SeriesEditor.vue";
@@ -35,6 +35,7 @@
 		try {
 			const response = await getSeriesArticlesCount(props.series.id);
 			count.value = response;
+			seriesArticleCount.value[props.series.id] = response;
 		} catch (error) {
 			console.error(error);
 		}

@@ -140,3 +140,6 @@ export type ArticleSeriesLocalAndRemote = {
 		local: Series;
 	};
 };
+export type SeriesArticleCount = {
+	[key: number]: number;
+};

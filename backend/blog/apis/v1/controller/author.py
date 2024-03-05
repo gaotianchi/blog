@@ -91,6 +91,23 @@ def get_all_article_cards():
     return jsonify(response_data), 200
 
 
+@author.route("/article-series/<int:id>", methods=["PATCH"])
+@auth_required
+def patch_article_series(id: int):
+    current_article = cast(Article, Article.query.get(id))
+    if not current_article:
+        return abort(message="No article found.", status_code=404)
+    data = cast(dict[str, Any], request.json)
+    if not data.get("seriesId"):
+        return abort()
+    series = cast(Series | None, Series.query.get(data["seriesId"]))
+    if not series:
+        return abort(message="No series found.", status_code=404)
+    new_article = current_article.update_series(series)
+    response_data = get_article_card(new_article)
+    return jsonify(response_data), 200
+
+
 @author.route("/article-card/<int:id>", methods=["PATCH"])
 @auth_required
 def patch_article_card(id: int):

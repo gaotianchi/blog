@@ -5,6 +5,7 @@
 		postSeriesItem,
 		getAllSeries,
 		getAllArticleCards,
+		patchArticleSeries
 	} from "@/api/remote";
 	import { propMessage } from "@/api/local";
 	import SeriesCardVue from "./SeriesCard.vue";
@@ -44,6 +45,9 @@
 		} catch (error) {
 			console.error(error);
 		}
+	}
+	async function updateArticleSeries(): Promise<void> {
+		
 	}
 	function createSeries(): void {
 		propMessage("Creating series ...");
@@ -118,8 +122,7 @@
 				@update-dropzone="
 					(s) => {
 						if (dragged) {
-							console.log(s);
-							console.log(dragged);
+							
 						}
 					}
 				"

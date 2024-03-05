@@ -322,3 +322,25 @@ export async function postMediaItem(file: File): Promise<{ url: string }> {
 		throw errorResponse.error;
 	}
 }
+export async function patchArticleSeries(
+	articleId: number,
+	seriesId: number
+): Promise<ArticleCard> {
+	const url = rootUrl + "/author/article-series/" + articleId;
+	const tokenData = getAccessToken();
+	const response = await fetch(url, {
+		method: "PATCH",
+		headers: {
+			Authorization: tokenData?.tokenType + " " + tokenData?.accessToken,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ seriesId: seriesId }),
+	});
+	if (response.status === 200) {
+		const data = await response.json();
+		return data;
+	} else {
+		const error = await response.json();
+		throw error.error;
+	}
+}

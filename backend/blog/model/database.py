@@ -192,6 +192,12 @@ class Article(db.Model):
         db.session.commit()
         return Article.query.get(self.id)  # type: ignore
 
+    def update_series(self, series: Series) -> "Article":
+        self.series_id = series.id
+        db.session.add(self)
+        db.session.commit()
+        return Article.query.get(self.id)  # type: ignore
+
     def update_card(
         self,
         is_published: bool | None = None,

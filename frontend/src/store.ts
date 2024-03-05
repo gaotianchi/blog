@@ -8,6 +8,7 @@ import type {
 	Article,
 	ArticleCard,
 	Series,
+	SeriesArticleCount,
 } from "@/typing";
 import { defaultConfirm, defaultSettingStatus } from "@/defaults";
 import { defaultArticle, defaultSeries } from "@/defaults";
@@ -22,7 +23,7 @@ export const settingStatus: SettingStatus = reactive({
 });
 export const messageProp: Ref<string> = ref("");
 export const confirmProp: Confirm = reactive({ ...defaultConfirm });
-
+export const seriesArticleCount: Ref<SeriesArticleCount> = ref({});
 export const remoteArticle: Article = reactive({ ...defaultArticle });
 export const remoteSeries: Series = reactive({ ...defaultSeries });
 export const allRemoteArticleCards: ArticleCard[] = reactive([]);
