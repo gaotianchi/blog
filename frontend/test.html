@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .target {
+            margin-bottom: 10px;
+            padding: 1rem;
+            background-color: #333;
+        }
+
+        .source {
+            padding: 1rem;
+            background-color: #fff;
+            margin: 10px;
+            cursor: move;
+            border: #333 solid 1px;
+        }
+
+        .source.dragging {
+            opacity: .5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="target" id="t1">
+        <div class="source" draggable="true" id="s1">1</div>
+        <div class="source" draggable="true" id="s2">2</div>
+    </div>
+    <div class="target" id="t2">
+        <div class="source" draggable="true" id="s3">3</div>
+        <div class="source" draggable="true" id="s4">4</div>
+    </div>
+    <script>
+        const sources = document.querySelectorAll(".source")
+        sources.forEach(source => {
+            source.addEventListener("dragstart", e => {
+                source.classList.add("dragging")
+            })
+            source.addEventListener("dragend", e => {
+                source.classList.remove("dragging")
+            })
+        })
+        const targets = document.querySelectorAll(".target");
+        targets.forEach(target => {
+            target.addEventListener("dragover", e => {
+                e.preventDefault()
+                const draggingSource = document.querySelector(".dragging");
+                target.appendChild(draggingSource)
+            })
+        })
+    </script>
+</body>
+
+</html>

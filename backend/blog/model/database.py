@@ -135,6 +135,7 @@ class Series(db.Model):
             cover=self.cover,
             authorId=self.author_id,
             createdAt=serialize_datetime(self.created_at),
+            seriesId=self.id,
         )
 
     def __repr__(self) -> str:

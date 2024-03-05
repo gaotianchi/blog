@@ -8,7 +8,6 @@
 	import Radio from "@/components/Radio.vue";
 	import InputA from "@/components/InputA.vue";
 	import icons from "@/components/icons";
-	const previewCover: PreviewCover = reactive({ ...defaultPreviewCover });
 	import {
 		editorLocalAndRemote,
 		articleSerieLocalAndRemote,
@@ -17,18 +16,19 @@
 	} from "@/store";
 	const articleId = inject("articleId") as number;
 	const uploadImageArea: Ref<HTMLInputElement | null> = ref(null);
+	const previewCover: PreviewCover = reactive({ ...defaultPreviewCover });
 	const newSeries: Series = reactive({ ...defaultSeries });
 	onMounted(() => {
 		loadAllSeries();
 	});
 	async function loadAllSeries(): Promise<void> {
-		if (allRemoteSeries.length > 0) {
+		if (allRemoteSeries.value.length > 0) {
 			console.log("Load remote series from local.");
 			return;
 		}
 		try {
 			const seriesData = await getAllSeries();
-			Object.assign(allRemoteSeries, seriesData);
+			allRemoteSeries.value = seriesData;
 		} catch (error) {
 			console.error(error);
 		}
@@ -72,7 +72,7 @@
 				seriesData
 			);
 			editorLocalAndRemote[articleId].local.seriesId = seriesData.id;
-			allRemoteSeries.push(seriesData);
+			allRemoteSeries.value.push(seriesData);
 			propMessage("Successfully create new series.");
 		} catch (error) {
 		} finally {
@@ -94,7 +94,12 @@
 		});
 	}
 	function resetSeries(): void {
-		editorLocalAndRemote[articleId].local.seriesId = 0;
+		Object.assign(editorLocalAndRemote[articleId].local.seriesId, {
+			...defaultSeries,
+		});
+		Object.assign(articleSerieLocalAndRemote[articleId].local, {
+			...defaultSeries,
+		});
 	}
 </script>
 <template>

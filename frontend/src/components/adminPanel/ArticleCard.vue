@@ -11,10 +11,15 @@
 	import TagEditor from "./TagEditor.vue";
 	const props = defineProps<{
 		articleCard: ArticleCard;
+		sCardMode?: boolean;
+	}>();
+	const emits = defineEmits<{
+		updateDraggingCard: [card: ArticleCard];
 	}>();
 	const status = reactive({
 		tags: false,
 		card: false,
+		dragging: false,
 	});
 	const router = useRouter();
 	const localTags = ref(props.articleCard.tags);
@@ -28,12 +33,14 @@
 		}
 	});
 	function toEditPage(): void {
-		router.push({
-			name: "EditArticle",
-			params: {
-				articleId: props.articleCard.id,
-			},
-		});
+		if (props.sCardMode) {
+			router.push({
+				name: "EditArticle",
+				params: {
+					articleId: props.articleCard.id,
+				},
+			});
+		}
 	}
 	function decideToPublishArticle(): void {
 		propConfirm({
@@ -117,41 +124,58 @@
 	}
 </script>
 <template>
-	<ConfirmSlot
-		:status="status.tags"
-		:callback="updateTags"
-		@close="status.tags = false"
-	>
-		<template #header>Editor tags</template>
-		<template #body>
-			<TagEditor
-				:article-card="props.articleCard"
-				@getLocalTags="
-					(tags) => {
-						localTags = tags;
-					}
-				"
-			/>
-		</template>
-		<template #noMessage>Cancel</template>
-		<template #yesMessage>Apply</template>
-	</ConfirmSlot>
 	<div
 		class="parent-NJQTAg2j1g"
 		@mouseenter="status.card = true"
 		@mouseleave="status.card = false"
+		:draggable="props.sCardMode"
+		@dragstart="status.dragging = true"
+		@dragend="
+			() => {
+				status.dragging = false;
+				emits('updateDraggingCard', props.articleCard);
+			}
+		"
+		@dragover=""
 	>
-		<div class="parent-Vy7GxWhi1x" @click="toEditPage">
+		<ConfirmSlot
+			:status="status.tags"
+			:callback="updateTags"
+			@close="status.tags = false"
+		>
+			<template #header>Editor tags</template>
+			<template #body>
+				<TagEditor
+					:article-card="props.articleCard"
+					@getLocalTags="
+						(tags) => {
+							localTags = tags;
+						}
+					"
+				/>
+			</template>
+			<template #noMessage>Cancel</template>
+			<template #yesMessage>Apply</template>
+		</ConfirmSlot>
+		<div
+			class="parent-Vy7GxWhi1x"
+			@click="toEditPage"
+			:class="{ active: props.sCardMode }"
+		>
 			<slot name="cover"></slot>
 		</div>
 		<div class="parent-EJbXxWnjke">
 			<div class="parent-V1C7xb3syx">
-				<div class="parent-Ek3X-WnsJx" @click="toEditPage">
+				<div
+					class="parent-Ek3X-WnsJx"
+					@click="toEditPage"
+					:class="{ scard: props.sCardMode }"
+				>
 					<slot name="title">
 						Iriure nonummy vero sea facilisi feugiat takimata.
 					</slot>
 				</div>
-				<div class="parent-4ke4Z-hjyl">
+				<div class="parent-4ke4Z-hjyl" v-if="!props.sCardMode">
 					<div class="parent-NJaMdZ43Jl" v-if="!status.card">
 						{{ props.articleCard.author }}
 					</div>
@@ -249,6 +273,7 @@
 						<div
 							class="child-EyLCwWno1l"
 							v-for="tag in props.articleCard.tags"
+							v-if="!props.sCardMode"
 							@click="
 								() => {
 									router.push({

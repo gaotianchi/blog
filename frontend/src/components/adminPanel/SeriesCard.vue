@@ -13,15 +13,18 @@
 	import { propConfirm, propMessage } from "@/api/local";
 	import ConfirmSlot from "@/components/ConfirmSlot.vue";
 	import SeriesEditor from "./SeriesEditor.vue";
-	import { useRouter } from "vue-router";
 	const props = defineProps<{
 		series: Series;
+	}>();
+	const emits = defineEmits<{
+		beClicked: [];
+		updateDropzone: [target: Series];
 	}>();
 	const status = reactive({
 		actionMenu: false,
 		updateSeries: false,
+		drop: false,
 	});
-	const router = useRouter();
 	const newSeries: Ref<Series> = ref(props.series);
 	const newCoverImg: Ref<File | null> = ref(null);
 	const count = ref(0);
@@ -52,10 +55,10 @@
 			propMessage("Deleting series ...");
 			deleteSeriesItem(props.series.id).then(() => {
 				propMessage("Successfully delete series.");
-				const index = allRemoteSeries.findIndex(
+				const index = allRemoteSeries.value.findIndex(
 					(i) => i.id === props.series.id
 				);
-				allRemoteSeries.splice(index, 1);
+				allRemoteSeries.value.splice(index, 1);
 			});
 		} catch (error) {
 			console.error(error);
@@ -82,12 +85,12 @@
 		}
 		try {
 			patchSeriesItem(newSeries.value).then((card) => {
-				const index = allRemoteSeries.findIndex(
+				const index = allRemoteSeries.value.findIndex(
 					(i) => i.id === props.series.id
 				);
 				console.log(card);
-				allRemoteSeries[index] = card;
-				console.log(allRemoteSeries[index]);
+				allRemoteSeries.value[index] = card;
+				console.log(allRemoteSeries.value[index]);
 				propMessage("Change saved.");
 			});
 		} catch (error) {
@@ -96,36 +99,42 @@
 		}
 	}
 	function gotoArticles(): void {
-		router.push({
-			name: "ArticlesPanel",
-			query: {
-				filter: ""
-			}
-		})
+		emits("beClicked");
+	}
+	function dropped(): void {
+		emits("updateDropzone", props.series);
+		status.drop = false;
 	}
 </script>
 <template>
-	<ConfirmSlot
-		:status="status.updateSeries"
-		:callback="updateSeries"
-		@close="status.updateSeries = false"
+	<div
+		class="parent-EytiXaw31g"
+		:class="{ dragover: status.drop }"
+		@drop.prevent="dropped"
+		@dragover.prevent="status.drop = true"
+		@dragenter.prevent="status.drop = true"
+		@dragleave.prevent="status.drop = false"
 	>
-		<template #header>Editor series</template>
-		<template #body>
-			<SeriesEditor
-				:series="props.series"
-				@update-series="
-					(series, coverImg) => {
-						newSeries = series;
-						newCoverImg = coverImg;
-					}
-				"
-			/>
-		</template>
-		<template #noMessage>Cancel</template>
-		<template #yesMessage>Apply</template>
-	</ConfirmSlot>
-	<div class="parent-EytiXaw31g">
+		<ConfirmSlot
+			:status="status.updateSeries"
+			:callback="updateSeries"
+			@close="status.updateSeries = false"
+		>
+			<template #header>Editor series</template>
+			<template #body>
+				<SeriesEditor
+					:series="props.series"
+					@update-series="
+						(series, coverImg) => {
+							newSeries = series;
+							newCoverImg = coverImg;
+						}
+					"
+				/>
+			</template>
+			<template #noMessage>Cancel</template>
+			<template #yesMessage>Apply</template>
+		</ConfirmSlot>
 		<div class="parent-4khhQ6D3ke" @click="gotoArticles">
 			<img
 				:src="series.cover ?? '/default-cover.jpg'"
@@ -182,11 +191,13 @@
 </template>
 <style scoped>
 	.parent-EytiXaw31g {
-		width: 220px;
 		height: fit-content;
 		display: flex;
 		flex-direction: column;
-		margin: 0 30px 40px 0;
+		padding: 20px;
+	}
+	.parent-EytiXaw31g.dragover {
+		background-color: lightgrey;
 	}
 	.parent-4khhQ6D3ke {
 		position: relative;

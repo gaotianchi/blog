@@ -26,7 +26,7 @@ export const confirmProp: Confirm = reactive({ ...defaultConfirm });
 export const remoteArticle: Article = reactive({ ...defaultArticle });
 export const remoteSeries: Series = reactive({ ...defaultSeries });
 export const allRemoteArticleCards: ArticleCard[] = reactive([]);
-export const allRemoteSeries: Series[] = reactive([]);
+export const allRemoteSeries: Ref<Series[]> = ref([]);
 export const tagIndex = new Index({ tokenize: "forward" });
 export const articleCardIndex = new Document({
 	document: {

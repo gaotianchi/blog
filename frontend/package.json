@@ -19,7 +19,8 @@
     "moment-timezone": "^0.5.45",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5",
-    "vue3-datepicker": "^0.4.0"
+    "vue3-datepicker": "^0.4.0",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.0",
