@@ -5,7 +5,7 @@
 	import { patchArticleItem } from "@/api/remote";
 	import icons from "@/components/icons";
 	import SettingBar from "./SettingBar.vue";
-	import { editorLocalAndRemote } from "@/store";
+	import { editorLocalAndRemote, allRemoteArticleCards } from "@/store";
 	const articleId = inject("articleId") as number;
 	const elementsStatus = reactive({
 		settingBtn: false,
@@ -57,12 +57,22 @@
 	function publishArticleItem(): void {
 		editorLocalAndRemote[articleId].local.isPublished = true;
 		elementsStatus.sync = false;
-		updateArticleItem();
+		updateArticleItem().then(() => {
+			const index = allRemoteArticleCards.value.findIndex(
+				(i) => i.id === articleId
+			);
+			allRemoteArticleCards.value[index].isPublished = true;
+		});
 	}
 	function convertToDraft(): void {
 		editorLocalAndRemote[articleId].local.isPublished = false;
 		elementsStatus.sync = false;
-		updateArticleItem();
+		updateArticleItem().then(() => {
+			const index = allRemoteArticleCards.value.findIndex(
+				(i) => i.id === articleId
+			);
+			allRemoteArticleCards.value[index].isPublished = false;
+		});
 	}
 </script>
 <template>

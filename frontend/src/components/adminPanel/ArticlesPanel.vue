@@ -12,10 +12,17 @@
 	} from "@/typing";
 	const route = useRoute();
 	const router = useRouter();
-	const currentArticleCards = ref(allRemoteArticleCards);
+	const currentArticleCards = ref(allRemoteArticleCards.value);
 	const articleFilter: Ref<ArticleCardStatus> = ref("all");
 	onMounted(() => {
 		initAllRemoteArticleCards();
+		router.push({
+			name: "ArticlesPanel",
+			query: {
+				filter: "status",
+				query: "all",
+			},
+		});
 	});
 	watch(
 		() => route.query,
@@ -30,8 +37,8 @@
 		}
 		const searchResult = articleCardIndex.search(query, [meta]);
 		const articleIds = (searchResult[0]?.result as number[]) || [];
-		const resultArticles = allRemoteArticleCards.value.filter((articleCard) =>
-			articleIds.includes(articleCard.id)
+		const resultArticles = allRemoteArticleCards.value.filter(
+			(articleCard) => articleIds.includes(articleCard.id)
 		);
 		return resultArticles || [];
 	}
@@ -41,8 +48,8 @@
 			bool: "and",
 		});
 		const articleIds = (searchResult[0]?.result as number[]) || [];
-		const resultArticles = allRemoteArticleCards.value.filter((articleCard) =>
-			articleIds.includes(articleCard.id)
+		const resultArticles = allRemoteArticleCards.value.filter(
+			(articleCard) => articleIds.includes(articleCard.id)
 		);
 		return resultArticles || [];
 	}
@@ -53,7 +60,9 @@
 					(i) => i.isPublished === true && i.planned === false
 				);
 			case "planned":
-				return allRemoteArticleCards.value.filter((i) => i.planned === true);
+				return allRemoteArticleCards.value.filter(
+					(i) => i.planned === true
+				);
 			case "draft":
 				return allRemoteArticleCards.value.filter(
 					(i) => i.isPublished === false
@@ -61,11 +70,6 @@
 			default:
 				return allRemoteArticleCards.value;
 		}
-	}
-	function filterBySeries(seriesId: string): ArticleCard[] {
-		return allRemoteArticleCards.value.filter(
-			(i) => i.seriesId.toString() === seriesId
-		);
 	}
 	function getFilteredCards(
 		filter: ArticleSearchField,
@@ -78,12 +82,10 @@
 				return filterByMeta(filter, query);
 			case "tag":
 				return filterByMeta(filter, query);
-			case "series":
-				return filterBySeries(query);
 			case "status":
 				return filterByStatus(query as ArticleCardStatus);
 			default:
-				return [];
+				return allRemoteArticleCards.value;
 		}
 	}
 	function updateCurrentCards(): void {

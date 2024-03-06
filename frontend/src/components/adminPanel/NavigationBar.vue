@@ -39,7 +39,17 @@
 		<div class="parent-NyqMZg3jkl">
 			<div
 				class="child-E17jXe3okl"
-				@click="router.push({ name: 'ArticlesPanel' })"
+				@click="
+					() => {
+						router.push({
+							name: 'ArticlesPanel',
+							query: {
+								filter: 'status',
+								query: 'all',
+							},
+						});
+					}
+				"
 			>
 				<component :is="icons.article" class="icon child-41G37ensyx" />
 				<span class="child-VkvsQehjyg">Article</span>

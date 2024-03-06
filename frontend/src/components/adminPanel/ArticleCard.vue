@@ -21,6 +21,12 @@
 		card: false,
 		dragging: false,
 	});
+	const currentArtiticleCard = computed<ArticleCard>(() => {
+		const index = allRemoteArticleCards.value.findIndex(
+			(i) => i.id === props.articleCard.id
+		);
+		return allRemoteArticleCards.value[index];
+	});
 	const router = useRouter();
 	const localTags = ref(props.articleCard.tags);
 	const currentPubishStatus = computed<string>(() => {
@@ -33,7 +39,7 @@
 		}
 	});
 	function toEditPage(): void {
-		if (props.sCardMode) {
+		if (!props.sCardMode) {
 			router.push({
 				name: "EditArticle",
 				params: {
@@ -133,7 +139,7 @@
 		@dragend="
 			() => {
 				status.dragging = false;
-				emits('updateDraggingCard', props.articleCard);
+				emits('updateDraggingCard', currentArtiticleCard);
 			}
 		"
 		@dragover=""
@@ -146,7 +152,7 @@
 			<template #header>Editor tags</template>
 			<template #body>
 				<TagEditor
-					:article-card="props.articleCard"
+					:article-card="currentArtiticleCard"
 					@getLocalTags="
 						(tags) => {
 							localTags = tags;
@@ -160,7 +166,7 @@
 		<div
 			class="parent-Vy7GxWhi1x"
 			@click="toEditPage"
-			:class="{ active: props.sCardMode }"
+			:class="{ scard: props.sCardMode }"
 		>
 			<slot name="cover"></slot>
 		</div>
@@ -177,12 +183,12 @@
 				</div>
 				<div class="parent-4ke4Z-hjyl" v-if="!props.sCardMode">
 					<div class="parent-NJaMdZ43Jl" v-if="!status.card">
-						{{ props.articleCard.author }}
+						{{ currentArtiticleCard.author }}
 					</div>
 					<div class="parent-4JePW-2ike" v-if="status.card">
 						<div
 							class="child-41BOZ-2sJx"
-							v-if="props.articleCard.isPublished === true"
+							v-if="currentArtiticleCard.isPublished === true"
 							@click="convertToDraft"
 						>
 							<component
@@ -192,7 +198,7 @@
 						</div>
 						<div
 							class="child-41BOZ-2sJx"
-							v-if="props.articleCard.isPublished === false"
+							v-if="currentArtiticleCard.isPublished === false"
 							@click="decideToPublishArticle"
 						>
 							<component
@@ -233,7 +239,7 @@
 									name: 'ArticlesPanel',
 									query: {
 										filter: 'author',
-										query: props.articleCard.author,
+										query: currentArtiticleCard.author,
 									},
 								});
 							}
@@ -251,8 +257,8 @@
 					<div
 						class="parent-N1rwLZ3jyl"
 						:class="{
-							published: props.articleCard.isPublished,
-							planned: props.articleCard.planned,
+							published: currentArtiticleCard.isPublished,
+							planned: currentArtiticleCard.planned,
 						}"
 					>
 						{{ currentPubishStatus }}
@@ -261,18 +267,18 @@
 					<div class="parent-Vk5DLW2jJl">
 						{{
 							dateFormatter(
-								getLocalDatetime(props.articleCard.createdAt),
+								getLocalDatetime(currentArtiticleCard.createdAt),
 								"ddd MMM DD YYYY"
 							)
 						}}
 					</div>
 					<div
 						class="parent-4J0P8-hsJl"
-						v-if="props.articleCard.tags.length > 0"
+						v-if="currentArtiticleCard.tags.length > 0"
 					>
 						<div
 							class="child-EyLCwWno1l"
-							v-for="tag in props.articleCard.tags"
+							v-for="tag in currentArtiticleCard.tags"
 							v-if="!props.sCardMode"
 							@click="
 								() => {
