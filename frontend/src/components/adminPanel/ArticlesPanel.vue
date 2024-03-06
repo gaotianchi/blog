@@ -30,7 +30,7 @@
 		}
 		const searchResult = articleCardIndex.search(query, [meta]);
 		const articleIds = (searchResult[0]?.result as number[]) || [];
-		const resultArticles = allRemoteArticleCards.filter((articleCard) =>
+		const resultArticles = allRemoteArticleCards.value.filter((articleCard) =>
 			articleIds.includes(articleCard.id)
 		);
 		return resultArticles || [];
@@ -41,7 +41,7 @@
 			bool: "and",
 		});
 		const articleIds = (searchResult[0]?.result as number[]) || [];
-		const resultArticles = allRemoteArticleCards.filter((articleCard) =>
+		const resultArticles = allRemoteArticleCards.value.filter((articleCard) =>
 			articleIds.includes(articleCard.id)
 		);
 		return resultArticles || [];
@@ -49,21 +49,21 @@
 	function filterByStatus(status: ArticleCardStatus): ArticleCard[] {
 		switch (status) {
 			case "published":
-				return allRemoteArticleCards.filter(
+				return allRemoteArticleCards.value.filter(
 					(i) => i.isPublished === true && i.planned === false
 				);
 			case "planned":
-				return allRemoteArticleCards.filter((i) => i.planned === true);
+				return allRemoteArticleCards.value.filter((i) => i.planned === true);
 			case "draft":
-				return allRemoteArticleCards.filter(
+				return allRemoteArticleCards.value.filter(
 					(i) => i.isPublished === false
 				);
 			default:
-				return allRemoteArticleCards;
+				return allRemoteArticleCards.value;
 		}
 	}
 	function filterBySeries(seriesId: string): ArticleCard[] {
-		return allRemoteArticleCards.filter(
+		return allRemoteArticleCards.value.filter(
 			(i) => i.seriesId.toString() === seriesId
 		);
 	}
@@ -93,14 +93,14 @@
 				route.query.query as string
 			);
 		} else {
-			currentArticleCards.value = allRemoteArticleCards;
+			currentArticleCards.value = allRemoteArticleCards.value;
 		}
 	}
 	async function initAllRemoteArticleCards(): Promise<void> {
 		try {
 			const response = await getAllArticleCards();
-			Object.assign(allRemoteArticleCards, response);
-			allRemoteArticleCards.forEach((articleCard) => {
+			allRemoteArticleCards.value = response;
+			allRemoteArticleCards.value.forEach((articleCard) => {
 				articleCardIndex.add(articleCard);
 			});
 		} catch (error) {

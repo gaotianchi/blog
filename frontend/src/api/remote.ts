@@ -7,6 +7,7 @@ import type {
 	SerializedArticle,
 	SerializedArticleCard,
 	ArticleCard,
+	SeriesArticleCount,
 } from "@/typing";
 import { rootUrl } from "@/config";
 import type { APIError } from "@/api/errors";
@@ -336,6 +337,17 @@ export async function patchArticleSeries(
 		},
 		body: JSON.stringify({ seriesId: seriesId }),
 	});
+	if (response.status === 200) {
+		const data = await response.json();
+		return data;
+	} else {
+		const error = await response.json();
+		throw error.error;
+	}
+}
+export async function getSeriesArticleCouns(): Promise<SeriesArticleCount[]> {
+	const url = rootUrl + "/author/series-article-counts";
+	const response = await fetch(url);
 	if (response.status === 200) {
 		const data = await response.json();
 		return data;

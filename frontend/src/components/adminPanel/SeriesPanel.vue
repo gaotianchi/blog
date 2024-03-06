@@ -5,7 +5,8 @@
 		postSeriesItem,
 		getAllSeries,
 		getAllArticleCards,
-		patchArticleSeries
+		patchArticleSeries,
+		getSeriesArticleCouns,
 	} from "@/api/remote";
 	import { propMessage } from "@/api/local";
 	import SeriesCardVue from "./SeriesCard.vue";
@@ -16,7 +17,7 @@
 	import { allRemoteSeries } from "@/store";
 	import type { ArticleCard, Series } from "@/typing";
 	import ArticleCardVue from "./ArticleCard.vue";
-	import { allRemoteArticleCards } from "@/store";
+	import { allRemoteArticleCards, seriesArticleCount } from "@/store";
 	const newSeries: Ref<Series> = ref(defaultSeries);
 	const newCoverImg: Ref<File | null> = ref(null);
 	const status = reactive({
@@ -29,11 +30,20 @@
 	onMounted(() => {
 		initAllRemoteSeries();
 		initAllRemoteArticleCards();
+		initSeriesArticleCount();
 	});
 	async function initAllRemoteArticleCards(): Promise<void> {
 		try {
 			const response = await getAllArticleCards();
-			Object.assign(allRemoteArticleCards, response);
+			allRemoteArticleCards.value = response;
+		} catch (error) {
+			console.error(error);
+		}
+	}
+	async function initSeriesArticleCount(): Promise<void> {
+		try {
+			const data = await getSeriesArticleCouns();
+			seriesArticleCount.value = data;
 		} catch (error) {
 			console.error(error);
 		}
@@ -46,8 +56,31 @@
 			console.error(error);
 		}
 	}
-	async function updateArticleSeries(): Promise<void> {
-		
+	function updateArticleSeries(a: ArticleCard, s: Series): void {
+		propMessage("Changing article series ...");
+		try {
+			patchArticleSeries(a.id, s.id).then((card) => {
+				const origiSeriesIndex = seriesArticleCount.value.findIndex(
+					(i) => i.seriesId === a.seriesId
+				);
+				const newSeriesIndex = seriesArticleCount.value.findIndex(
+					(i) => i.seriesId === s.id
+				);
+				seriesArticleCount.value[origiSeriesIndex].articlesCount -= 1;
+				seriesArticleCount.value[newSeriesIndex].articlesCount += 1;
+				currentArticleCards.value = currentArticleCards.value.filter(
+					(i) => i.id !== card.id
+				);
+				const index = allRemoteArticleCards.value.findIndex(
+					(i) => i.id === a.id
+				);
+				allRemoteArticleCards.value[index].seriesId = s.id;
+
+				propMessage("Changed saved.");
+			});
+		} catch (error) {
+			console.error(error);
+		}
 	}
 	function createSeries(): void {
 		propMessage("Creating series ...");
@@ -75,7 +108,7 @@
 		}
 	}
 	function getArticleCards(seriesId: number): ArticleCard[] {
-		const result = allRemoteArticleCards.filter(
+		const result = allRemoteArticleCards.value.filter(
 			(i) => i.seriesId === seriesId
 		);
 		return result;
@@ -122,7 +155,7 @@
 				@update-dropzone="
 					(s) => {
 						if (dragged) {
-							
+							updateArticleSeries(dragged, s);
 						}
 					}
 				"
@@ -166,10 +199,8 @@
 		display: flex;
 		flex-direction: column;
 	}
-	.parent-4JGZtUJp1g {
-		margin: 0 30px 40px 0;
-	}
 	.parent-4JGZtUJp1g.active {
+		width: min-content;
 		background-color: lightgrey;
 	}
 	.parent-4JGZtUJp1g.dropzone {

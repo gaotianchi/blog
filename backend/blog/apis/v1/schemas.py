@@ -224,3 +224,15 @@ schema_13 = {
     },
     "required": ["id", "author", "name", "cover", "createdAt"],
 }
+schema_14 = {
+    "$schema": SCHEMA,
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "seriesId": {"type": "integer"},
+            "articlesCount": {"type": "integer"},
+        },
+        "required": ["seriesId", "articlesCount"],
+    },
+}

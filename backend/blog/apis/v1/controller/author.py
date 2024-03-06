@@ -13,6 +13,7 @@ from blog.apis.v1.schemas import (  # type: ignore
     schema_08,
     schema_09,
     schema_11,
+    schema_14,
 )
 from blog.model.database import Article, Series, Tag, User
 from blog.utlis import get_all_image_url, serialize_datetime, validator
@@ -219,6 +220,18 @@ def get_series_articles_count(series_id: int):
         return abort(message="No series found.", status_code=404)
     count = Article.query.with_parent(current_series).count()
     return jsonify(count), 200
+
+
+@author.route("/series-article-counts", methods=["GET"])  # type: ignore
+def get_series_articles_counts():
+    all_series = cast(list[Series], Series.query.all())
+    response_data = [
+        dict(seriesId=s.id, articlesCount=Article.query.with_parent(s).count())
+        for s in all_series
+    ]
+    if validator(response_data, schema_14):
+        return abort()
+    return jsonify(response_data), 200
 
 
 @author.route("/articles/<int:series_id>", methods=["GET"])

@@ -141,5 +141,6 @@ export type ArticleSeriesLocalAndRemote = {
 	};
 };
 export type SeriesArticleCount = {
-	[key: number]: number;
+	seriesId: number;
+	articlesCount: number;
 };

@@ -23,10 +23,10 @@ export const settingStatus: SettingStatus = reactive({
 });
 export const messageProp: Ref<string> = ref("");
 export const confirmProp: Confirm = reactive({ ...defaultConfirm });
-export const seriesArticleCount: Ref<SeriesArticleCount> = ref({});
+export const seriesArticleCount: Ref<SeriesArticleCount[]> = ref([]);
 export const remoteArticle: Article = reactive({ ...defaultArticle });
 export const remoteSeries: Series = reactive({ ...defaultSeries });
-export const allRemoteArticleCards: ArticleCard[] = reactive([]);
+export const allRemoteArticleCards: Ref<ArticleCard[]> = ref([]);
 export const allRemoteSeries: Ref<Series[]> = ref([]);
 export const tagIndex = new Index({ tokenize: "forward" });
 export const articleCardIndex = new Document({

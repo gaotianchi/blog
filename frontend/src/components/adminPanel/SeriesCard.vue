@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import icons from "@/components/icons";
-	import { onMounted, reactive, ref, type Ref } from "vue";
+	import { computed, onMounted, reactive, ref, type Ref } from "vue";
 	import {
 		getSeriesArticlesCount,
 		deleteSeriesItem,
@@ -27,19 +27,13 @@
 	});
 	const newSeries: Ref<Series> = ref(props.series);
 	const newCoverImg: Ref<File | null> = ref(null);
-	const count = ref(0);
-	onMounted(() => {
-		initCount();
+	const count = computed<number>(() => {
+		const index = seriesArticleCount.value.findIndex(
+			(i) => i.seriesId === props.series.id
+		);
+		return seriesArticleCount.value[index].articlesCount;
 	});
-	async function initCount(): Promise<void> {
-		try {
-			const response = await getSeriesArticlesCount(props.series.id);
-			count.value = response;
-			seriesArticleCount.value[props.series.id] = response;
-		} catch (error) {
-			console.error(error);
-		}
-	}
+
 	function decideToDeleteSeries(): void {
 		status.actionMenu = false;
 		propConfirm({
@@ -195,7 +189,7 @@
 		height: fit-content;
 		display: flex;
 		flex-direction: column;
-		padding: 20px;
+		padding: 15px;
 	}
 	.parent-EytiXaw31g.dragover {
 		background-color: lightgrey;
@@ -231,6 +225,7 @@
 		margin-bottom: 20px;
 	}
 	.parent-EkmamTwnyg {
+		width: 220px;
 		font-size: 15px;
 		line-height: 20px;
 		margin: 5px 0;
@@ -243,6 +238,7 @@
 	}
 	.parent-Vy_p7pw2yx {
 		display: flex;
+		width: 220px;
 		justify-content: space-between;
 		align-items: center;
 	}

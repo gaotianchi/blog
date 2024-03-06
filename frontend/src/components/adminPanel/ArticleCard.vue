@@ -65,10 +65,10 @@
 			propMessage("Deleting article ...");
 			deleteArticleItem(props.articleCard.id).then(() => {
 				propMessage("Article deleted successfully.");
-				const index = allRemoteArticleCards.findIndex(
+				const index = allRemoteArticleCards.value.findIndex(
 					(i) => i.id === props.articleCard.id
 				);
-				allRemoteArticleCards.splice(index, 1);
+				allRemoteArticleCards.value.splice(index, 1);
 			});
 		} catch (error) {
 			console.error(error);
@@ -84,10 +84,10 @@
 				serializedArticleCard
 			);
 			articleCardIndex.update(response);
-			const index = allRemoteArticleCards.findIndex(
+			const index = allRemoteArticleCards.value.findIndex(
 				(i) => i.id === props.articleCard.id
 			);
-			allRemoteArticleCards[index] = response;
+			allRemoteArticleCards.value[index] = response;
 			propMessage("Changed saved.");
 		} catch (error) {
 			console.error(error);
