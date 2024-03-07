@@ -129,6 +129,7 @@ export type ArticlePreivewCard = {
 	images: string[];
 	author: string;
 	summary: string;
+	slug: string;
 };
 
 export type ArticleCardMeta = "title" | "tag" | "author" | "series";

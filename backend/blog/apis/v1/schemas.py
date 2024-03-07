@@ -236,3 +236,30 @@ schema_14 = {
         "required": ["seriesId", "articlesCount"],
     },
 }
+schema_15 = {
+    "$schema": SCHEMA,
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "id": {"type": "integer"},
+            "title": {"type": "string"},
+            "createdAt": {"type": "string", "pattern": DATETIMEPATTERN},
+            "tags": {"type": "array", "items": {"type": "string"}},
+            "images": {"type": "array", "items": {"type": "string"}},
+            "author": {"type": "string"},
+            "summary": {"type": "string"},
+            "slug": {"type": "string"},
+        },
+        "required": [
+            "id",
+            "title",
+            "createdAt",
+            "tags",
+            "images",
+            "author",
+            "summary",
+            "slug",
+        ],
+    },
+}

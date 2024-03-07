@@ -5,7 +5,7 @@
 </script>
 
 <template>
-	<!-- <ArticlePreviewCard
+	<ArticlePreviewCard
 		:preview-card="{
 			id: 1,
 			title: 'Kasd eum ea at hendrerit soluta amet invidunt et clita exerci labore.',
@@ -18,8 +18,8 @@
 			summary:
 				'Sea tempor feugiat est invidunt liber augue ipsum est placerat stet invidunt sed erat sanctus enim ipsum ea odio. \n\nEa dolores stet duo ipsum delenit dolor nibh. Lorem erat sadipscing vel consetetur et invidunt ipsum voluptua eirmod et in.\nDolor stet et sit nulla aliquyam dolore. Amet eu erat kasd lorem diam sea ea ipsum dolore elitr accusam sed sit justo. Clita labore duis et ipsum kasd diam et elitr eos et sit kasd vulputate sanctus gubergren sed rebum.',
 		}"
-	/> -->
-	<ArticleDetailReader slug="Blog_article_20240307093143" />
+	/>
+	<!-- <ArticleDetailReader slug="Blog_article_20240307093143" /> -->
 </template>
 
 <style scoped>

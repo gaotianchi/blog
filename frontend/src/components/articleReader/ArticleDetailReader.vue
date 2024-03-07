@@ -56,8 +56,8 @@
 		box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
 		background: rgb(255, 255, 255);
 	}
-	.parent-NkGKVHM6ye {
-	}
+	/* .parent-NkGKVHM6ye {
+	} */
 	.parent-4k5f4BGpJg {
 		margin-bottom: 20px;
 		padding: 0 20px;
@@ -66,8 +66,8 @@
 		margin-bottom: 15px;
 		padding: 0 20px;
 	}
-	.parent-VJW7NSzTkx {
-	}
+	/* .parent-VJW7NSzTkx {
+	} */
 	.parent-V1-SEBfT1g {
 		font-weight: 500;
 	}

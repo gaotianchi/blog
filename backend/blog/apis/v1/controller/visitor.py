@@ -5,6 +5,7 @@ from flask import Blueprint, jsonify
 from blog.apis.v1.errors import abort
 from blog.apis.v1.schemas import (  # type: ignore; schema_05,; schema_06,; schema_07,; schema_08,; schema_09,; schema_11,; schema_14,
     schema_04,
+    schema_15,
 )
 from blog.model.database import Article, User
 from blog.utlis import (
@@ -26,6 +27,7 @@ def get_article_preview_card(a: Article) -> dict[str, int | str | list[str]]:
     card["images"] = get_all_image_url(a.body)
     card["author"] = cast(User, a.author).nickname
     card["summary"] = markdown_to_text(a.body)[0:500]
+    card["slug"] = a.slug
     return card
 
 
@@ -33,6 +35,8 @@ def get_article_preview_card(a: Article) -> dict[str, int | str | list[str]]:
 def get_article_preview_cards(page: int):
     articles = cast(list[Article], Article.query.paginate(page=page, per_page=10).items)
     response_data = [get_article_preview_card(a) for a in articles]
+    if validator(response_data, schema_15):
+        return abort()
     return jsonify(response_data), 200
 
 

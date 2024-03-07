@@ -8,6 +8,7 @@ import type {
 	SerializedArticleCard,
 	ArticleCard,
 	SeriesArticleCount,
+	ArticlePreivewCard,
 } from "@/typing";
 import { rootUrl } from "@/config";
 import type { APIError } from "@/api/errors";
@@ -360,6 +361,19 @@ export async function visitorGetArticleItem(
 	slug: string
 ): Promise<SerializedArticle> {
 	const url = rootUrl + "/visitor/article/" + slug;
+	const response = await fetch(url);
+	if (response.status === 200) {
+		const data = await response.json();
+		return data;
+	} else {
+		const error = await response.json();
+		throw error.error;
+	}
+}
+export async function getArticlePreivewCards(
+	page: number
+): Promise<ArticlePreivewCard[]> {
+	const url = rootUrl + "/visitor/article-preview-cards/" + page;
 	const response = await fetch(url);
 	if (response.status === 200) {
 		const data = await response.json();

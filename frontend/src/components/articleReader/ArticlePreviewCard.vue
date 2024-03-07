@@ -1,9 +1,19 @@
 <script setup lang="ts">
 	import type { ArticlePreivewCard } from "@/typing";
 	import { dateFormatter, getLocalDatetime } from "@/utlis";
+	import { useRouter } from "vue-router";
 	const props = defineProps<{
 		previewCard: ArticlePreivewCard;
 	}>();
+	const router = useRouter();
+	function readMore(): void {
+		router.push({
+			name: "ArticleDetail",
+			params: {
+				slug: props.previewCard.slug,
+			},
+		});
+	}
 </script>
 <template>
 	<div class="parent-Ey5SeGG6kx">
@@ -37,7 +47,7 @@
 			</div>
 		</div>
 		<div class="parent-41o1Zzzp1l">
-			<span class="parent-Vy0ufVf6ke">Read more</span>
+			<span class="parent-Vy0ufVf6ke" @click="readMore">Read more</span>
 		</div>
 	</div>
 </template>
