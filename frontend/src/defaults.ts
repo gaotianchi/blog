@@ -8,6 +8,7 @@ import type {
 	SettingStatus,
 	Confirm,
 	PreviewCover,
+	ArticleCard,
 } from "@/typing";
 import { dateFormatter, serializeDate } from "@/utlis";
 export const defaultTag: Tag = {
@@ -116,4 +117,28 @@ export const defaultLoginStatus: LoginStatus = {
 			condition_3: true,
 		},
 	},
+};
+export const defaultArticleCard: ArticleCard = {
+	id: 0,
+	title: "",
+	createdAt: serializeDate(new Date()),
+	isPublished: false,
+	tags: [],
+	images: [],
+	author: "",
+	planned: false,
+	seriesId: 0,
+};
+export const defaultSerializedArticle = {
+	id: 0,
+	title: "",
+	body: "",
+	slug: "Blog_article_" + dateFormatter(new Date(), "YYYYMMDDhhmmss"),
+	createdAt: serializeDate(new Date()),
+	updatedAt: serializeDate(new Date()),
+	publishedAt: serializeDate(new Date()),
+	isPublished: false,
+	tags: [],
+	authorId: 0,
+	seriesId: 0,
 };

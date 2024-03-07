@@ -356,3 +356,16 @@ export async function getSeriesArticleCouns(): Promise<SeriesArticleCount[]> {
 		throw error.error;
 	}
 }
+export async function visitorGetArticleItem(
+	slug: string
+): Promise<SerializedArticle> {
+	const url = rootUrl + "/visitor/article/" + slug;
+	const response = await fetch(url);
+	if (response.status === 200) {
+		const data = await response.json();
+		return data;
+	} else {
+		const error = await response.json();
+		throw error.error;
+	}
+}

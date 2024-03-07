@@ -2,7 +2,7 @@
 	import { onMounted, ref, watch, type Ref, computed } from "vue";
 	import { useRoute, useRouter } from "vue-router";
 	import { getAllArticleCards } from "@/api/remote";
-	import { allRemoteArticleCards, articleCardIndex } from "@/store";
+	import { articleCardIndex, ArticleCards } from "@/store";
 	import ArticleCardVue from "./ArticleCard.vue";
 	import type {
 		ArticleCard,
@@ -12,10 +12,10 @@
 	} from "@/typing";
 	const route = useRoute();
 	const router = useRouter();
-	const currentArticleCards = ref(allRemoteArticleCards.value);
+	const currentArticleCards = ref(ArticleCards.allCards);
 	const articleFilter: Ref<ArticleCardStatus> = ref("all");
 	onMounted(() => {
-		initAllRemoteArticleCards();
+		initAllArticleCards();
 		router.push({
 			name: "ArticlesPanel",
 			query: {
@@ -30,6 +30,28 @@
 			updateCurrentCards();
 		}
 	);
+	async function initAllArticleCards(): Promise<void> {
+		try {
+			const response = await getAllArticleCards();
+			ArticleCards.allCards = response;
+			ArticleCards.allCards.forEach((articleCard) => {
+				articleCardIndex.add(articleCard);
+			});
+		} catch (error) {
+			console.error(error);
+		}
+	}
+	function updateCurrentCards(): void {
+		if (route.query.filter && route.query.query) {
+			currentArticleCards.value = getFilteredCards(
+				route.query.filter as ArticleSearchField,
+				route.query.query as string
+			);
+			console.log(currentArticleCards.value);
+		} else {
+			currentArticleCards.value = ArticleCards.allCards;
+		}
+	}
 
 	function filterByMeta(meta: ArticleCardMeta, query: string): ArticleCard[] {
 		if (meta === "tag") {
@@ -37,8 +59,8 @@
 		}
 		const searchResult = articleCardIndex.search(query, [meta]);
 		const articleIds = (searchResult[0]?.result as number[]) || [];
-		const resultArticles = allRemoteArticleCards.value.filter(
-			(articleCard) => articleIds.includes(articleCard.id)
+		const resultArticles = ArticleCards.allCards.filter((articleCard) =>
+			articleIds.includes(articleCard.id)
 		);
 		return resultArticles || [];
 	}
@@ -48,27 +70,27 @@
 			bool: "and",
 		});
 		const articleIds = (searchResult[0]?.result as number[]) || [];
-		const resultArticles = allRemoteArticleCards.value.filter(
-			(articleCard) => articleIds.includes(articleCard.id)
+		const resultArticles = ArticleCards.allCards.filter((articleCard) =>
+			articleIds.includes(articleCard.id)
 		);
 		return resultArticles || [];
 	}
 	function filterByStatus(status: ArticleCardStatus): ArticleCard[] {
 		switch (status) {
 			case "published":
-				return allRemoteArticleCards.value.filter(
+				return ArticleCards.allCards.filter(
 					(i) => i.isPublished === true && i.planned === false
 				);
 			case "planned":
-				return allRemoteArticleCards.value.filter(
-					(i) => i.planned === true
-				);
+				return ArticleCards.allCards.filter((i) => i.planned === true);
 			case "draft":
-				return allRemoteArticleCards.value.filter(
+				return ArticleCards.allCards.filter(
 					(i) => i.isPublished === false
 				);
+			case "all":
+				return ArticleCards.allCards;
 			default:
-				return allRemoteArticleCards.value;
+				return ArticleCards.allCards;
 		}
 	}
 	function getFilteredCards(
@@ -85,28 +107,7 @@
 			case "status":
 				return filterByStatus(query as ArticleCardStatus);
 			default:
-				return allRemoteArticleCards.value;
-		}
-	}
-	function updateCurrentCards(): void {
-		if (route.query.filter && route.query.query) {
-			currentArticleCards.value = getFilteredCards(
-				route.query.filter as ArticleSearchField,
-				route.query.query as string
-			);
-		} else {
-			currentArticleCards.value = allRemoteArticleCards.value;
-		}
-	}
-	async function initAllRemoteArticleCards(): Promise<void> {
-		try {
-			const response = await getAllArticleCards();
-			allRemoteArticleCards.value = response;
-			allRemoteArticleCards.value.forEach((articleCard) => {
-				articleCardIndex.add(articleCard);
-			});
-		} catch (error) {
-			console.error(error);
+				return ArticleCards.allCards;
 		}
 	}
 	function updateWithStatus(status: ArticleCardStatus): void {
@@ -191,7 +192,7 @@
 			</div>
 			<div class="parent-Vk5b5GB3kl"></div>
 		</div>
-		<div class="parent-E1k-9G6ske">
+		<div class="parent-E1k-9G6ske" v-if="currentArticleCards.length > 0">
 			<ArticleCardVue
 				v-for="item in currentArticleCards"
 				:article-card="item"
@@ -204,6 +205,7 @@
 				</template>
 			</ArticleCardVue>
 		</div>
+		<div class="parent-EkZ0bbzaye" v-else>No articles.</div>
 	</div>
 </template>
 <style scoped>

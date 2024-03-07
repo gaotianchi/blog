@@ -2,6 +2,8 @@ import re
 from datetime import datetime, timezone
 from typing import Any, cast
 
+import markdown
+from bs4 import BeautifulSoup
 from jsonschema import validate
 from jsonschema.exceptions import SchemaError, ValidationError
 
@@ -42,3 +44,10 @@ def get_all_image_url(text: str) -> list[str]:
     pattern = re.compile(r"!\[.*?\]\((.*?)\)", re.MULTILINE)
     search_results = cast(list[str], re.findall(pattern, text))
     return search_results
+
+
+def markdown_to_text(markdown_text: str):
+    html_content = markdown.markdown(markdown_text)
+    soup = BeautifulSoup(html_content, "html.parser")
+    plain_text = soup.get_text(separator="\n")
+    return plain_text.replace("\n\n", "\n")

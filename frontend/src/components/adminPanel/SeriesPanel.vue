@@ -14,10 +14,10 @@
 	import icons from "@/components/icons";
 	import SeriesEditor from "./SeriesEditor.vue";
 	import { defaultSeries } from "@/defaults";
-	import { allRemoteSeries } from "@/store";
+	import { allRemoteSeries, ArticleCards } from "@/store";
 	import type { ArticleCard, Series } from "@/typing";
 	import ArticleCardVue from "./ArticleCard.vue";
-	import { allRemoteArticleCards, seriesArticleCount } from "@/store";
+	import { seriesArticleCount } from "@/store";
 	const newSeries: Ref<Series> = ref(defaultSeries);
 	const newCoverImg: Ref<File | null> = ref(null);
 	const status = reactive({
@@ -29,13 +29,13 @@
 	const dragged: Ref<ArticleCard | null> = ref(null);
 	onMounted(() => {
 		initAllRemoteSeries();
-		initAllRemoteArticleCards();
+		initAllArticleCards();
 		initSeriesArticleCount();
 	});
-	async function initAllRemoteArticleCards(): Promise<void> {
+	async function initAllArticleCards(): Promise<void> {
 		try {
 			const response = await getAllArticleCards();
-			allRemoteArticleCards.value = response;
+			ArticleCards.allCards = response;
 		} catch (error) {
 			console.error(error);
 		}
@@ -71,10 +71,9 @@
 				currentArticleCards.value = currentArticleCards.value.filter(
 					(i) => i.id !== card.id
 				);
-				const index = allRemoteArticleCards.value.findIndex(
-					(i) => i.id === a.id
-				);
-				allRemoteArticleCards.value[index].seriesId = s.id;
+				const curr = ArticleCards.card(a.id);
+				curr.seriesId = s.id;
+				ArticleCards.update(curr);
 
 				propMessage("Changed saved.");
 			});
@@ -108,7 +107,7 @@
 		}
 	}
 	function getArticleCards(seriesId: number): ArticleCard[] {
-		const result = allRemoteArticleCards.value.filter(
+		const result = ArticleCards.allCards.filter(
 			(i) => i.seriesId === seriesId
 		);
 		return result;
@@ -165,23 +164,29 @@
 			</div>
 		</div>
 		<div class="parent-4kNMSLy61x" v-if="status.dropzone">
-			<ArticleCardVue
-				v-for="a in currentArticleCards"
-				:article-card="a"
-				s-card-mode
-				@update-dragging-card="
-					(c) => {
-						dragged = c;
-					}
-				"
+			<div
+				class="parent-41XFLWfa1g"
+				v-if="currentArticleCards.length > 0"
 			>
-				<template #cover>
-					<img width="80px" height="80px" :src="a.images[0]" />
-				</template>
-				<template #title>
-					{{ a.title }}
-				</template>
-			</ArticleCardVue>
+				<ArticleCardVue
+					v-for="a in currentArticleCards"
+					:article-card="a"
+					s-card-mode
+					@update-dragging-card="
+						(c) => {
+							dragged = c;
+						}
+					"
+				>
+					<template #cover>
+						<img width="80px" height="80px" :src="a.images[0]" />
+					</template>
+					<template #title>
+						{{ a.title }}
+					</template>
+				</ArticleCardVue>
+			</div>
+			<div class="parent-EkZh8WfaJx" v-else>No articles.</div>
 		</div>
 	</div>
 </template>
@@ -220,5 +225,8 @@
 	.parent-V1Np4Mdn1e {
 		height: 100px;
 		width: 100px;
+	}
+	.parent-4kNMSLy61x {
+		margin-top: 15px;
 	}
 </style>

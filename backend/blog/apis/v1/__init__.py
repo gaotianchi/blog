@@ -5,13 +5,13 @@ from flask import Blueprint, jsonify
 from .controller.account import account
 from .controller.author import author
 from .controller.media import media
-from .controller.vistor import vistor
+from .controller.visitor import visitor
 
 v1 = Blueprint("v1", __name__, url_prefix="/v1")
 
 v1.register_blueprint(account)
 v1.register_blueprint(author)
-v1.register_blueprint(vistor)
+v1.register_blueprint(visitor)
 v1.register_blueprint(media)
 
 

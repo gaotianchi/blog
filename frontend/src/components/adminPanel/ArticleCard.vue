@@ -4,11 +4,15 @@
 	import { useRouter } from "vue-router";
 	import { patchArticleCardItem, deleteArticleItem } from "@/api/remote";
 	import { propConfirm, propMessage } from "@/api/local";
-	import { allRemoteArticleCards, articleCardIndex } from "@/store";
+	import {
+		articleCardIndex,
+		ArticleCards,
+	} from "@/store";
 	import type { ArticleCard, SerializedArticleCard } from "@/typing";
 	import { getLocalDatetime, dateFormatter } from "@/utlis";
 	import ConfirmSlot from "@/components/ConfirmSlot.vue";
 	import TagEditor from "./TagEditor.vue";
+	import { defaultArticleCard } from "@/defaults";
 	const props = defineProps<{
 		articleCard: ArticleCard;
 		sCardMode?: boolean;
@@ -22,10 +26,10 @@
 		dragging: false,
 	});
 	const currentArtiticleCard = computed<ArticleCard>(() => {
-		const index = allRemoteArticleCards.value.findIndex(
-			(i) => i.id === props.articleCard.id
-		);
-		return allRemoteArticleCards.value[index];
+		if (!props.articleCard.id) {
+			return defaultArticleCard;
+		}
+		return ArticleCards.card(props.articleCard.id);
 	});
 	const router = useRouter();
 	const localTags = ref(props.articleCard.tags);
@@ -71,10 +75,7 @@
 			propMessage("Deleting article ...");
 			deleteArticleItem(props.articleCard.id).then(() => {
 				propMessage("Article deleted successfully.");
-				const index = allRemoteArticleCards.value.findIndex(
-					(i) => i.id === props.articleCard.id
-				);
-				allRemoteArticleCards.value.splice(index, 1);
+				ArticleCards.delete(props.articleCard.id);
 			});
 		} catch (error) {
 			console.error(error);
@@ -90,10 +91,7 @@
 				serializedArticleCard
 			);
 			articleCardIndex.update(response);
-			const index = allRemoteArticleCards.value.findIndex(
-				(i) => i.id === props.articleCard.id
-			);
-			allRemoteArticleCards.value[index] = response;
+			ArticleCards.update(response);
 			propMessage("Changed saved.");
 		} catch (error) {
 			console.error(error);
@@ -267,7 +265,9 @@
 					<div class="parent-Vk5DLW2jJl">
 						{{
 							dateFormatter(
-								getLocalDatetime(currentArtiticleCard.createdAt),
+								getLocalDatetime(
+									currentArtiticleCard.createdAt
+								),
 								"ddd MMM DD YYYY"
 							)
 						}}

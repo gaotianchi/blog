@@ -121,6 +121,16 @@ export type ArticleCard = {
 	planned: boolean;
 	seriesId: number;
 };
+export type ArticlePreivewCard = {
+	id: number;
+	title: string;
+	createdAt: string;
+	tags: string[];
+	images: string[];
+	author: string;
+	summary: string;
+};
+
 export type ArticleCardMeta = "title" | "tag" | "author" | "series";
 export type ArticleSearchField = ArticleCardMeta | "status";
 export type ArticleCardStatus = "all" | "published" | "planned" | "draft";

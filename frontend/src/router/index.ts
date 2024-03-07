@@ -59,6 +59,13 @@ const router = createRouter({
 			],
 		},
 		{
+			path: "/article/:slug",
+			name: "ArticleDetail",
+			component: () => import("@/views/ArticleDetailPage.vue"),
+			meta: { loginRequired: false },
+			props: true,
+		},
+		{
 			path: "/auth",
 			component: () => import("@/views/Auth.vue"),
 			meta: { loginRequired: false },
