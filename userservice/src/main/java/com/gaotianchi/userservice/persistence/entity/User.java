@@ -1,7 +1,7 @@
 package com.gaotianchi.userservice.persistence.entity;
 
-import com.gaotianchi.userservice.enums.AccountStatus;
 import com.gaotianchi.userservice.enums.RegistrationMethod;
+import com.gaotianchi.userservice.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.Data;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.Base64;
@@ -27,13 +26,16 @@ public class User {
     @Column(length = 60)
     private String password;
     private String penName;
+    @Enumerated(EnumType.STRING)
     private RegistrationMethod registrationMethod;
+    private TimeZone timeZone;
     private String avatar_url;
     private OffsetDateTime registrationTime;
-    private TimeZone timeZone;
     private String personalWebsite;
-    private AccountStatus accountStatus;
+    @Enumerated(EnumType.STRING)
+    private RoleType roleType;
     private String secret;
+    private OffsetDateTime lockedUntil;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles;
@@ -41,7 +43,7 @@ public class User {
     public User() {
         super();
         this.secret = generateBase64RandomCode();
-        this.accountStatus = AccountStatus.NOT_ACTIVATED;
+        this.roleType = RoleType.NOT_ACTIVATED_SUBSCRIBER;
         this.registrationTime = OffsetDateTime.now();
     }
 
