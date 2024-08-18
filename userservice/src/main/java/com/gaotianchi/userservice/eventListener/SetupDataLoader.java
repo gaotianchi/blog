@@ -1,6 +1,7 @@
 package com.gaotianchi.userservice.eventListener;
 
 import com.gaotianchi.userservice.enums.PrivilegeType;
+import com.gaotianchi.userservice.enums.RegistrationMethod;
 import com.gaotianchi.userservice.enums.RoleType;
 import com.gaotianchi.userservice.persistence.entity.Privilege;
 import com.gaotianchi.userservice.persistence.entity.Role;
@@ -8,6 +9,7 @@ import com.gaotianchi.userservice.persistence.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,13 +19,17 @@ import java.util.*;
 
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
+    private final UserRepo userRepo;
     private boolean alreadySetup = false;
     private final PrivilegeRepo privilegeRepo;
     private final RoleRepo roleRepo;
+    private final PasswordEncoder passwordEncoder;
     @Autowired
-    public SetupDataLoader(PrivilegeRepo privilegeRepo, RoleRepo roleRepo) {
+    public SetupDataLoader(PrivilegeRepo privilegeRepo, RoleRepo roleRepo, UserRepo userRepo, PasswordEncoder passwordEncoder) {
         this.privilegeRepo = privilegeRepo;
         this.roleRepo = roleRepo;
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
     @Override
     @Transactional
@@ -35,17 +41,14 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         final Privilege privilegeCommentContent = createPrivilegeIfNotFound(PrivilegeType.COMMENT_CONTENT);
         final Privilege privilegeLikeOrDislikeContent = createPrivilegeIfNotFound(PrivilegeType.LIKE_OR_DISLIKE_CONTENT);
 
-        final List<Privilege> bloggerPrivileges = new ArrayList<>(Arrays.asList(privilegeManageContent, privilegeCommentContent, privilegeLikeOrDislikeContent));
         final List<Privilege> notActivatedPrivileges = new ArrayList<>(Collections.singletonList(privilegeLikeOrDislikeContent));
         final List<Privilege> activatedPrivileges = new ArrayList<>(Arrays.asList(privilegeCommentContent, privilegeLikeOrDislikeContent));
-        final List<Privilege> lockedPrivileges = new ArrayList<>(Collections.singletonList(privilegeLikeOrDislikeContent));
-        final List<Privilege> deregisterPrivileges = new ArrayList<>(Collections.singletonList(privilegeLikeOrDislikeContent));
+        final List<Privilege> bloggerPrivileges = new ArrayList<>(Arrays.asList(privilegeManageContent, privilegeCommentContent, privilegeLikeOrDislikeContent));
 
         createRoleIfNotFound(RoleType.NOT_ACTIVATED_SUBSCRIBER, notActivatedPrivileges);
         createRoleIfNotFound(RoleType.ACTIVATED_SUBSCRIBER, activatedPrivileges);
-        createRoleIfNotFound(RoleType.LOCKED_SUBSCRIBER, lockedPrivileges);
-        createRoleIfNotFound(RoleType.DEREGISTERED_SUBSCRIBER, deregisterPrivileges);
         final Role blogger = createRoleIfNotFound(RoleType.BLOGGER, bloggerPrivileges);
+        createBloggerIfNotFound("6159984@gmail.com", "6159984@gmail.com", "高天驰", RegistrationMethod.EMAIL, TimeZone.getTimeZone("Asia/Shanghai"), new ArrayList<>(Collections.singleton(blogger)));
 
         alreadySetup = true;
     }
@@ -68,19 +71,18 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         role = roleRepo.save(role);
         return role;
     }
-//    @Transactional
-//    public User createUserIfNotFound(final String email, final String firstName, final String lastName, final String password, final Collection<Role> roles) {
-//        User user = userRepository.findByEmail(email);
-//        if (user == null) {
-//            user = new User();
-//            user.setFirstName(firstName);
-//            user.setLastName(lastName);
-//            user.setPassword(passwordEncoder.encode(password));
-//            user.setEmail(email);
-//            user.setEnabled(true);
-//        }
-//        user.setRoles(roles);
-//        user = userRepository.save(user);
-//        return user;
-//    }
+    @Transactional
+    public void createBloggerIfNotFound(final String email, final String password, final String penName, final RegistrationMethod registrationMethod, final TimeZone timeZone, final Collection<Role> roles) {
+        User user = userRepo.findByEmail(email);
+        if (user == null) {
+            user = new User();
+            user.setPassword(passwordEncoder.encode(password));
+            user.setEmail(email);
+            user.setPenName(penName);
+            user.setRegistrationMethod(registrationMethod);
+            user.setTimeZone(timeZone);
+        }
+        user.setRoles(roles);
+        userRepo.save(user);
+    }
 }
