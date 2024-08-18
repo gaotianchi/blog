@@ -18,6 +18,7 @@ public class Privilege {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Enumerated(EnumType.STRING)
     private PrivilegeType privilegeType;
 
     @ManyToMany(mappedBy = "privileges")
