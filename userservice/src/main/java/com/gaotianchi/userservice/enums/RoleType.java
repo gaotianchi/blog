@@ -2,5 +2,8 @@ package com.gaotianchi.userservice.enums;
 
 public enum RoleType {
     BLOGGER,
-    SUBSCRIBER;
+    NOT_ACTIVATED_SUBSCRIBER,
+    ACTIVATED_SUBSCRIBER,
+    LOCKED_SUBSCRIBER,
+    DEREGISTERED_SUBSCRIBER,
 }
