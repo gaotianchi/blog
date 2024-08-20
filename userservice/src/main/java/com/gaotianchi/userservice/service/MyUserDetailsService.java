@@ -38,7 +38,6 @@ public class MyUserDetailsService implements UserDetailsService {
         user.setPenName(registrationDto.getPenName());
         user.setEmail(registrationDto.getEmail());
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-        user.setTimeZone(registrationDto.getTimeZone());
         user.setRegistrationMethod(registrationDto.getRegistrationMethod());
         if (registrationDto.getRegistrationMethod() == RegistrationMethod.EMAIL) {
             user.setRoles(Collections.singletonList(roleRepo.findByRoleType(RoleType.NOT_ACTIVATED_SUBSCRIBER)));
