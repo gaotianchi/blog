@@ -34,7 +34,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String accessToken = authorizedClient.getAccessToken().getTokenValue();
             UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/users")
                     .queryParam("method", clientRegistrationId);
-            webClient.post().uri(uriComponentsBuilder.build().toUri()).retrieve().toBodilessEntity().block();
+            webClient.post().uri(uriComponentsBuilder.build().toUri()).header("Authorization", "Bearer " + accessToken).retrieve().toBodilessEntity().block();
             response.sendRedirect("/");
         }
     }
