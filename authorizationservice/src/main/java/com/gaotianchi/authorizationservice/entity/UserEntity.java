@@ -42,7 +42,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
@@ -55,12 +55,12 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return Objects.equals(this.role, "ROLE_DEREGISTERED_SUBSCRIBER");
+        return !Objects.equals(this.role, "ROLE_DEREGISTERED_SUBSCRIBER");
     }
 
 }
