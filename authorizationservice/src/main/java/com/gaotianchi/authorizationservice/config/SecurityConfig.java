@@ -19,8 +19,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers(HttpMethod.POST, "/users").anonymous()
-                                .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("BLOGGER")
+                                .requestMatchers(HttpMethod.POST,"/users/register").anonymous()
+                                .requestMatchers(HttpMethod.DELETE, "/users/*").hasRole("BLOGGER")
                                 .requestMatchers(HttpMethod.PATCH, "/users/*/lock").hasRole("BLOGGER")
                                 .anyRequest().authenticated()
                 )

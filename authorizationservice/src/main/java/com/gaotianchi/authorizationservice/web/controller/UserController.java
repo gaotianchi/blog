@@ -21,7 +21,7 @@ public class UserController {
         this.userDetailsService = userDetailsService;
     }
 
-    @PostMapping("/users")
+    @PostMapping("/users/register")
     public ResponseEntity<UserEntity> register(@RequestBody UserDto userDto) throws UserExistingException {
         if (userDetailsService.emailExists(userDto.getEmail())) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);

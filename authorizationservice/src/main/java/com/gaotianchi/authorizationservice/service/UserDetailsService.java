@@ -1,7 +1,11 @@
 package com.gaotianchi.authorizationservice.service;
 
+import com.gaotianchi.authorizationservice.entity.RoleEntity;
 import com.gaotianchi.authorizationservice.entity.UserEntity;
 import com.gaotianchi.authorizationservice.enums.AccountStatus;
+import com.gaotianchi.authorizationservice.enums.RoleType;
+import com.gaotianchi.authorizationservice.repo.PrivilegeRepo;
+import com.gaotianchi.authorizationservice.repo.RoleRepo;
 import com.gaotianchi.authorizationservice.repo.UserRepo;
 import com.gaotianchi.authorizationservice.web.dto.EmailUpdatedMessage;
 import com.gaotianchi.authorizationservice.web.dto.UserDto;
@@ -15,17 +19,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
 @Service
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepo roleRepo;
+    private final PrivilegeRepo privilegeRepo;
 
     @Autowired
-    public UserDetailsService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+    public UserDetailsService(UserRepo userRepo, PasswordEncoder passwordEncoder, RoleRepo roleRepo, PrivilegeRepo privilegeRepo) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepo = roleRepo;
+        this.privilegeRepo = privilegeRepo;
     }
 
     @Override
@@ -40,8 +50,13 @@ public class UserDetailsService implements org.springframework.security.core.use
         final UserEntity userEntity = new UserEntity();
         userEntity.setEmail(userDto.getEmail());
         userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userEntity.setRoles(userDto.getRoles());
-        userEntity.setPrivileges(userDto.getPrivileges());
+        Collection<RoleEntity> roleEntities = new ArrayList<>();
+        for (String roleName : userDto.getRoles()) {
+            RoleType roleType = RoleType.valueOf(roleName);
+            RoleEntity roleEntity = roleRepo.findByRoleType(roleType);
+            roleEntities.add(roleEntity);
+        }
+        userEntity.setRoles(roleEntities);
         userRepo.save(userEntity);
         return userEntity;
     }

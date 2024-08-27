@@ -6,12 +6,10 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -25,12 +23,13 @@ public class UserEntity implements UserDetails {
     private Long id;
     private String email;
     private String password;
-    private String roles;
     private OffsetDateTime lockedUntil;
     private OffsetDateTime registrationDateTime;
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
-    private String privileges;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<RoleEntity> roles;
 
     public UserEntity() {
         this.registrationDateTime = OffsetDateTime.now();
@@ -38,24 +37,16 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(this.roles));
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        for (RoleEntity roleEntity : this.roles) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + roleEntity.getRoleType().toString()));
+            for (PrivilegeEntity privilegeEntity : roleEntity.getPrivileges()) {
+                authorities.add(new SimpleGrantedAuthority(privilegeEntity.getPrivilegeType().toString()));
+            }
+        }
+        return authorities;
     }
 
-    public void setRoles(List<String> roleList) {
-        this.roles = StringUtils.collectionToCommaDelimitedString(roleList);
-    }
-
-    public Set<String> getRoles() {
-        return StringUtils.commaDelimitedListToSet(this.roles);
-    }
-
-    public void setPrivileges(List<String> roleList) {
-        this.roles = StringUtils.collectionToCommaDelimitedString(roleList);
-    }
-
-    public Set<String> getPrivileges() {
-        return StringUtils.commaDelimitedListToSet(this.privileges);
-    }
 
     @Override
     public String getPassword() {
