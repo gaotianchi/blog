@@ -26,7 +26,11 @@ public class UserEntity implements UserDetails {
     private String password;
     private String role;
     private OffsetDateTime lockedUntil;
+    private OffsetDateTime registrationDateTime;
 
+    public UserEntity() {
+        this.registrationDateTime = OffsetDateTime.now();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
