@@ -28,14 +28,12 @@ public class UserDetailsService implements org.springframework.security.core.use
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepo roleRepo;
-    private final PrivilegeRepo privilegeRepo;
 
     @Autowired
     public UserDetailsService(UserRepo userRepo, PasswordEncoder passwordEncoder, RoleRepo roleRepo, PrivilegeRepo privilegeRepo) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.roleRepo = roleRepo;
-        this.privilegeRepo = privilegeRepo;
     }
 
     @Override
