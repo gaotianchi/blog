@@ -4,6 +4,7 @@ import com.gaotianchi.authorizationservice.entity.UserEntity;
 import com.gaotianchi.authorizationservice.repo.UserRepo;
 import com.gaotianchi.authorizationservice.web.dto.UserDto;
 import com.gaotianchi.authorizationservice.web.error.UserExistingException;
+import com.gaotianchi.authorizationservice.web.error.UserHasBeenDeletedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,7 +28,7 @@ public class UserDetailsService implements org.springframework.security.core.use
     }
 
     public UserEntity registerNowUserAccount(UserDto userDto) throws UserExistingException {
-        if (userExists(userDto.getEmail())) {
+        if (emailExists(userDto.getEmail())) {
             throw new UserExistingException();
         }
         final UserEntity userEntity = new UserEntity();
@@ -39,7 +40,17 @@ public class UserDetailsService implements org.springframework.security.core.use
         return userEntity;
     }
 
-    public boolean userExists(String email) {
+    public boolean emailExists(String email) {
         return userRepo.findByEmail(email) != null;
+    }
+
+    public boolean idExists(Long userId) {
+        return userRepo.findById(userId).isPresent();
+    }
+
+    public boolean deleteUserById(Long userId) {
+        if (!idExists(userId)) return false;
+        userRepo.deleteById(userId);
+        return true;
     }
 }

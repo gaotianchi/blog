@@ -2,6 +2,7 @@ package com.gaotianchi.authorizationservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +19,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/users/register").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/users").anonymous()
+                                .requestMatchers(HttpMethod.DELETE, "/users/").hasRole("BLOGGER")
                                 .anyRequest().authenticated()
                 )
                 .formLogin(withDefaults());
