@@ -88,4 +88,13 @@ public class UserDetailsService implements org.springframework.security.core.use
         user.setRole("DEREGISTERED_SUBSCRIBER");
         userRepo.save(user);
     }
+
+    public void lockAccount(Long userId) throws UserNotFoundException {
+        Optional<UserEntity> userEntity = userRepo.findById(userId);
+        if (userEntity.isEmpty()) throw new UserNotFoundException();
+        UserEntity user = userEntity.get();
+        user.setRole("LOCKED_SUBSCRIBER");
+        user.setLockedUntil(OffsetDateTime.now().plusDays(7));
+        userRepo.save(user);
+    }
 }
