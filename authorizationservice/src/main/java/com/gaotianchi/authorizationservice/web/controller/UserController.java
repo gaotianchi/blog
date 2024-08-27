@@ -70,4 +70,15 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PatchMapping("/users{userId}/deregister")
+    public ResponseEntity<Void> deregisterAccount(@PathVariable Long userId) {
+        try {
+            userDetailsService.deregister(userId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

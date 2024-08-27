@@ -8,7 +8,6 @@ import com.gaotianchi.authorizationservice.web.error.EmailAlreadyExistsException
 import com.gaotianchi.authorizationservice.web.error.UserExistingException;
 import com.gaotianchi.authorizationservice.web.error.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -79,6 +78,14 @@ public class UserDetailsService implements org.springframework.security.core.use
         if (userEntity.isEmpty()) throw new UserNotFoundException();
         UserEntity user = userEntity.get();
         user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+    }
+
+    public void deregister(Long userId) throws UserNotFoundException {
+        Optional<UserEntity> userEntity = userRepo.findById(userId);
+        if (userEntity.isEmpty()) throw new UserNotFoundException();
+        UserEntity user = userEntity.get();
+        user.setRole("DEREGISTERED_SUBSCRIBER");
         userRepo.save(user);
     }
 }
