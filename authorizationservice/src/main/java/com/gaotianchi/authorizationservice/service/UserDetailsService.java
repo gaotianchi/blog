@@ -1,6 +1,7 @@
 package com.gaotianchi.authorizationservice.service;
 
 import com.gaotianchi.authorizationservice.entity.UserEntity;
+import com.gaotianchi.authorizationservice.enums.AccountStatus;
 import com.gaotianchi.authorizationservice.repo.UserRepo;
 import com.gaotianchi.authorizationservice.web.dto.EmailUpdatedMessage;
 import com.gaotianchi.authorizationservice.web.dto.UserDto;
@@ -39,8 +40,8 @@ public class UserDetailsService implements org.springframework.security.core.use
         final UserEntity userEntity = new UserEntity();
         userEntity.setEmail(userDto.getEmail());
         userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        userEntity.setLockedUntil(userDto.getLockedUntil());
-        userEntity.setRole(userDto.getRole());
+        userEntity.setRoles(userDto.getRoles());
+        userEntity.setPrivileges(userDto.getPrivileges());
         userRepo.save(userEntity);
         return userEntity;
     }
@@ -85,7 +86,7 @@ public class UserDetailsService implements org.springframework.security.core.use
         Optional<UserEntity> userEntity = userRepo.findById(userId);
         if (userEntity.isEmpty()) throw new UserNotFoundException();
         UserEntity user = userEntity.get();
-        user.setRole("DEREGISTERED_SUBSCRIBER");
+        user.setAccountStatus(AccountStatus.DEREGISTERED);
         userRepo.save(user);
     }
 
@@ -93,7 +94,7 @@ public class UserDetailsService implements org.springframework.security.core.use
         Optional<UserEntity> userEntity = userRepo.findById(userId);
         if (userEntity.isEmpty()) throw new UserNotFoundException();
         UserEntity user = userEntity.get();
-        user.setRole("LOCKED_SUBSCRIBER");
+        user.setAccountStatus(AccountStatus.LOCKED);
         user.setLockedUntil(OffsetDateTime.now().plusDays(7));
         userRepo.save(user);
     }

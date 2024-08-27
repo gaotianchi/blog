@@ -1,17 +1,18 @@
 package com.gaotianchi.authorizationservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.gaotianchi.authorizationservice.enums.AccountStatus;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
+import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -24,9 +25,12 @@ public class UserEntity implements UserDetails {
     private Long id;
     private String email;
     private String password;
-    private String role;
+    private String roles;
     private OffsetDateTime lockedUntil;
     private OffsetDateTime registrationDateTime;
+    @Enumerated(EnumType.STRING)
+    private AccountStatus accountStatus;
+    private String privileges;
 
     public UserEntity() {
         this.registrationDateTime = OffsetDateTime.now();
@@ -34,7 +38,23 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(this.role));
+        return Collections.singletonList(new SimpleGrantedAuthority(this.roles));
+    }
+
+    public void setRoles(List<String> roleList) {
+        this.roles = StringUtils.collectionToCommaDelimitedString(roleList);
+    }
+
+    public Set<String> getRoles() {
+        return StringUtils.commaDelimitedListToSet(this.roles);
+    }
+
+    public void setPrivileges(List<String> roleList) {
+        this.roles = StringUtils.collectionToCommaDelimitedString(roleList);
+    }
+
+    public Set<String> getPrivileges() {
+        return StringUtils.commaDelimitedListToSet(this.privileges);
     }
 
     @Override
@@ -54,7 +74,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        if (Objects.equals(this.role, "LOCKED_SUBSCRIBER") && this.getLockedUntil() != null) {
+        if (this.accountStatus == AccountStatus.LOCKED && this.getLockedUntil() != null) {
             return OffsetDateTime.now().isAfter(this.getLockedUntil());
         }
         return true;
@@ -67,7 +87,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !Objects.equals(this.role, "DEREGISTERED_SUBSCRIBER");
+        return !(this.accountStatus == AccountStatus.DEREGISTERED);
     }
 
 }
