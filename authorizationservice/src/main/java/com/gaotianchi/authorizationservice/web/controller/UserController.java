@@ -2,8 +2,11 @@ package com.gaotianchi.authorizationservice.web.controller;
 
 import com.gaotianchi.authorizationservice.entity.UserEntity;
 import com.gaotianchi.authorizationservice.service.UserDetailsService;
+import com.gaotianchi.authorizationservice.web.dto.EmailUpdatedMessage;
 import com.gaotianchi.authorizationservice.web.dto.UserDto;
+import com.gaotianchi.authorizationservice.web.error.EmailAlreadyExistsException;
 import com.gaotianchi.authorizationservice.web.error.UserExistingException;
+import com.gaotianchi.authorizationservice.web.error.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +38,21 @@ public class UserController {
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PatchMapping("/users/{userId}/email")
+    public ResponseEntity<EmailUpdatedMessage> updateUserEmail(
+            @PathVariable Long userId,
+            @RequestBody String newEmail) {
+        try {
+            EmailUpdatedMessage emailUpdatedMessage = userDetailsService.updateUserEmail(userId, newEmail);
+            return new ResponseEntity<>(emailUpdatedMessage, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (EmailAlreadyExistsException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
