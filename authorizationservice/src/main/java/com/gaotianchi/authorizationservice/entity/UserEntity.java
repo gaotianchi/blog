@@ -18,6 +18,7 @@ import java.util.Objects;
 @Data
 public class UserEntity implements UserDetails {
 
+
     @Id
     @GeneratedValue
     private Long id;
@@ -25,6 +26,8 @@ public class UserEntity implements UserDetails {
     private String password;
     private String role;
     private OffsetDateTime lockedUntil;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(this.role));
@@ -47,7 +50,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        if (Objects.equals(this.role, "ROLE_LOCKED_SUBSCRIBER") && this.getLockedUntil() != null) {
+        if (Objects.equals(this.role, "LOCKED_SUBSCRIBER") && this.getLockedUntil() != null) {
             return OffsetDateTime.now().isAfter(this.getLockedUntil());
         }
         return true;
@@ -60,7 +63,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !Objects.equals(this.role, "ROLE_DEREGISTERED_SUBSCRIBER");
+        return !Objects.equals(this.role, "DEREGISTERED_SUBSCRIBER");
     }
 
 }

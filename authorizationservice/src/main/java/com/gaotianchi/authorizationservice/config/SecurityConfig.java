@@ -20,7 +20,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(HttpMethod.POST, "/users").anonymous()
-                                .requestMatchers(HttpMethod.DELETE, "/users/").hasRole("BLOGGER")
+                                .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("BLOGGER")
+                                .requestMatchers(HttpMethod.PATCH, "/users/*/lock").hasRole("BLOGGER")
                                 .anyRequest().authenticated()
                 )
                 .formLogin(withDefaults());
