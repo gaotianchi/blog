@@ -1,0 +1,29 @@
+server:
+  port: 9000
+
+
+spring:
+  application:
+    name: authorizationservice
+  security:
+    oauth2:
+      authorizationserver:
+        issuer: http://localhost:9000
+    user:
+      name: user
+      password: pass
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/blog_auth?createDatabaseIfNotExist=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: gaotianchi
+    password: "{noop}password"
+  jpa:
+    hibernate:
+      ddl-auto: update
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
