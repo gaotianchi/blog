@@ -57,4 +57,17 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PatchMapping("/users/{userId}/password")
+    public ResponseEntity<Void> resetPassword(
+            @RequestBody String newPassword,
+            @PathVariable Long userId) {
+        try {
+            userDetailsService.resetPassword(userId, newPassword);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
