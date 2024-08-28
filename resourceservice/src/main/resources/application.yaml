@@ -3,17 +3,17 @@ server:
 
 spring:
   application:
-    name: userservice
+    name: resourceservice
   security:
     oauth2:
       resourceserver:
         jwt:
           jwk-set-uri: http://127.0.0.1:9000/oauth2/jwks
   datasource:
-    url: jdbc:mysql://localhost:3306/blog_user?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/blog_auth?createDatabaseIfNotExist=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: gaotianchi
-    password: "{noop}password"
+    password: 20040401
   jpa:
     hibernate:
       ddl-auto: update

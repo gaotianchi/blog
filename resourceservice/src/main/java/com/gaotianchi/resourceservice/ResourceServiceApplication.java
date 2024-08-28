@@ -1,4 +1,4 @@
-package com.gaotianchi.userservice;
+package com.gaotianchi.resourceservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,10 +9,10 @@ import java.io.IOException;
 
 @SpringBootApplication
 @RestController
-public class UserserviceApplication {
+public class ResourceServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(UserserviceApplication.class, args);
+        SpringApplication.run(ResourceServiceApplication.class, args);
     }
 
 
