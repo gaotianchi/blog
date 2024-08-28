@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.gaotianchi</groupId>
-    <artifactId>userservice</artifactId>
+    <artifactId>resourceservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>userservice</name>
-    <description>userservice</description>
+    <name>resourceservice</name>
+    <description>resource service</description>
     <url/>
     <licenses>
         <license/>

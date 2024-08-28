@@ -4,7 +4,7 @@ server:
 
 spring:
   application:
-    name: authorizationservice
+    name: oauth2service
   security:
     oauth2:
       authorizationserver:
