@@ -4,7 +4,6 @@ import com.gaotianchi.oauth2service.entity.RoleEntity;
 import com.gaotianchi.oauth2service.entity.UserEntity;
 import com.gaotianchi.oauth2service.enums.AccountStatus;
 import com.gaotianchi.oauth2service.enums.RoleType;
-import com.gaotianchi.oauth2service.repo.PrivilegeRepo;
 import com.gaotianchi.oauth2service.repo.RoleRepo;
 import com.gaotianchi.oauth2service.repo.UserRepo;
 import com.gaotianchi.oauth2service.web.dto.EmailUpdatedMessage;
@@ -30,7 +29,7 @@ public class UserDetailsService implements org.springframework.security.core.use
     private final RoleRepo roleRepo;
 
     @Autowired
-    public UserDetailsService(UserRepo userRepo, PasswordEncoder passwordEncoder, RoleRepo roleRepo, PrivilegeRepo privilegeRepo) {
+    public UserDetailsService(UserRepo userRepo, PasswordEncoder passwordEncoder, RoleRepo roleRepo) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.roleRepo = roleRepo;
@@ -55,6 +54,7 @@ public class UserDetailsService implements org.springframework.security.core.use
             roleEntities.add(roleEntity);
         }
         userEntity.setRoles(roleEntities);
+        userEntity.setAccountStatus(AccountStatus.ACTIVATED);
         userRepo.save(userEntity);
         return userEntity;
     }

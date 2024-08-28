@@ -22,4 +22,8 @@ public class PrivilegeEntity {
 
     @ManyToMany(mappedBy = "privileges")
     private Collection<RoleEntity> roles;
+
+    public PrivilegeEntity(PrivilegeType privilegeType) {
+        this.privilegeType = privilegeType;
+    }
 }

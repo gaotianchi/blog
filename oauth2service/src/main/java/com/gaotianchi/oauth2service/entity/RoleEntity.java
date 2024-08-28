@@ -26,5 +26,9 @@ public class RoleEntity {
 
     @ManyToMany
     private Collection<PrivilegeEntity> privileges;
+
+    public RoleEntity(RoleType roleType) {
+        this.roleType = roleType;
+    }
 }
 
