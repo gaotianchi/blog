@@ -1,6 +1,6 @@
-package com.gaotianchi.authorizationservice.entity;
+package com.gaotianchi.oauth2service.entity;
 
-import com.gaotianchi.authorizationservice.enums.AccountStatus;
+import com.gaotianchi.oauth2service.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

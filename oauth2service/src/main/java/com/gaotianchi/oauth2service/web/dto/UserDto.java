@@ -1,4 +1,4 @@
-package com.gaotianchi.authorizationservice.web.dto;
+package com.gaotianchi.oauth2service.web.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

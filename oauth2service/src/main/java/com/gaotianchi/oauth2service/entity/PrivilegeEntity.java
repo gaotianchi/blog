@@ -1,5 +1,5 @@
-package com.gaotianchi.authorizationservice.entity;
-import com.gaotianchi.authorizationservice.enums.PrivilegeType;
+package com.gaotianchi.oauth2service.entity;
+import com.gaotianchi.oauth2service.enums.PrivilegeType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

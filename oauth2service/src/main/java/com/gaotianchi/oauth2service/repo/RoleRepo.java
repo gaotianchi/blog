@@ -1,7 +1,7 @@
-package com.gaotianchi.authorizationservice.repo;
+package com.gaotianchi.oauth2service.repo;
 
-import com.gaotianchi.authorizationservice.entity.RoleEntity;
-import com.gaotianchi.authorizationservice.enums.RoleType;
+import com.gaotianchi.oauth2service.entity.RoleEntity;
+import com.gaotianchi.oauth2service.enums.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

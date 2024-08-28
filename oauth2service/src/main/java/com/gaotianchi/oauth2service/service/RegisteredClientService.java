@@ -1,10 +1,10 @@
-package com.gaotianchi.authorizationservice.service;
+package com.gaotianchi.oauth2service.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gaotianchi.authorizationservice.entity.RegisteredClientEntity;
-import com.gaotianchi.authorizationservice.repo.RegisteredClientRepo;
+import com.gaotianchi.oauth2service.entity.RegisteredClientEntity;
+import com.gaotianchi.oauth2service.repo.RegisteredClientRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;

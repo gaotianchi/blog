@@ -1,12 +1,12 @@
-package com.gaotianchi.authorizationservice.web.controller;
+package com.gaotianchi.oauth2service.web.controller;
 
-import com.gaotianchi.authorizationservice.entity.UserEntity;
-import com.gaotianchi.authorizationservice.service.UserDetailsService;
-import com.gaotianchi.authorizationservice.web.dto.EmailUpdatedMessage;
-import com.gaotianchi.authorizationservice.web.dto.UserDto;
-import com.gaotianchi.authorizationservice.web.error.EmailAlreadyExistsException;
-import com.gaotianchi.authorizationservice.web.error.UserExistingException;
-import com.gaotianchi.authorizationservice.web.error.UserNotFoundException;
+import com.gaotianchi.oauth2service.entity.UserEntity;
+import com.gaotianchi.oauth2service.service.UserDetailsService;
+import com.gaotianchi.oauth2service.web.dto.EmailUpdatedMessage;
+import com.gaotianchi.oauth2service.web.dto.UserDto;
+import com.gaotianchi.oauth2service.web.error.EmailAlreadyExistsException;
+import com.gaotianchi.oauth2service.web.error.UserExistingException;
+import com.gaotianchi.oauth2service.web.error.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

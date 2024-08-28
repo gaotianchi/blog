@@ -1,4 +1,4 @@
-package com.gaotianchi.authorizationservice.enums;
+package com.gaotianchi.oauth2service.enums;
 
 public enum AccountStatus {
     ACTIVATED,

@@ -1,4 +1,4 @@
-package com.gaotianchi.authorizationservice.web.error;
+package com.gaotianchi.oauth2service.web.error;
 
 public class UserNotFoundException extends  Exception{
     public UserNotFoundException() {

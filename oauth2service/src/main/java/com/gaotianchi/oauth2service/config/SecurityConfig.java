@@ -1,4 +1,4 @@
-package com.gaotianchi.authorizationservice.config;
+package com.gaotianchi.oauth2service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.gaotianchi.authorizationservice.entity;
+package com.gaotianchi.oauth2service.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

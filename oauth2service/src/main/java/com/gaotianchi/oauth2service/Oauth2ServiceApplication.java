@@ -1,13 +1,13 @@
-package com.gaotianchi.authorizationservice;
+package com.gaotianchi.oauth2service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AuthorizationserviceApplication {
+public class Oauth2ServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AuthorizationserviceApplication.class, args);
+        SpringApplication.run(Oauth2ServiceApplication.class, args);
     }
 
 }
