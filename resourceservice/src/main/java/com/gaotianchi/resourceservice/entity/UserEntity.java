@@ -21,7 +21,7 @@ public class UserEntity {
     private Integer score;
 
     @OneToOne
-    private ImageEntity avatar;
+    private AvatarEntity avatarEntity;
 
     @OneToMany
     private Collection<ArticleEntity> articleEntities;

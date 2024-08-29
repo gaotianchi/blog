@@ -1,8 +1,7 @@
 package com.gaotianchi.resourceservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.gaotianchi.resourceservice.enums.ImageType;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,5 +13,13 @@ public class ImageEntity {
     @Id
     @GeneratedValue
     private Long id;
+    private String filepath;
+    private String alt;
+    private String filename;
+    @Enumerated(EnumType.STRING)
+    private ImageType imageType;
 
+
+    @ManyToOne
+    private ArticleEntity article;
 }

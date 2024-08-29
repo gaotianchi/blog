@@ -38,9 +38,9 @@ public class ArticleEntity implements Content {
     @OneToMany
     private Collection<ArticleVoteRecordEntity> articleVoteRecordEntities;
 
-    @OneToMany
+    @OneToMany(mappedBy = "article")
     private Collection<CommentEntity> commentEntities;
 
-    @OneToMany
+    @OneToMany(mappedBy = "article")
     private Collection<ImageEntity> articleImages;
 }
