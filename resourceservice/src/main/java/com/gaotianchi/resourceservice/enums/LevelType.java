@@ -3,7 +3,7 @@ package com.gaotianchi.resourceservice.enums;
 import lombok.Getter;
 
 @Getter
-public enum LevelEnums {
+public enum LevelType {
     SEED(10),
     SAPLING(100),
     YOUNG_TREE(1000),
@@ -13,7 +13,7 @@ public enum LevelEnums {
 
     private final Integer defaultScoreMilestones;
 
-    LevelEnums(Integer defaultScoreMilestones) {
+    LevelType(Integer defaultScoreMilestones) {
         this.defaultScoreMilestones = defaultScoreMilestones;
     }
 }
