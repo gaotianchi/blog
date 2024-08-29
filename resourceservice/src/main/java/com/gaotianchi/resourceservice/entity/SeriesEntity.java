@@ -10,7 +10,7 @@ import java.util.Collection;
 @Entity
 @Setter
 @Getter
-public class Series {
+public class SeriesEntity {
     @Id
     @GeneratedValue
     private Long id;

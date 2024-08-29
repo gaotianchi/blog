@@ -18,13 +18,16 @@ public class ArticleEntity implements Content {
     private String title;
     private String body;
     private String Summary;
-    private OffsetDateTime creationDate;
-    private OffsetDateTime lastUpdatedDate;
+    private OffsetDateTime creationDatetime;
+    private OffsetDateTime publishDatetime;
+    private OffsetDateTime lastUpdatedDatetime;
     @Enumerated(EnumType.STRING)
     private ArticleStatus articleStatus;
+    private String slug;
+
 
     @ManyToOne
-    private Series series;
+    private SeriesEntity seriesEntity;
 
     @ManyToMany(mappedBy = "articles")
     private Collection<TagEntity> tags;
