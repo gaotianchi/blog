@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Collection;
+
 @Entity
 @Getter
 @Setter
@@ -17,6 +19,9 @@ public class LevelEntity {
     @Enumerated(EnumType.STRING)
     private LevelType level;
     private Integer scoreMilestones;
+
+    @OneToMany(mappedBy = "level")
+    private Collection<UserEntity> userEntities;
 
     public LevelEntity(LevelType level) {
         this.level = level;

@@ -18,7 +18,7 @@ public class UserEntity {
     private String email;
     private String penName;
     private TimeZone timeZone;
-    private Integer score;
+    private Integer score = 0;
 
     @OneToOne
     private AvatarEntity avatarEntity;
@@ -37,4 +37,7 @@ public class UserEntity {
 
     @OneToMany
     private Collection<AccessRecordEntity> accessRecordEntities;
+
+    @ManyToOne
+    private LevelEntity level;
 }
