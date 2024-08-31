@@ -1,7 +1,7 @@
 package com.gaotianchi.resourceservice.enums;
 
-public enum ImageType {
-    COVER,
+public enum ArticleImageType {
+    INIT,
     ORIGINAL,
     THUMBNAIL;
 }

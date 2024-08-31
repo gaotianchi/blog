@@ -18,7 +18,7 @@ public class SeriesEntity {
     private OffsetDateTime creationDatetime;
 
     @OneToOne
-    private ImageEntity cover;
+    private ArticleImageEntity cover;
 
     @OneToMany
     private Collection<ArticleEntity> articleEntities;

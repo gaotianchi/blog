@@ -33,9 +33,6 @@ public class UserEntity {
     private Collection<ArticleVoteRecordEntity> voteEntities;
 
     @OneToMany
-    private Collection<ImageEntity> imageEntities;
-
-    @OneToMany
     private Collection<AccessRecordEntity> accessRecordEntities;
 
     @ManyToOne

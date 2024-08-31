@@ -1,7 +1,10 @@
 server:
   port: 8080
-
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
   application:
     name: resourceservice
   security:
@@ -20,3 +23,7 @@ spring:
 logging:
   level:
     org.springframework.security: debug
+storage:
+  root-location: "src/main/resources/static"
+  article-image-uri: "uploads/articleImage"
+  root-url: "http://localhost:8080"

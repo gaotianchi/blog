@@ -33,7 +33,7 @@ public class ArticleEntity implements Content {
     private Collection<TagEntity> tags;
 
     @OneToOne
-    private ImageEntity cover;
+    private ArticleImageEntity cover;
 
     @ManyToOne
     private UserEntity author;
@@ -45,5 +45,5 @@ public class ArticleEntity implements Content {
     private Collection<CommentEntity> commentEntities;
 
     @OneToMany(mappedBy = "article")
-    private Collection<ImageEntity> articleImages;
+    private Collection<ArticleImageEntity> articleImages;
 }

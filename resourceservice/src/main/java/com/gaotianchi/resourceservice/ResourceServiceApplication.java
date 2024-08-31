@@ -1,23 +1,16 @@
 package com.gaotianchi.resourceservice;
 
+import com.gaotianchi.resourceservice.config.StorageProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@RestController
+@EnableConfigurationProperties(StorageProperties.class)
 public class ResourceServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ResourceServiceApplication.class, args);
     }
 
-
-    @GetMapping("/")
-    public String index() throws IOException {
-        return "index";
-    }
 }
