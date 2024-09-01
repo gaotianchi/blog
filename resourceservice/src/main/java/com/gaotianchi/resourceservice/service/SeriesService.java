@@ -64,4 +64,10 @@ public class SeriesService {
         seriesEntity.setName(name);
         return seriesRepo.save(seriesEntity);
     }
+    public SeriesEntity updateSeriesCover(Long id, Long coverId) throws SeriesNotFoundException, ArticleImageNotFoundException {
+        SeriesEntity seriesEntity = getSeriesEntityOrNotFound(id);
+        ArticleImageEntity articleImageEntity = getArticleImageOrNotFound(coverId);
+        seriesEntity.setCover(articleImageEntity);
+        return seriesRepo.save(seriesEntity);
+    }
 }
