@@ -105,5 +105,9 @@ public class ArticleController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+//    @GetMapping("/articles/{id}/details")
+//    public ResponseEntity<ArticleOtd> getArticleDetails(@PathVariable Long id) {
+//
+//    }
 
 }

@@ -1,10 +1,13 @@
 package com.gaotianchi.resourceservice.service;
 
+import com.gaotianchi.resourceservice.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.entity.ArticleImageEntity;
 import com.gaotianchi.resourceservice.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.repo.ArticleImageRepo;
+import com.gaotianchi.resourceservice.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.repo.SeriesRepo;
 import com.gaotianchi.resourceservice.web.error.ArticleImageNotFoundException;
+import com.gaotianchi.resourceservice.web.error.SeriesNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +18,13 @@ import java.util.Optional;
 public class SeriesService {
     private final ArticleImageRepo articleImageRepo;
     private final SeriesRepo seriesRepo;
+    private final ArticleRepo articleRepo;
 
     @Autowired
-    public SeriesService(ArticleImageRepo articleImageRepo, SeriesRepo seriesRepo) {
+    public SeriesService(ArticleImageRepo articleImageRepo, SeriesRepo seriesRepo, ArticleRepo articleRepo) {
         this.articleImageRepo = articleImageRepo;
         this.seriesRepo = seriesRepo;
+        this.articleRepo = articleRepo;
     }
 
     public SeriesEntity newSeries(String name, Long coverId) throws ArticleImageNotFoundException {
@@ -35,5 +40,22 @@ public class SeriesService {
         Optional<ArticleImageEntity> articleImageEntity = articleImageRepo.findById(id);
         if (articleImageEntity.isEmpty()) throw new ArticleImageNotFoundException();
         return articleImageEntity.get();
+    }
+
+    public SeriesEntity getSeriesEntityOrNotFound(Long id) throws SeriesNotFoundException {
+        Optional<SeriesEntity> seriesEntity = seriesRepo.findById(id);
+        if (seriesEntity.isEmpty()) throw new SeriesNotFoundException();
+        return seriesEntity.get();
+    }
+
+    public void deleteSeries(Long id) throws SeriesNotFoundException {
+        SeriesEntity seriesEntity = getSeriesEntityOrNotFound(id);
+        if (!seriesEntity.getArticleEntities().isEmpty()) {
+            for (ArticleEntity articleEntity : seriesEntity.getArticleEntities()) {
+                articleEntity.setSeriesEntity(null);
+                articleRepo.save(articleEntity);
+            }
+        }
+        seriesRepo.delete(seriesEntity);
     }
 }

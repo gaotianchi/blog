@@ -4,14 +4,12 @@ import com.gaotianchi.resourceservice.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.service.SeriesService;
 import com.gaotianchi.resourceservice.web.dto.SeriesDto;
 import com.gaotianchi.resourceservice.web.error.ArticleImageNotFoundException;
+import com.gaotianchi.resourceservice.web.error.SeriesNotFoundException;
 import com.gaotianchi.resourceservice.web.otd.SeriesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class SeriesController {
@@ -31,6 +29,14 @@ public class SeriesController {
         } catch (ArticleImageNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
+    }
+    @DeleteMapping("/series/delete/{id}")
+    public ResponseEntity<Void> deleteSeries(@PathVariable Long id) {
+        try {
+            seriesService.deleteSeries(id);
+            return null;
+        } catch (SeriesNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
