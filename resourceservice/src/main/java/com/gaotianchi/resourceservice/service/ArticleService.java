@@ -122,4 +122,10 @@ public class ArticleService {
         articleRepo.save(articleEntity);
         return seriesEntity;
     }
+
+    public void removeArticleSeries(Long id) throws ArticleNotFoundException {
+        ArticleEntity articleEntity = getArticleOrNotFound(id);
+        articleEntity.setSeriesEntity(null);
+        articleRepo.save(articleEntity);
+    }
 }

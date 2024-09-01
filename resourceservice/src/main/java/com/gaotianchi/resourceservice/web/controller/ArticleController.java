@@ -114,5 +114,14 @@ public class ArticleController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @PatchMapping("/articles/{id}/series/remove")
+    public ResponseEntity<Void> removeArticleSeries(@PathVariable Long id) {
+        try {
+            articleService.removeArticleSeries(id);
+            return null;
+        } catch (ArticleNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }
