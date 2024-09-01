@@ -2,10 +2,7 @@ package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.entity.*;
 import com.gaotianchi.resourceservice.enums.ArticleStatus;
-import com.gaotianchi.resourceservice.repo.ArticleImageRepo;
-import com.gaotianchi.resourceservice.repo.ArticleRepo;
-import com.gaotianchi.resourceservice.repo.SeriesRepo;
-import com.gaotianchi.resourceservice.repo.UserRepo;
+import com.gaotianchi.resourceservice.repo.*;
 import com.gaotianchi.resourceservice.web.error.*;
 import com.gaotianchi.resourceservice.web.otd.ArticleCommentsOtd;
 import com.gaotianchi.resourceservice.web.otd.CommentWithRepliesOtd;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,14 +22,16 @@ public class ArticleService {
     private final CommentService commentService;
     private final SeriesRepo seriesRepo;
     private final ArticleImageRepo articleImageRepo;
+    private final TagRepo tagRepo;
 
     @Autowired
-    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ArticleImageRepo articleImageRepo) {
+    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ArticleImageRepo articleImageRepo, TagRepo tagRepo) {
         this.articleRepo = articleRepo;
         this.userRepo = userRepo;
         this.commentService = commentService;
         this.seriesRepo = seriesRepo;
         this.articleImageRepo = articleImageRepo;
+        this.tagRepo = tagRepo;
     }
 
     public ArticleEntity createNewDraft(Long userId) throws UserNotFoundException {
@@ -142,5 +142,18 @@ public class ArticleService {
         articleEntity.setCover(articleImageEntity);
         articleRepo.save(articleEntity);
         return articleImageEntity;
+    }
+    public TagEntity getTagOrNotFound(Long id) throws TagNotFoundException {
+        Optional<TagEntity> tagEntity = tagRepo.findById(id);
+        if (tagEntity.isEmpty()) throw new TagNotFoundException();
+        return tagEntity.get();
+    }
+    public void removeArticleTag(Long tagId, Long articleId) throws TagNotFoundException, ArticleNotFoundException {
+        TagEntity tagEntity = getTagOrNotFound(tagId);
+        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
+        Collection<TagEntity> tagEntities = articleEntity.getTags();
+        tagEntities.remove(tagEntity);
+        articleEntity.setTags(tagEntities);
+        articleRepo.save(articleEntity);
     }
 }

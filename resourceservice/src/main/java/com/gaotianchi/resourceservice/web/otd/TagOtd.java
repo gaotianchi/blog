@@ -9,9 +9,11 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 public class TagOtd {
+    private Long id;
     private String name;
     private OffsetDateTime creationDatetime;
     public TagOtd(TagEntity tagEntity) {
+        this.id = tagEntity.getId();
         this.creationDatetime = tagEntity.getCreationDatetime();
         this.name = tagEntity.getName();
     }

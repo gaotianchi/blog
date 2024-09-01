@@ -8,10 +8,7 @@ import com.gaotianchi.resourceservice.service.ArticleService;
 import com.gaotianchi.resourceservice.web.dto.DraftDto;
 import com.gaotianchi.resourceservice.web.dto.UpdateContentDto;
 import com.gaotianchi.resourceservice.web.error.*;
-import com.gaotianchi.resourceservice.web.otd.ArticleCommentsOtd;
-import com.gaotianchi.resourceservice.web.otd.ArticleImageOtd;
-import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
-import com.gaotianchi.resourceservice.web.otd.SeriesOtd;
+import com.gaotianchi.resourceservice.web.otd.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -134,6 +131,16 @@ public class ArticleController {
             ArticleImageEntity articleImageEntity = articleService.updateArticleCover(articleId, coverId);
             return new ResponseEntity<>(new ArticleImageOtd(articleImageEntity), HttpStatus.OK);
         } catch (ArticleNotFoundException | ArticleImageNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping("/articles/{articleId}/remove/tags/{tagId}")
+    public ResponseEntity<Void> removeArticleTag(@PathVariable Long articleId, @PathVariable Long tagId) {
+        try {
+            articleService.removeArticleTag(tagId, articleId);
+            return null;
+        } catch (TagNotFoundException | ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
