@@ -1,15 +1,14 @@
 package com.gaotianchi.resourceservice.web.controller;
 
 import com.gaotianchi.resourceservice.entity.ArticleEntity;
+import com.gaotianchi.resourceservice.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.service.ArticleService;
 import com.gaotianchi.resourceservice.web.dto.DraftDto;
 import com.gaotianchi.resourceservice.web.dto.UpdateContentDto;
-import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
-import com.gaotianchi.resourceservice.web.error.CommentNotFoundException;
-import com.gaotianchi.resourceservice.web.error.UnExpectedStatusException;
-import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
+import com.gaotianchi.resourceservice.web.error.*;
 import com.gaotianchi.resourceservice.web.otd.ArticleCommentsOtd;
 import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
+import com.gaotianchi.resourceservice.web.otd.SeriesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -105,9 +104,15 @@ public class ArticleController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-//    @GetMapping("/articles/{id}/details")
-//    public ResponseEntity<ArticleOtd> getArticleDetails(@PathVariable Long id) {
-//
-//    }
+
+    @PatchMapping("/articles/{articleId}/series/{seriesId}")
+    public ResponseEntity<SeriesOtd> updateArticleSeries(@PathVariable Long articleId, @PathVariable Long seriesId) {
+        try {
+            SeriesEntity seriesEntity = articleService.updateArticleSeries(articleId, seriesId);
+            return new ResponseEntity<>(new SeriesOtd(seriesEntity), HttpStatus.OK);
+        } catch (ArticleNotFoundException | SeriesNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

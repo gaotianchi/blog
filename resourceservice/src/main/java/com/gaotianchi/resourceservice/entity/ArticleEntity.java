@@ -38,7 +38,7 @@ public class ArticleEntity implements Content {
     @ManyToOne
     private UserEntity author;
 
-    @OneToMany
+    @OneToMany(mappedBy = "target")
     private Collection<ArticleVoteRecordEntity> articleVoteRecordEntities;
 
     @OneToMany(mappedBy = "article")

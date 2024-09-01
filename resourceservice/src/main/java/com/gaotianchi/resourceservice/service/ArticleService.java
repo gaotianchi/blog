@@ -2,14 +2,13 @@ package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.entity.CommentEntity;
+import com.gaotianchi.resourceservice.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.entity.UserEntity;
 import com.gaotianchi.resourceservice.enums.ArticleStatus;
 import com.gaotianchi.resourceservice.repo.ArticleRepo;
+import com.gaotianchi.resourceservice.repo.SeriesRepo;
 import com.gaotianchi.resourceservice.repo.UserRepo;
-import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
-import com.gaotianchi.resourceservice.web.error.CommentNotFoundException;
-import com.gaotianchi.resourceservice.web.error.UnExpectedStatusException;
-import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
+import com.gaotianchi.resourceservice.web.error.*;
 import com.gaotianchi.resourceservice.web.otd.ArticleCommentsOtd;
 import com.gaotianchi.resourceservice.web.otd.CommentWithRepliesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +24,14 @@ public class ArticleService {
     private final ArticleRepo articleRepo;
     private final UserRepo userRepo;
     private final CommentService commentService;
+    private final SeriesRepo seriesRepo;
 
     @Autowired
-    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService) {
+    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo) {
         this.articleRepo = articleRepo;
         this.userRepo = userRepo;
         this.commentService = commentService;
+        this.seriesRepo = seriesRepo;
     }
 
     public ArticleEntity createNewDraft(Long userId) throws UserNotFoundException {
@@ -106,5 +107,19 @@ public class ArticleService {
         }
         articleCommentsOtd.setCommentWithRepliesOtds(commentWithRepliesOtds);
         return articleCommentsOtd;
+    }
+
+    public SeriesEntity getSeriesOrNotFound(Long id) throws SeriesNotFoundException {
+        Optional<SeriesEntity> seriesEntity = seriesRepo.findById(id);
+        if (seriesEntity.isEmpty()) throw new SeriesNotFoundException();
+        return seriesEntity.get();
+    }
+
+    public SeriesEntity updateArticleSeries(Long articleId, Long seriesId) throws SeriesNotFoundException, ArticleNotFoundException {
+        SeriesEntity seriesEntity = getSeriesOrNotFound(seriesId);
+        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
+        articleEntity.setSeriesEntity(seriesEntity);
+        articleRepo.save(articleEntity);
+        return seriesEntity;
     }
 }

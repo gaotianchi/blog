@@ -20,6 +20,6 @@ public class SeriesEntity {
     @OneToOne
     private ArticleImageEntity cover;
 
-    @OneToMany
+    @OneToMany(mappedBy = "seriesEntity")
     private Collection<ArticleEntity> articleEntities;
 }
