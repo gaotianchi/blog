@@ -8,6 +8,7 @@ import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.web.error.CommentNotFoundException;
 import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
 import com.gaotianchi.resourceservice.web.otd.CommentOtd;
+import com.gaotianchi.resourceservice.web.otd.CommentWithRepliesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,15 @@ public class CommentController {
         try {
             CommentEntity commentEntity = commentService.updateCommentContent(id, updateCommentDto.getBody());
             return new ResponseEntity<>(commentService.getCommentOtd(commentEntity), HttpStatus.OK);
+        } catch (CommentNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/comments/{id}")
+    public ResponseEntity<CommentWithRepliesOtd> getComment(@PathVariable Long id) {
+        try {
+            CommentWithRepliesOtd commentWithRepliesOtd = commentService.getCommentWithReplies(id);
+            return new ResponseEntity<>(commentWithRepliesOtd, HttpStatus.OK);
         } catch (CommentNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

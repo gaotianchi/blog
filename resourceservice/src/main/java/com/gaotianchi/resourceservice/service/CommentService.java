@@ -2,6 +2,7 @@ package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.entity.CommentEntity;
+import com.gaotianchi.resourceservice.entity.CommentVoteEntity;
 import com.gaotianchi.resourceservice.entity.UserEntity;
 import com.gaotianchi.resourceservice.enums.CommentStatus;
 import com.gaotianchi.resourceservice.repo.ArticleRepo;
@@ -11,6 +12,7 @@ import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.web.error.CommentNotFoundException;
 import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
 import com.gaotianchi.resourceservice.web.otd.CommentOtd;
+import com.gaotianchi.resourceservice.web.otd.CommentWithRepliesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,6 +70,23 @@ public class CommentService {
         commentOtd.setLike(commentCacheService.getNumberOfCommentLike(commentEntity.getId()));
         commentOtd.setDislike(commentCacheService.getNumberOfCommentDislike(commentEntity.getId()));
         return commentOtd;
+    }
+
+    public void setCommentLikeAndDislikeNumber(CommentWithRepliesOtd commentWithRepliesOtd) {
+        commentWithRepliesOtd.setDislike(commentCacheService.getNumberOfCommentLike(commentWithRepliesOtd.getId()));
+        commentWithRepliesOtd.setLike(commentCacheService.getNumberOfCommentLike(commentWithRepliesOtd.getId()));
+        if (!commentWithRepliesOtd.getCommentWithRepliesOtds().isEmpty()) {
+            for (CommentWithRepliesOtd commentWithRepliesOtd1 : commentWithRepliesOtd.getCommentWithRepliesOtds()) {
+                setCommentLikeAndDislikeNumber(commentWithRepliesOtd1);
+            }
+        }
+    }
+
+    public CommentWithRepliesOtd getCommentWithReplies(Long id) throws CommentNotFoundException {
+        CommentEntity commentEntity = getCommentOrNotFound(id);
+        CommentWithRepliesOtd commentWithRepliesOtd = new CommentWithRepliesOtd(commentEntity);
+        setCommentLikeAndDislikeNumber(commentWithRepliesOtd);
+        return commentWithRepliesOtd;
     }
 
     public UserEntity getUserOrNotFound(Long id) throws UserNotFoundException {
