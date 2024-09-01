@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class TagController {
     private final TagService tagService;
@@ -40,6 +42,15 @@ public class TagController {
             return null;
         } catch (TagNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/tags/all")
+    public ResponseEntity<List<TagOtd>> getAllTags() {
+        try {
+            List<TagOtd> tagOtds = tagService.getAllTags();
+            return new ResponseEntity<>(tagOtds, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

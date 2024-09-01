@@ -12,9 +12,11 @@ public class TagOtd {
     private Long id;
     private String name;
     private OffsetDateTime creationDatetime;
+    private Integer numberOfArticles;
     public TagOtd(TagEntity tagEntity) {
         this.id = tagEntity.getId();
         this.creationDatetime = tagEntity.getCreationDatetime();
         this.name = tagEntity.getName();
+        this.numberOfArticles = tagEntity.getArticles().size();
     }
 }

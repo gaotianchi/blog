@@ -7,13 +7,12 @@ import com.gaotianchi.resourceservice.repo.TagRepo;
 import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.web.error.TagAlreadyExistException;
 import com.gaotianchi.resourceservice.web.error.TagNotFoundException;
+import com.gaotianchi.resourceservice.web.otd.TagOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TagService {
@@ -61,6 +60,15 @@ public class TagService {
         if (tagEntity.isEmpty()) throw new TagNotFoundException();
         return tagEntity.get();
     }
+
+    public List<TagOtd> getAllTags() {
+        List<TagOtd> tagOtds = new ArrayList<>();
+        for (TagEntity tagEntity : tagRepo.findAll()) {
+            tagOtds.add(new TagOtd(tagEntity));
+        }
+        return tagOtds;
+    }
+
     public TagEntity getTagOrNotFound(String name) throws TagNotFoundException {
         TagEntity tagEntity = tagRepo.findByName(name);
         if (tagEntity == null) throw new TagNotFoundException();
