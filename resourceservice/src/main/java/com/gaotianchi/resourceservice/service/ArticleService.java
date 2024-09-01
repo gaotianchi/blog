@@ -1,10 +1,8 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.entity.ArticleEntity;
-import com.gaotianchi.resourceservice.entity.CommentEntity;
-import com.gaotianchi.resourceservice.entity.SeriesEntity;
-import com.gaotianchi.resourceservice.entity.UserEntity;
+import com.gaotianchi.resourceservice.entity.*;
 import com.gaotianchi.resourceservice.enums.ArticleStatus;
+import com.gaotianchi.resourceservice.repo.ArticleImageRepo;
 import com.gaotianchi.resourceservice.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.repo.SeriesRepo;
 import com.gaotianchi.resourceservice.repo.UserRepo;
@@ -25,13 +23,15 @@ public class ArticleService {
     private final UserRepo userRepo;
     private final CommentService commentService;
     private final SeriesRepo seriesRepo;
+    private final ArticleImageRepo articleImageRepo;
 
     @Autowired
-    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo) {
+    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ArticleImageRepo articleImageRepo) {
         this.articleRepo = articleRepo;
         this.userRepo = userRepo;
         this.commentService = commentService;
         this.seriesRepo = seriesRepo;
+        this.articleImageRepo = articleImageRepo;
     }
 
     public ArticleEntity createNewDraft(Long userId) throws UserNotFoundException {
@@ -127,5 +127,20 @@ public class ArticleService {
         ArticleEntity articleEntity = getArticleOrNotFound(id);
         articleEntity.setSeriesEntity(null);
         articleRepo.save(articleEntity);
+    }
+
+    public ArticleImageEntity getArticleImageOrNotFound(Long id) throws ArticleImageNotFoundException {
+        Optional<ArticleImageEntity> articleImageEntity = articleImageRepo.findById(id);
+        if (articleImageEntity.isEmpty()) throw new ArticleImageNotFoundException();
+        return articleImageEntity.get();
+    }
+
+
+    public ArticleImageEntity updateArticleCover(Long articleId, Long coverId) throws ArticleNotFoundException, ArticleImageNotFoundException {
+        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
+        ArticleImageEntity articleImageEntity = getArticleImageOrNotFound(coverId);
+        articleEntity.setCover(articleImageEntity);
+        articleRepo.save(articleEntity);
+        return articleImageEntity;
     }
 }

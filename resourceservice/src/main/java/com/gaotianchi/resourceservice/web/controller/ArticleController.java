@@ -1,12 +1,15 @@
 package com.gaotianchi.resourceservice.web.controller;
 
 import com.gaotianchi.resourceservice.entity.ArticleEntity;
+import com.gaotianchi.resourceservice.entity.ArticleImageEntity;
 import com.gaotianchi.resourceservice.entity.SeriesEntity;
+import com.gaotianchi.resourceservice.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.service.ArticleService;
 import com.gaotianchi.resourceservice.web.dto.DraftDto;
 import com.gaotianchi.resourceservice.web.dto.UpdateContentDto;
 import com.gaotianchi.resourceservice.web.error.*;
 import com.gaotianchi.resourceservice.web.otd.ArticleCommentsOtd;
+import com.gaotianchi.resourceservice.web.otd.ArticleImageOtd;
 import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
 import com.gaotianchi.resourceservice.web.otd.SeriesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +20,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ArticleController {
     private final ArticleService articleService;
+    private final ArticleRepo articleRepo;
 
     @Autowired
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleService articleService, ArticleRepo articleRepo) {
         this.articleService = articleService;
+        this.articleRepo = articleRepo;
     }
 
     @PostMapping("/articles/draft")
@@ -120,6 +125,15 @@ public class ArticleController {
             articleService.removeArticleSeries(id);
             return null;
         } catch (ArticleNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @PatchMapping("/articles/{articleId}/cover/{coverId}")
+    public ResponseEntity<ArticleImageOtd> updateArticleCover(@PathVariable Long articleId, @PathVariable Long coverId) {
+        try {
+            ArticleImageEntity articleImageEntity = articleService.updateArticleCover(articleId, coverId);
+            return new ResponseEntity<>(new ArticleImageOtd(articleImageEntity), HttpStatus.OK);
+        } catch (ArticleNotFoundException | ArticleImageNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
