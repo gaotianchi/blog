@@ -33,6 +33,6 @@ public class CommentEntity implements Content {
     @ManyToOne
     private ArticleEntity article;
 
-    @OneToMany
+    @OneToMany(mappedBy = "target")
     private Collection<CommentVoteEntity> commentVoteEntities;
 }

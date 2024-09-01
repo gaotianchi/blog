@@ -23,16 +23,16 @@ public class UserEntity {
     @OneToOne
     private AvatarEntity avatarEntity;
 
-    @OneToMany
+    @OneToMany(mappedBy = "author")
     private Collection<ArticleEntity> articleEntities;
 
-    @OneToMany
+    @OneToMany(mappedBy = "author")
     private Collection<CommentEntity> commentEntities;
 
-    @OneToMany
+    @OneToMany(mappedBy = "voter")
     private Collection<ArticleVoteRecordEntity> voteEntities;
 
-    @OneToMany
+    @OneToMany(mappedBy = "userEntity")
     private Collection<AccessRecordEntity> accessRecordEntities;
 
     @ManyToOne
