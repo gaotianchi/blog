@@ -2,7 +2,6 @@ package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.entity.CommentEntity;
-import com.gaotianchi.resourceservice.entity.CommentVoteEntity;
 import com.gaotianchi.resourceservice.entity.UserEntity;
 import com.gaotianchi.resourceservice.enums.CommentStatus;
 import com.gaotianchi.resourceservice.repo.ArticleRepo;
@@ -84,6 +83,11 @@ public class CommentService {
 
     public CommentWithRepliesOtd getCommentWithReplies(Long id) throws CommentNotFoundException {
         CommentEntity commentEntity = getCommentOrNotFound(id);
+        CommentWithRepliesOtd commentWithRepliesOtd = new CommentWithRepliesOtd(commentEntity);
+        setCommentLikeAndDislikeNumber(commentWithRepliesOtd);
+        return commentWithRepliesOtd;
+    }
+    public CommentWithRepliesOtd getCommentWithReplies(CommentEntity commentEntity) throws CommentNotFoundException {
         CommentWithRepliesOtd commentWithRepliesOtd = new CommentWithRepliesOtd(commentEntity);
         setCommentLikeAndDislikeNumber(commentWithRepliesOtd);
         return commentWithRepliesOtd;

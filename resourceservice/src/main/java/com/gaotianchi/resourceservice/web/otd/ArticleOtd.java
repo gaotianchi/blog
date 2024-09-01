@@ -1,7 +1,6 @@
 package com.gaotianchi.resourceservice.web.otd;
 
 import com.gaotianchi.resourceservice.entity.ArticleEntity;
-import com.gaotianchi.resourceservice.enums.ArticleStatus;
 import lombok.Getter;
 import lombok.Setter;
 

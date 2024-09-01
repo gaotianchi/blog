@@ -5,8 +5,10 @@ import com.gaotianchi.resourceservice.service.ArticleService;
 import com.gaotianchi.resourceservice.web.dto.DraftDto;
 import com.gaotianchi.resourceservice.web.dto.UpdateContentDto;
 import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
+import com.gaotianchi.resourceservice.web.error.CommentNotFoundException;
 import com.gaotianchi.resourceservice.web.error.UnExpectedStatusException;
 import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
+import com.gaotianchi.resourceservice.web.otd.ArticleCommentsOtd;
 import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -92,6 +94,15 @@ public class ArticleController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/articles/{articleId}/comments")
+    public ResponseEntity<ArticleCommentsOtd> getArticleComments(@PathVariable Long articleId) {
+        try {
+            ArticleCommentsOtd articleCommentsOtd = articleService.getArticleCommentsOtd(articleId);
+            return new ResponseEntity<>(articleCommentsOtd, HttpStatus.OK);
+        } catch (ArticleNotFoundException | CommentNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 

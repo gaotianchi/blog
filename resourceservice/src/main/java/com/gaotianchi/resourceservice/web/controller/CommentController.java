@@ -30,7 +30,7 @@ public class CommentController {
     public ResponseEntity<CommentOtd> newComment(@RequestBody CommentDto commentDto) {
         try {
             CommentEntity commentEntity = commentService.newComment(commentDto.getBody(), commentDto.getUserId(), commentDto.getArticleId(), Optional.ofNullable(commentDto.getParentCommentId()));
-            return new ResponseEntity<>(new CommentOtd(commentEntity), HttpStatus.OK);
+            return new ResponseEntity<>(commentService.getCommentOtd(commentEntity), HttpStatus.OK);
         } catch (UserNotFoundException | ArticleNotFoundException | CommentNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
