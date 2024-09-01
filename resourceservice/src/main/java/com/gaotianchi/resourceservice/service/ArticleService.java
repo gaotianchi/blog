@@ -156,4 +156,14 @@ public class ArticleService {
         articleEntity.setTags(tagEntities);
         articleRepo.save(articleEntity);
     }
+
+    public TagEntity addArticleTag(Long articleId, Long tagId) throws TagNotFoundException, ArticleNotFoundException {
+        TagEntity tagEntity = getTagOrNotFound(tagId);
+        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
+        Collection<TagEntity> tagEntities = articleEntity.getTags();
+        if (!tagEntities.contains(tagEntity)) tagEntities.add(tagEntity);
+        articleEntity.setTags(tagEntities);
+        articleRepo.save(articleEntity);
+        return tagEntity;
+    }
 }

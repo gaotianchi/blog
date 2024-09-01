@@ -3,6 +3,7 @@ package com.gaotianchi.resourceservice.web.controller;
 import com.gaotianchi.resourceservice.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.entity.ArticleImageEntity;
 import com.gaotianchi.resourceservice.entity.SeriesEntity;
+import com.gaotianchi.resourceservice.entity.TagEntity;
 import com.gaotianchi.resourceservice.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.service.ArticleService;
 import com.gaotianchi.resourceservice.web.dto.DraftDto;
@@ -140,6 +141,17 @@ public class ArticleController {
         try {
             articleService.removeArticleTag(tagId, articleId);
             return null;
+        } catch (TagNotFoundException | ArticleNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @PatchMapping("/articles/{articleId}/add/tags/{tagId}")
+    public ResponseEntity<TagOtd> addArticleTag(@PathVariable Long articleId, @PathVariable Long tagId) {
+        try {
+            TagEntity tagEntity = articleService.addArticleTag(articleId, tagId);
+            return new ResponseEntity<>(new TagOtd(tagEntity), HttpStatus.OK);
         } catch (TagNotFoundException | ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
