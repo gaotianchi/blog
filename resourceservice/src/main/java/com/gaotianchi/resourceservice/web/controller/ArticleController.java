@@ -58,10 +58,10 @@ public class ArticleController {
         }
     }
     @PatchMapping("/articles/publish/{articleId}")
-    public ResponseEntity<ArticleEntity> publishDraft(@PathVariable Long articleId) {
+    public ResponseEntity<ArticleOtd> publishDraft(@PathVariable Long articleId) {
         try {
             ArticleEntity articleEntity = articleService.publishDraft(articleId);
-            return new ResponseEntity<>(articleEntity, HttpStatus.OK);
+            return new ResponseEntity<>(new ArticleOtd(articleEntity), HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (UnExpectedStatusException e) {
@@ -71,10 +71,10 @@ public class ArticleController {
         }
     }
     @PatchMapping("/articles/draft/{articleId}")
-    public ResponseEntity<ArticleEntity> convertToDraft(@PathVariable Long articleId) {
+    public ResponseEntity<ArticleOtd> convertToDraft(@PathVariable Long articleId) {
         try {
             ArticleEntity articleEntity = articleService.convertToDraft(articleId);
-            return new ResponseEntity<>(articleEntity, HttpStatus.OK);
+            return new ResponseEntity<>(new ArticleOtd(articleEntity), HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (UnExpectedStatusException e) {
@@ -84,10 +84,10 @@ public class ArticleController {
         }
     }
     @PatchMapping("/articles/content/{articleId}")
-    public ResponseEntity<ArticleEntity> updateArticleContent(@PathVariable Long articleId, @RequestBody UpdateContentDto updateContentDto) {
+    public ResponseEntity<ArticleOtd> updateArticleContent(@PathVariable Long articleId, @RequestBody UpdateContentDto updateContentDto) {
         try {
             ArticleEntity articleEntity = articleService.updateArticleContent(articleId, updateContentDto.getTitle(), updateContentDto.getBody(), updateContentDto.getSummary(), updateContentDto.getSlug());
-            return new ResponseEntity<>(articleEntity, HttpStatus.OK);
+            return new ResponseEntity<>(new ArticleOtd(articleEntity), HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {

@@ -5,7 +5,6 @@ import com.gaotianchi.resourceservice.service.UserService;
 import com.gaotianchi.resourceservice.web.dto.RegistrationDto;
 import com.gaotianchi.resourceservice.web.error.UserAlreadyExistException;
 import com.gaotianchi.resourceservice.web.otd.UserOtd;
-import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

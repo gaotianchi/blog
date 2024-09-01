@@ -17,7 +17,7 @@ public class ArticleOtd {
     private OffsetDateTime creationDatetime;
     private OffsetDateTime publishDatetime;
     private OffsetDateTime lastUpdatedDatetime;
-    private ArticleStatus articleStatus;
+    private String articleStatus;
     private String slug;
     private UserOtd userOtd;
 
@@ -29,8 +29,8 @@ public class ArticleOtd {
         this.creationDatetime = articleEntity.getCreationDatetime();
         this.publishDatetime = articleEntity.getPublishDatetime();
         this.lastUpdatedDatetime = articleEntity.getLastUpdatedDatetime();
-        this.articleStatus = this.getArticleStatus();
-        this.slug = this.getSlug();
+        this.articleStatus = articleEntity.getArticleStatus().name();
+        this.slug = articleEntity.getSlug();
         this.userOtd = new UserOtd(articleEntity.getAuthor());
     }
 }
