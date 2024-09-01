@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
@@ -30,7 +31,7 @@ public class ArticleEntity implements Content {
     private SeriesEntity seriesEntity;
 
     @ManyToMany(mappedBy = "articles")
-    private Collection<TagEntity> tags;
+    private Collection<TagEntity> tags = new ArrayList<>();
 
     @OneToOne
     private ArticleImageEntity cover;

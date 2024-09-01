@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
@@ -21,5 +22,5 @@ public class TagEntity {
     private OffsetDateTime creationDatetime;
 
     @ManyToMany
-    private Collection<ArticleEntity> articles;
+    private Collection<ArticleEntity> articles = new ArrayList<>();
 }
