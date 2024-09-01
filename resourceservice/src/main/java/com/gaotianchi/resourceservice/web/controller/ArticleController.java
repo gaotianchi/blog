@@ -7,6 +7,7 @@ import com.gaotianchi.resourceservice.web.dto.UpdateContentDto;
 import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.web.error.UnExpectedStatusException;
 import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
+import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,10 @@ public class ArticleController {
     }
 
     @PostMapping("/articles/draft")
-    public ResponseEntity<ArticleEntity> createNewDraft(@RequestBody DraftDto draftDto) {
+    public ResponseEntity<ArticleOtd> createNewDraft(@RequestBody DraftDto draftDto) {
         try {
             ArticleEntity articleEntity = articleService.createNewDraft(draftDto.getUserId());
-            return new ResponseEntity<>(articleEntity, HttpStatus.CREATED);
+            return new ResponseEntity<>(new ArticleOtd(articleEntity), HttpStatus.CREATED);
         } catch (UserNotFoundException e) {
             return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -33,10 +34,10 @@ public class ArticleController {
         }
     }
     @PatchMapping("/articles/trash/{articleId}")
-    public ResponseEntity<ArticleEntity> throwInTrashCan(@PathVariable Long articleId) {
+    public ResponseEntity<ArticleOtd> throwInTrashCan(@PathVariable Long articleId) {
         try {
             ArticleEntity articleEntity = articleService.throwInTrashCan(articleId);
-            return new ResponseEntity<>(articleEntity, HttpStatus.OK);
+            return new ResponseEntity<>(new ArticleOtd(articleEntity), HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {

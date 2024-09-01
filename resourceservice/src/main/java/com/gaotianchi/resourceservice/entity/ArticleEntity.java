@@ -17,7 +17,7 @@ public class ArticleEntity implements Content {
     private Long id;
     private String title;
     private String body;
-    private String Summary;
+    private String summary;
     private OffsetDateTime creationDatetime;
     private OffsetDateTime publishDatetime;
     private OffsetDateTime lastUpdatedDatetime;
