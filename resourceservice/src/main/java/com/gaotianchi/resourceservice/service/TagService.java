@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TagService {
@@ -44,6 +41,17 @@ public class TagService {
         Optional<ArticleEntity> article = articleRepo.findById(articleId);
         if (article.isEmpty()) throw new ArticleNotFoundException();
         return article.get();
+    }
+
+    public void deleteTag(Long id) throws TagNotFoundException {
+        TagEntity tagEntity = getTagOrNotFound(id);
+        if (!tagEntity.getArticles().isEmpty()) {
+            for (ArticleEntity articleEntity : tagEntity.getArticles()) {
+                articleEntity.getTags().removeIf(t -> Objects.equals(t.getId(), id));
+            }
+            articleRepo.saveAll(tagEntity.getArticles());
+        }
+        tagRepo.delete(tagEntity);
     }
 
     public TagEntity getTagOrNotFound(Long id) throws TagNotFoundException {
