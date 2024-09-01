@@ -74,4 +74,6 @@ public class SeriesService {
     public SeriesEntity getSeriesInfo(Long id) throws SeriesNotFoundException {
         return getSeriesEntityOrNotFound(id);
     }
+
+
 }

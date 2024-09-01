@@ -8,6 +8,7 @@ import com.gaotianchi.resourceservice.web.dto.UpdateSeriesInfoDto;
 import com.gaotianchi.resourceservice.web.error.ArticleImageNotFoundException;
 import com.gaotianchi.resourceservice.web.error.SeriesNotFoundException;
 import com.gaotianchi.resourceservice.web.otd.SeriesOtd;
+import com.gaotianchi.resourceservice.web.otd.SeriesWithArticlesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +65,15 @@ public class SeriesController {
         try {
             SeriesEntity seriesEntity = seriesService.getSeriesInfo(id);
             return new ResponseEntity<>(new SeriesOtd(seriesEntity), HttpStatus.OK);
+        } catch (SeriesNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/series/details/{id}")
+    public ResponseEntity<SeriesWithArticlesOtd> getSeriesDetails(@PathVariable Long id) {
+        try {
+            SeriesEntity seriesEntity = seriesService.getSeriesEntityOrNotFound(id);
+            return new ResponseEntity<>(new SeriesWithArticlesOtd(seriesEntity), HttpStatus.OK);
         } catch (SeriesNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
