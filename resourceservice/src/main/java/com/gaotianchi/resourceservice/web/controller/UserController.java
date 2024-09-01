@@ -4,10 +4,11 @@ import com.gaotianchi.resourceservice.entity.UserEntity;
 import com.gaotianchi.resourceservice.service.UserService;
 import com.gaotianchi.resourceservice.web.dto.RegistrationDto;
 import com.gaotianchi.resourceservice.web.error.UserAlreadyExistException;
-import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {

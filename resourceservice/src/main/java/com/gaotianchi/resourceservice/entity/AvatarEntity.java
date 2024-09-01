@@ -15,6 +15,7 @@ public class AvatarEntity {
     @Enumerated(EnumType.STRING)
     private AvatarType avatarType;
     private String filename;
+    private String avatarUrl;
 
     @OneToOne
     private UserEntity userEntity;
