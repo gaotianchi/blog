@@ -3,6 +3,7 @@ package com.gaotianchi.resourceservice.web.controller;
 import com.gaotianchi.resourceservice.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.service.SeriesService;
 import com.gaotianchi.resourceservice.web.dto.SeriesDto;
+import com.gaotianchi.resourceservice.web.dto.UpdateSeriesInfoDto;
 import com.gaotianchi.resourceservice.web.error.ArticleImageNotFoundException;
 import com.gaotianchi.resourceservice.web.error.SeriesNotFoundException;
 import com.gaotianchi.resourceservice.web.otd.SeriesOtd;
@@ -35,6 +36,15 @@ public class SeriesController {
         try {
             seriesService.deleteSeries(id);
             return null;
+        } catch (SeriesNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @PatchMapping("/series/info/{id}")
+    public ResponseEntity<SeriesOtd> updateSeriesInfo(@PathVariable Long id, @RequestBody UpdateSeriesInfoDto updateSeriesInfoDto) {
+        try {
+            SeriesEntity seriesEntity = seriesService.updateSeriesInfo(id, updateSeriesInfoDto.getName());
+            return new ResponseEntity<>(new SeriesOtd(seriesEntity), HttpStatus.OK);
         } catch (SeriesNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -58,4 +58,10 @@ public class SeriesService {
         }
         seriesRepo.delete(seriesEntity);
     }
+
+    public SeriesEntity updateSeriesInfo(Long id, String name) throws SeriesNotFoundException {
+        SeriesEntity seriesEntity = getSeriesEntityOrNotFound(id);
+        seriesEntity.setName(name);
+        return seriesRepo.save(seriesEntity);
+    }
 }
