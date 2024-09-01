@@ -3,7 +3,7 @@ package com.gaotianchi.resourceservice.web.controller;
 import com.gaotianchi.resourceservice.entity.ArticleImageEntity;
 import com.gaotianchi.resourceservice.service.ArticleImageService;
 import com.gaotianchi.resourceservice.web.error.ArticleImageNotFoundException;
-import com.gaotianchi.resourceservice.web.otd.UploadImageResult;
+import com.gaotianchi.resourceservice.web.otd.ArticleImageOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +23,10 @@ public class ArticleImageController {
     }
 
     @PostMapping("/images/upload")
-    public ResponseEntity<UploadImageResult> uploadArticleImage(@RequestParam("file") MultipartFile file, @RequestParam("articleId") Long articleId) {
+    public ResponseEntity<ArticleImageOtd> uploadArticleImage(@RequestParam("file") MultipartFile file, @RequestParam("articleId") Long articleId) {
         try {
             ArticleImageEntity articleImageEntity = articleImageService.createArticleImage(file, articleId);
-            return new ResponseEntity<>(new UploadImageResult(articleImageEntity), HttpStatus.OK);
+            return new ResponseEntity<>(new ArticleImageOtd(articleImageEntity), HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
