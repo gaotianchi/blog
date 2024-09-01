@@ -14,8 +14,8 @@ public class CommentOtd {
     private OffsetDateTime creationDatetime;
     private OffsetDateTime lastUpdatedDatetime;
     private UserOtd userOtd;
-    private Integer like;
-    private Integer dislike;
+    private Integer like = 0;
+    private Integer dislike = 0;
 
     public CommentOtd(CommentEntity commentEntity) {
         this.userOtd = new UserOtd(commentEntity.getAuthor());

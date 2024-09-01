@@ -10,6 +10,7 @@ import com.gaotianchi.resourceservice.repo.UserRepo;
 import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.web.error.CommentNotFoundException;
 import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
+import com.gaotianchi.resourceservice.web.otd.CommentOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +22,14 @@ public class CommentService {
     private final UserRepo userRepo;
     private final ArticleRepo articleRepo;
     private final CommentRepo commentRepo;
+    private final CommentCacheService commentCacheService;
 
     @Autowired
-    public CommentService(UserRepo userRepo, ArticleRepo articleRepo, CommentRepo commentRepo) {
+    public CommentService(UserRepo userRepo, ArticleRepo articleRepo, CommentRepo commentRepo, CommentCacheService commentCacheService) {
         this.userRepo = userRepo;
         this.articleRepo = articleRepo;
         this.commentRepo = commentRepo;
+        this.commentCacheService = commentCacheService;
     }
 
     public CommentEntity newComment(String body, Long userId, Long articleId, Optional<Long> parentCommentId) throws UserNotFoundException, ArticleNotFoundException, CommentNotFoundException {
@@ -58,6 +61,13 @@ public class CommentService {
         commentEntity.setBody(body);
         commentEntity.setLastUpdatedDatetime(OffsetDateTime.now());
         return commentRepo.save(commentEntity);
+    }
+
+    public CommentOtd getCommentOtd(CommentEntity commentEntity) {
+        CommentOtd commentOtd = new CommentOtd(commentEntity);
+        commentOtd.setLike(commentCacheService.getNumberOfCommentLike(commentEntity.getId()));
+        commentOtd.setDislike(commentCacheService.getNumberOfCommentDislike(commentEntity.getId()));
+        return commentOtd;
     }
 
     public UserEntity getUserOrNotFound(Long id) throws UserNotFoundException {
