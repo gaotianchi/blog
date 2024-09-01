@@ -70,4 +70,8 @@ public class SeriesService {
         seriesEntity.setCover(articleImageEntity);
         return seriesRepo.save(seriesEntity);
     }
+
+    public SeriesEntity getSeriesInfo(Long id) throws SeriesNotFoundException {
+        return getSeriesEntityOrNotFound(id);
+    }
 }

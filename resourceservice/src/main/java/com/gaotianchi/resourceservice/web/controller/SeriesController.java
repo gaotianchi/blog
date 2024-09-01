@@ -59,4 +59,13 @@ public class SeriesController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/series/info/{id}")
+    public ResponseEntity<SeriesOtd> getSeriesInfo(@PathVariable Long id) {
+        try {
+            SeriesEntity seriesEntity = seriesService.getSeriesInfo(id);
+            return new ResponseEntity<>(new SeriesOtd(seriesEntity), HttpStatus.OK);
+        } catch (SeriesNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
