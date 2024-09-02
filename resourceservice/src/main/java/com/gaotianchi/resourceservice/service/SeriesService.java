@@ -3,15 +3,18 @@ package com.gaotianchi.resourceservice.service;
 import com.gaotianchi.resourceservice.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.entity.ImageEntity;
 import com.gaotianchi.resourceservice.entity.SeriesEntity;
-import com.gaotianchi.resourceservice.repo.ImageRepo;
 import com.gaotianchi.resourceservice.repo.ArticleRepo;
+import com.gaotianchi.resourceservice.repo.ImageRepo;
 import com.gaotianchi.resourceservice.repo.SeriesRepo;
 import com.gaotianchi.resourceservice.web.error.ImageNotFoundException;
 import com.gaotianchi.resourceservice.web.error.SeriesNotFoundException;
+import com.gaotianchi.resourceservice.web.otd.SeriesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -76,4 +79,11 @@ public class SeriesService {
     }
 
 
+    public List<SeriesOtd> getAllSeries() {
+        List<SeriesOtd> seriesOtds = new ArrayList<>();
+        for (SeriesEntity seriesEntity : seriesRepo.findAll()) {
+            seriesOtds.add(new SeriesOtd(seriesEntity));
+        }
+        return seriesOtds;
+    }
 }
