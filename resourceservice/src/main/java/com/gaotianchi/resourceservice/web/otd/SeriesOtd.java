@@ -12,11 +12,11 @@ public class SeriesOtd {
     private Long id;
     private String name;
     private OffsetDateTime creationDatetime;
-    private ArticleImageOtd cover;
+    private ImageOtd cover;
     public SeriesOtd(SeriesEntity seriesEntity) {
         this.id = seriesEntity.getId();
         this.name = seriesEntity.getName();
         this.creationDatetime = seriesEntity.getCreationDatetime();
-        this.cover = new ArticleImageOtd(seriesEntity.getCover());
+        this.cover = new ImageOtd(seriesEntity.getCover());
     }
 }

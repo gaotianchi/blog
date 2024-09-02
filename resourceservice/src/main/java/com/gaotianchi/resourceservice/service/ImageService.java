@@ -2,11 +2,11 @@ package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.config.StorageProperties;
 import com.gaotianchi.resourceservice.entity.ArticleEntity;
-import com.gaotianchi.resourceservice.entity.ArticleImageEntity;
+import com.gaotianchi.resourceservice.entity.ImageEntity;
 import com.gaotianchi.resourceservice.enums.ArticleImageType;
-import com.gaotianchi.resourceservice.repo.ArticleImageRepo;
+import com.gaotianchi.resourceservice.repo.ImageRepo;
 import com.gaotianchi.resourceservice.repo.ArticleRepo;
-import com.gaotianchi.resourceservice.web.error.ArticleImageNotFoundException;
+import com.gaotianchi.resourceservice.web.error.ImageNotFoundException;
 import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,49 +24,60 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
-public class ArticleImageService {
+public class ImageService {
 
     private final ArticleRepo articleRepo;
     private final StorageService storageService;
-    private final ArticleImageRepo articleImageRepo;
+    private final ImageRepo imageRepo;
     private final StorageProperties storageProperties;
     private final CompressionService compressionService;
 
     @Autowired
-    public ArticleImageService(ArticleRepo articleRepo, StorageService storageService, ArticleImageRepo articleImageRepo, StorageProperties storageProperties, CompressionService compressionService) {
+    public ImageService(ArticleRepo articleRepo, StorageService storageService, ImageRepo imageRepo, StorageProperties storageProperties, CompressionService compressionService) {
         this.articleRepo = articleRepo;
         this.storageService = storageService;
-        this.articleImageRepo = articleImageRepo;
+        this.imageRepo = imageRepo;
         this.storageProperties = storageProperties;
         this.compressionService = compressionService;
     }
 
-    public ArticleImageEntity createArticleImage(MultipartFile file, Long articleId) throws IOException, ArticleNotFoundException {
-        if (file.isEmpty()) throw new FileNotFoundException();
+    public ImageEntity createArticleImage(MultipartFile file, Long articleId) throws IOException, ArticleNotFoundException {
+        ImageEntity imageEntity = saveImage(file);
         ArticleEntity articleEntity = getArticleOrNotFound(articleId);
+        imageEntity.setArticle(articleEntity);
+        return imageRepo.save(imageEntity);
+    }
+
+    public ImageEntity createImage(MultipartFile file) throws IOException {
+        ImageEntity imageEntity = saveImage(file);
+        return imageRepo.save(imageEntity);
+    }
+
+    public ImageEntity saveImage(MultipartFile file) throws IOException {
+        if (file.isEmpty()) throw new FileNotFoundException();
         String fileDirName = generateUniqueFileName();
         String fileExtension = getFileExtension(file);
         Path thumbnailRelativePath = Paths.get(storageProperties.getArticleImageUri()).resolve(fileDirName).resolve(ArticleImageType.THUMBNAIL.name() + fileExtension);
         Path originalRelativePath = Paths.get(storageProperties.getArticleImageUri()).resolve(fileDirName).resolve(ArticleImageType.ORIGINAL.name() + fileExtension);
         String originalUrl = storeOriginalArticleImage(file, originalRelativePath);
         String thumbnailUrl = storeThumbnailArticleImage(originalRelativePath, thumbnailRelativePath);
-        ArticleImageEntity articleImageEntity = new ArticleImageEntity();
-        articleImageEntity.setFileDirName(fileDirName);
-        articleImageEntity.setArticle(articleEntity);
-        articleImageEntity.setOriginalUrl(originalUrl);
-        articleImageEntity.setFileExtension(fileExtension);
-        articleImageEntity.setThumbnailUrl(thumbnailUrl);
-        return articleImageRepo.save(articleImageEntity);
+        ImageEntity imageEntity = new ImageEntity();
+        imageEntity.setFileDirName(fileDirName);
+        imageEntity.setOriginalUrl(originalUrl);
+        imageEntity.setFileExtension(fileExtension);
+        imageEntity.setThumbnailUrl(thumbnailUrl);
+        return imageEntity;
     }
 
-    public void deleteImage(Long imageId) throws ArticleImageNotFoundException, IOException {
-        ArticleImageEntity articleImageEntity = getArticleImageOrNotFound(imageId);
-        Path fileDirPath = findArticleImageByDirName(articleImageEntity.getFileDirName());
-        deleteImages(fileDirPath, articleImageEntity.getFileExtension());
-        articleImageRepo.delete(articleImageEntity);
+
+    public void deleteImage(Long imageId) throws ImageNotFoundException, IOException {
+        ImageEntity imageEntity = getArticleImageOrNotFound(imageId);
+        Path fileDirPath = findImageByDirName(imageEntity.getFileDirName());
+        deleteImages(fileDirPath, imageEntity.getFileExtension());
+        imageRepo.delete(imageEntity);
     }
 
-    public Path findArticleImageByDirName(String fileDirName) {
+    public Path findImageByDirName(String fileDirName) {
         return Paths.get(storageProperties.getRootLocation()).resolve(storageProperties.getArticleImageUri()).resolve(fileDirName);
     }
 
@@ -94,9 +105,9 @@ public class ArticleImageService {
         return articleEntity.get();
     }
 
-    public ArticleImageEntity getArticleImageOrNotFound(Long id) throws ArticleImageNotFoundException {
-        Optional<ArticleImageEntity> articleImageEntity = articleImageRepo.findById(id);
-        if (articleImageEntity.isEmpty()) throw new ArticleImageNotFoundException();
+    public ImageEntity getArticleImageOrNotFound(Long id) throws ImageNotFoundException {
+        Optional<ImageEntity> articleImageEntity = imageRepo.findById(id);
+        if (articleImageEntity.isEmpty()) throw new ImageNotFoundException();
         return articleImageEntity.get();
     }
 
@@ -116,5 +127,4 @@ public class ArticleImageService {
         }
         throw new InvalidFileNameException(fileName, "检索不到文件格式！");
     }
-
 }

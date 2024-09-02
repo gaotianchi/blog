@@ -5,7 +5,7 @@ import com.gaotianchi.resourceservice.service.SeriesService;
 import com.gaotianchi.resourceservice.web.dto.SeriesDto;
 import com.gaotianchi.resourceservice.web.dto.UpdateSeriesCoverDto;
 import com.gaotianchi.resourceservice.web.dto.UpdateSeriesInfoDto;
-import com.gaotianchi.resourceservice.web.error.ArticleImageNotFoundException;
+import com.gaotianchi.resourceservice.web.error.ImageNotFoundException;
 import com.gaotianchi.resourceservice.web.error.SeriesNotFoundException;
 import com.gaotianchi.resourceservice.web.otd.SeriesOtd;
 import com.gaotianchi.resourceservice.web.otd.SeriesWithArticlesOtd;
@@ -29,7 +29,7 @@ public class SeriesController {
         try {
             SeriesEntity seriesEntity = seriesService.newSeries(seriesDto.getName(), seriesDto.getCoverId());
             return new ResponseEntity<>(new SeriesOtd(seriesEntity), HttpStatus.OK);
-        } catch (ArticleImageNotFoundException e) {
+        } catch (ImageNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -56,7 +56,7 @@ public class SeriesController {
         try {
             SeriesEntity seriesEntity = seriesService.updateSeriesCover(id, updateSeriesCoverDto.getCoverId());
             return new ResponseEntity<>(new SeriesOtd(seriesEntity), HttpStatus.OK);
-        } catch (ArticleImageNotFoundException | SeriesNotFoundException e) {
+        } catch (ImageNotFoundException | SeriesNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

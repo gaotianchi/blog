@@ -1,10 +1,9 @@
 package com.gaotianchi.resourceservice.web.controller;
 
 import com.gaotianchi.resourceservice.entity.ArticleEntity;
-import com.gaotianchi.resourceservice.entity.ArticleImageEntity;
+import com.gaotianchi.resourceservice.entity.ImageEntity;
 import com.gaotianchi.resourceservice.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.entity.TagEntity;
-import com.gaotianchi.resourceservice.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.service.ArticleService;
 import com.gaotianchi.resourceservice.web.dto.DraftDto;
 import com.gaotianchi.resourceservice.web.dto.UpdateContentDto;
@@ -129,9 +128,9 @@ public class ArticleController {
     @PatchMapping("/articles/{articleId}/cover/{coverId}")
     public ResponseEntity<ArticleImageOtd> updateArticleCover(@PathVariable Long articleId, @PathVariable Long coverId) {
         try {
-            ArticleImageEntity articleImageEntity = articleService.updateArticleCover(articleId, coverId);
-            return new ResponseEntity<>(new ArticleImageOtd(articleImageEntity), HttpStatus.OK);
-        } catch (ArticleNotFoundException | ArticleImageNotFoundException e) {
+            ImageEntity imageEntity = articleService.updateArticleCover(articleId, coverId);
+            return new ResponseEntity<>(new ArticleImageOtd(imageEntity), HttpStatus.OK);
+        } catch (ArticleNotFoundException | ImageNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

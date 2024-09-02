@@ -9,8 +9,6 @@ import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
 import com.gaotianchi.resourceservice.web.otd.CommentWithRepliesOtd;
 import com.gaotianchi.resourceservice.web.otd.TagOtd;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -25,17 +23,17 @@ public class ArticleService {
     private final UserRepo userRepo;
     private final CommentService commentService;
     private final SeriesRepo seriesRepo;
-    private final ArticleImageRepo articleImageRepo;
+    private final ImageRepo imageRepo;
     private final TagRepo tagRepo;
     private final ArticleCacheService articleCacheService;
 
     @Autowired
-    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ArticleImageRepo articleImageRepo, TagRepo tagRepo, ArticleCacheService articleCacheService) {
+    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ImageRepo imageRepo, TagRepo tagRepo, ArticleCacheService articleCacheService) {
         this.articleRepo = articleRepo;
         this.userRepo = userRepo;
         this.commentService = commentService;
         this.seriesRepo = seriesRepo;
-        this.articleImageRepo = articleImageRepo;
+        this.imageRepo = imageRepo;
         this.tagRepo = tagRepo;
         this.articleCacheService = articleCacheService;
     }
@@ -135,19 +133,19 @@ public class ArticleService {
         articleRepo.save(articleEntity);
     }
 
-    public ArticleImageEntity getArticleImageOrNotFound(Long id) throws ArticleImageNotFoundException {
-        Optional<ArticleImageEntity> articleImageEntity = articleImageRepo.findById(id);
-        if (articleImageEntity.isEmpty()) throw new ArticleImageNotFoundException();
+    public ImageEntity getArticleImageOrNotFound(Long id) throws ImageNotFoundException {
+        Optional<ImageEntity> articleImageEntity = imageRepo.findById(id);
+        if (articleImageEntity.isEmpty()) throw new ImageNotFoundException();
         return articleImageEntity.get();
     }
 
 
-    public ArticleImageEntity updateArticleCover(Long articleId, Long coverId) throws ArticleNotFoundException, ArticleImageNotFoundException {
+    public ImageEntity updateArticleCover(Long articleId, Long coverId) throws ArticleNotFoundException, ImageNotFoundException {
         ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        ArticleImageEntity articleImageEntity = getArticleImageOrNotFound(coverId);
-        articleEntity.setCover(articleImageEntity);
+        ImageEntity imageEntity = getArticleImageOrNotFound(coverId);
+        articleEntity.setCover(imageEntity);
         articleRepo.save(articleEntity);
-        return articleImageEntity;
+        return imageEntity;
     }
     public TagEntity getTagOrNotFound(Long id) throws TagNotFoundException {
         Optional<TagEntity> tagEntity = tagRepo.findById(id);
