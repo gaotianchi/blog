@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
@@ -21,5 +22,5 @@ public class SeriesEntity {
     private ImageEntity cover;
 
     @OneToMany(mappedBy = "seriesEntity")
-    private Collection<ArticleEntity> articleEntities;
+    private Collection<ArticleEntity> articleEntities = new ArrayList<>();
 }
