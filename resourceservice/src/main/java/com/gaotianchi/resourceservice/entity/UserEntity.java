@@ -20,8 +20,8 @@ public class UserEntity {
     private TimeZone timeZone;
     private Integer score = 0;
 
-    @OneToOne
-    private AvatarEntity avatarEntity;
+    @ManyToOne
+    private ImageEntity avatar;
 
     @OneToMany(mappedBy = "author")
     private Collection<ArticleEntity> articleEntities;

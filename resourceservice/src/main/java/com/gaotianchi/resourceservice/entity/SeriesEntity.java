@@ -18,7 +18,7 @@ public class SeriesEntity {
     private String name;
     private OffsetDateTime creationDatetime;
 
-    @OneToOne
+    @ManyToOne
     private ImageEntity cover;
 
     @OneToMany(mappedBy = "seriesEntity")
