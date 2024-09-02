@@ -13,10 +13,12 @@ public class SeriesOtd {
     private String name;
     private OffsetDateTime creationDatetime;
     private ImageOtd cover;
+    private Integer numberOfArticles;
     public SeriesOtd(SeriesEntity seriesEntity) {
         this.id = seriesEntity.getId();
         this.name = seriesEntity.getName();
         this.creationDatetime = seriesEntity.getCreationDatetime();
         this.cover = new ImageOtd(seriesEntity.getCover());
+        this.numberOfArticles = seriesEntity.getArticleEntities().size();
     }
 }
