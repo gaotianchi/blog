@@ -18,19 +18,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ArticleController {
     private final ArticleService articleService;
-    private final ArticleRepo articleRepo;
 
     @Autowired
-    public ArticleController(ArticleService articleService, ArticleRepo articleRepo) {
+    public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
-        this.articleRepo = articleRepo;
     }
 
     @PostMapping("/articles/draft")
     public ResponseEntity<ArticleOtd> createNewDraft(@RequestBody DraftDto draftDto) {
         try {
             ArticleEntity articleEntity = articleService.createNewDraft(draftDto.getUserId());
-            return new ResponseEntity<>(new ArticleOtd(articleEntity), HttpStatus.CREATED);
+            return new ResponseEntity<>(articleService.getArticleOtd(articleEntity), HttpStatus.CREATED);
         } catch (UserNotFoundException e) {
             return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -41,7 +39,7 @@ public class ArticleController {
     public ResponseEntity<ArticleOtd> throwInTrashCan(@PathVariable Long articleId) {
         try {
             ArticleEntity articleEntity = articleService.throwInTrashCan(articleId);
-            return new ResponseEntity<>(new ArticleOtd(articleEntity), HttpStatus.OK);
+            return new ResponseEntity<>(articleService.getArticleOtd(articleEntity), HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
@@ -65,7 +63,7 @@ public class ArticleController {
     public ResponseEntity<ArticleOtd> publishDraft(@PathVariable Long articleId) {
         try {
             ArticleEntity articleEntity = articleService.publishDraft(articleId);
-            return new ResponseEntity<>(new ArticleOtd(articleEntity), HttpStatus.OK);
+            return new ResponseEntity<>(articleService.getArticleOtd(articleEntity), HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (UnExpectedStatusException e) {
@@ -78,7 +76,7 @@ public class ArticleController {
     public ResponseEntity<ArticleOtd> convertToDraft(@PathVariable Long articleId) {
         try {
             ArticleEntity articleEntity = articleService.convertToDraft(articleId);
-            return new ResponseEntity<>(new ArticleOtd(articleEntity), HttpStatus.OK);
+            return new ResponseEntity<>(articleService.getArticleOtd(articleEntity), HttpStatus.OK);
         } catch (ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (UnExpectedStatusException e) {

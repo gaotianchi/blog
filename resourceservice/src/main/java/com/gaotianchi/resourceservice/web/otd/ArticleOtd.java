@@ -19,6 +19,8 @@ public class ArticleOtd {
     private String articleStatus;
     private String slug;
     private UserOtd userOtd;
+    private Integer like;
+    private Integer dislike;
 
     public ArticleOtd(ArticleEntity articleEntity) {
         this.id = articleEntity.getId();

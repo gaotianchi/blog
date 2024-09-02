@@ -5,8 +5,11 @@ import com.gaotianchi.resourceservice.enums.ArticleStatus;
 import com.gaotianchi.resourceservice.repo.*;
 import com.gaotianchi.resourceservice.web.error.*;
 import com.gaotianchi.resourceservice.web.otd.ArticleCommentsOtd;
+import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
 import com.gaotianchi.resourceservice.web.otd.CommentWithRepliesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -23,15 +26,17 @@ public class ArticleService {
     private final SeriesRepo seriesRepo;
     private final ArticleImageRepo articleImageRepo;
     private final TagRepo tagRepo;
+    private final ArticleCacheService articleCacheService;
 
     @Autowired
-    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ArticleImageRepo articleImageRepo, TagRepo tagRepo) {
+    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ArticleImageRepo articleImageRepo, TagRepo tagRepo, ArticleCacheService articleCacheService) {
         this.articleRepo = articleRepo;
         this.userRepo = userRepo;
         this.commentService = commentService;
         this.seriesRepo = seriesRepo;
         this.articleImageRepo = articleImageRepo;
         this.tagRepo = tagRepo;
+        this.articleCacheService = articleCacheService;
     }
 
     public ArticleEntity createNewDraft(Long userId) throws UserNotFoundException {
@@ -165,5 +170,12 @@ public class ArticleService {
         articleEntity.setTags(tagEntities);
         articleRepo.save(articleEntity);
         return tagEntity;
+    }
+
+    public ArticleOtd getArticleOtd(ArticleEntity articleEntity) {
+        ArticleOtd articleOtd = new ArticleOtd(articleEntity);
+        articleOtd.setLike(articleCacheService.getNumberOfArticleLike(articleEntity.getId()));
+        articleOtd.setDislike(articleCacheService.getNumberOfArticleDislike(articleEntity.getId()));
+        return articleOtd;
     }
 }
