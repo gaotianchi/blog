@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class ArticleController {
     private final ArticleService articleService;
@@ -151,6 +153,16 @@ public class ArticleController {
             TagEntity tagEntity = articleService.addArticleTag(articleId, tagId);
             return new ResponseEntity<>(new TagOtd(tagEntity), HttpStatus.OK);
         } catch (TagNotFoundException | ArticleNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/articles/{id}/tags/all")
+    public ResponseEntity<List<TagOtd>> getArticleTags(@PathVariable Long id) {
+        try {
+            List<TagOtd> tagOtds = articleService.getArticleTags(id);
+            return new ResponseEntity<>(tagOtds, HttpStatus.OK);
+        } catch (ArticleNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

@@ -6,6 +6,7 @@ import com.gaotianchi.resourceservice.web.dto.TagDto;
 import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.web.error.TagAlreadyExistException;
 import com.gaotianchi.resourceservice.web.error.TagNotFoundException;
+import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
 import com.gaotianchi.resourceservice.web.otd.TagOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,15 @@ public class TagController {
             return new ResponseEntity<>(tagOtds, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/tags/{id}/articles/all")
+    public ResponseEntity<List<ArticleOtd>> getAllArticlesFromTag(@PathVariable Long id) {
+        try {
+            List<ArticleOtd> articleOtds = tagService.getAllArticlesFromTags(id);
+            return new ResponseEntity<>(articleOtds, HttpStatus.OK);
+        } catch (TagNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }

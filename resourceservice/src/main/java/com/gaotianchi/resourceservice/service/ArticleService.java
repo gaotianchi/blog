@@ -7,6 +7,7 @@ import com.gaotianchi.resourceservice.web.error.*;
 import com.gaotianchi.resourceservice.web.otd.ArticleCommentsOtd;
 import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
 import com.gaotianchi.resourceservice.web.otd.CommentWithRepliesOtd;
+import com.gaotianchi.resourceservice.web.otd.TagOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -157,18 +158,25 @@ public class ArticleService {
         TagEntity tagEntity = getTagOrNotFound(tagId);
         ArticleEntity articleEntity = getArticleOrNotFound(articleId);
         Collection<TagEntity> tagEntities = articleEntity.getTags();
+        Collection<ArticleEntity> articleEntities = tagEntity.getArticles();
+        articleEntities.remove(articleEntity);
         tagEntities.remove(tagEntity);
         articleEntity.setTags(tagEntities);
         articleRepo.save(articleEntity);
+        tagRepo.save(tagEntity);
     }
 
     public TagEntity addArticleTag(Long articleId, Long tagId) throws TagNotFoundException, ArticleNotFoundException {
         TagEntity tagEntity = getTagOrNotFound(tagId);
         ArticleEntity articleEntity = getArticleOrNotFound(articleId);
         Collection<TagEntity> tagEntities = articleEntity.getTags();
+        Collection<ArticleEntity> articleEntities = tagEntity.getArticles();
         if (!tagEntities.contains(tagEntity)) tagEntities.add(tagEntity);
+        if (!articleEntities.contains(articleEntity)) articleEntities.add(articleEntity);
         articleEntity.setTags(tagEntities);
+        tagEntity.setArticles(articleEntities);
         articleRepo.save(articleEntity);
+        tagRepo.save(tagEntity);
         return tagEntity;
     }
 
@@ -177,5 +185,16 @@ public class ArticleService {
         articleOtd.setLike(articleCacheService.getNumberOfArticleLike(articleEntity.getId()));
         articleOtd.setDislike(articleCacheService.getNumberOfArticleDislike(articleEntity.getId()));
         return articleOtd;
+    }
+
+
+    public List<TagOtd> getArticleTags(Long id) throws ArticleNotFoundException {
+        ArticleEntity articleEntity = getArticleOrNotFound(id);
+        List<TagOtd> tagOtds = new ArrayList<>();
+        for (TagEntity tagEntity : articleEntity.getTags()) {
+            TagOtd tagOtd = new TagOtd(tagEntity);
+            tagOtds.add(tagOtd);
+        }
+        return tagOtds;
     }
 }

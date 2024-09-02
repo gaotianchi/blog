@@ -7,6 +7,7 @@ import com.gaotianchi.resourceservice.repo.TagRepo;
 import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.web.error.TagAlreadyExistException;
 import com.gaotianchi.resourceservice.web.error.TagNotFoundException;
+import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
 import com.gaotianchi.resourceservice.web.otd.TagOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,13 @@ import java.util.*;
 public class TagService {
     private final ArticleRepo articleRepo;
     private final TagRepo tagRepo;
+    private final ArticleService articleService;
 
     @Autowired
-    public TagService(ArticleRepo articleRepo, TagRepo tagRepo) {
+    public TagService(ArticleRepo articleRepo, TagRepo tagRepo, ArticleService articleService) {
         this.articleRepo = articleRepo;
         this.tagRepo = tagRepo;
+        this.articleService = articleService;
     }
 
     public TagEntity createNewTag(String name, Long articleId) throws ArticleNotFoundException, TagAlreadyExistException {
@@ -73,5 +76,15 @@ public class TagService {
         TagEntity tagEntity = tagRepo.findByName(name);
         if (tagEntity == null) throw new TagNotFoundException();
         return tagEntity;
+    }
+
+    public List<ArticleOtd> getAllArticlesFromTags(Long id) throws TagNotFoundException {
+        TagEntity tagEntity = getTagOrNotFound(id);
+        List<ArticleOtd> articleOtds = new ArrayList<>();
+        for (ArticleEntity articleEntity : tagEntity.getArticles()) {
+            ArticleOtd articleOtd = articleService.getArticleOtd(articleEntity);
+            articleOtds.add(articleOtd);
+        }
+        return articleOtds;
     }
 }
