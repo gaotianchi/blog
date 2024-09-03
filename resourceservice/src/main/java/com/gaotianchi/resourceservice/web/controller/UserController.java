@@ -41,6 +41,15 @@ public class UserController {
         return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
 
+    @PatchMapping("/users/deregister")
+    public ResponseEntity<UserResponse> deregister(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            UserResponse userResponse = userService.deregister(userDetails.getUsername());
+            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     @PatchMapping("/users/set-avatar/{imageId}")
     public ResponseEntity<UserResponse> setAvtar(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long imageId) {

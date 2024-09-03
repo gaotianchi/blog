@@ -74,6 +74,13 @@ public class UserService implements UserDetailsService {
         return new UserResponse(userEntity);
     }
 
+    public UserResponse deregister(String email) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        userEntity.setAccountStatus(AccountStatus.DEREGISTERED);
+        userEntity = userRepo.save(userEntity);
+        return new UserResponse(userEntity);
+    }
+
     public List<UserResponse> listUsers() {
         Collection<UserEntity> userEntities = userRepo.findAll();
         return userEntities.stream()
@@ -91,4 +98,6 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("");
         }
     }
+
+
 }
