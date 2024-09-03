@@ -81,6 +81,13 @@ public class UserService implements UserDetailsService {
         return new UserResponse(userEntity);
     }
 
+    public UserResponse lockUser(Long userId) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(userId);
+        userEntity.setAccountStatus(AccountStatus.LOCKED);
+        userEntity = userRepo.save(userEntity);
+        return new UserResponse(userEntity);
+    }
+
     public List<UserResponse> listUsers() {
         Collection<UserEntity> userEntities = userRepo.findAll();
         return userEntities.stream()

@@ -51,6 +51,16 @@ public class UserController {
         }
     }
 
+    @PatchMapping("/blogger/lock/{userId}")
+    public ResponseEntity<UserResponse> lockUser(@PathVariable Long userId) {
+        try {
+            UserResponse userResponse = userService.lockUser(userId);
+            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PatchMapping("/users/set-avatar/{imageId}")
     public ResponseEntity<UserResponse> setAvtar(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long imageId) {
         try {
