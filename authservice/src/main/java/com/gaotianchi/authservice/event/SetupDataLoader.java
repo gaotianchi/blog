@@ -3,6 +3,7 @@ package com.gaotianchi.authservice.event;
 import com.gaotianchi.authservice.entity.PrivilegeEntity;
 import com.gaotianchi.authservice.entity.RoleEntity;
 import com.gaotianchi.authservice.entity.UserEntity;
+import com.gaotianchi.authservice.enums.AccountStatus;
 import com.gaotianchi.authservice.enums.PrivilegeType;
 import com.gaotianchi.authservice.enums.RoleType;
 import com.gaotianchi.authservice.repo.PrivilegeRepo;
@@ -77,6 +78,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         if (blogger == null) {
             blogger = new UserEntity();
             blogger.setEmail("6159984@gmail.com");
+            blogger.setAccountStatus(AccountStatus.ACTIVATED);
             blogger.setPassword(passwordEncoder.encode("{noop}password"));
             blogger.setRoles(roleEntities);
             userRepo.save(blogger);

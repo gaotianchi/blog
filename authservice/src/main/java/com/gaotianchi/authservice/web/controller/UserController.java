@@ -1,12 +1,9 @@
 package com.gaotianchi.authservice.web.controller;
 
-import com.gaotianchi.authservice.entity.UserEntity;
-import com.gaotianchi.authservice.service.UserDetailsService;
-import com.gaotianchi.authservice.web.dto.EmailUpdatedMessage;
-import com.gaotianchi.authservice.web.dto.UserDto;
-import com.gaotianchi.authservice.web.error.EmailAlreadyExistsException;
+import com.gaotianchi.authservice.service.UserService;
 import com.gaotianchi.authservice.web.error.UserExistingException;
-import com.gaotianchi.authservice.web.error.UserNotFoundException;
+import com.gaotianchi.authservice.web.request.NewUserRequest;
+import com.gaotianchi.authservice.web.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,82 +11,35 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
-    private final UserDetailsService userDetailsService;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PostMapping("/users/register")
-    public ResponseEntity<UserEntity> register(@RequestBody UserDto userDto) throws UserExistingException {
-        if (userDetailsService.emailExists(userDto.getEmail())) {
+    @PostMapping("/users/new")
+    public ResponseEntity<UserResponse> register(@RequestBody NewUserRequest newUserRequest) {
+        try {
+            UserResponse userResponse = userService.newUser(newUserRequest.getEmail(), newUserRequest.getPassword(), newUserRequest.getRoles());
+            return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
+        } catch (UserExistingException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        UserEntity userEntity = userDetailsService.registerNowUserAccount(userDto);
-        return new ResponseEntity<>(userEntity, HttpStatus.CREATED);
     }
-    @DeleteMapping("/users/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        try {
-            boolean deleted = userDetailsService.deleteUserById(userId);
-            if (deleted) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    
+    @DeleteMapping("/users/delete/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return null;
     }
-    @PatchMapping("/users/{userId}/email")
-    public ResponseEntity<EmailUpdatedMessage> updateUserEmail(
-            @PathVariable Long userId,
-            @RequestBody String newEmail) {
-        try {
-            EmailUpdatedMessage emailUpdatedMessage = userDetailsService.updateUserEmail(userId, newEmail);
-            return new ResponseEntity<>(emailUpdatedMessage, HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (EmailAlreadyExistsException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    
+    @PatchMapping("/users/deregister/{id}")
+    public ResponseEntity<Void> deregister(@PathVariable Long id) {
+        return null;
     }
-    @PatchMapping("/users/{userId}/password")
-    public ResponseEntity<Void> resetPassword(
-            @RequestBody String newPassword,
-            @PathVariable Long userId) {
-        try {
-            userDetailsService.resetPassword(userId, newPassword);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @PatchMapping("/users{userId}/deregister")
-    public ResponseEntity<Void> deregisterAccount(@PathVariable Long userId) {
-        try {
-            userDetailsService.deregister(userId);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @PatchMapping("/users/{userId}/lock")
-    public ResponseEntity<Void> lockAccount(@PathVariable Long userId) {
-        try {
-            userDetailsService.lockAccount(userId);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
+    @PatchMapping("/users/lock/{id}")
+    public ResponseEntity<Void> lock(@PathVariable Long id) {
+        return null;
     }
 }
