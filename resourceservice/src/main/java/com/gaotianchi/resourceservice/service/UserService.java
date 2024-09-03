@@ -5,13 +5,17 @@ import com.gaotianchi.resourceservice.error.UserNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
+
 
     @Autowired
     public UserService(UserRepo userRepo) {
@@ -36,5 +40,10 @@ public class UserService {
         Optional<UserEntity> userEntity = userRepo.findById(id);
         if (userEntity.isEmpty()) throw new UserNotFoundException();
         return userEntity.get();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepo.findByEmail(username);
     }
 }
