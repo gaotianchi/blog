@@ -2,6 +2,7 @@ package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.error.EntityAlreadyExistException;
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
+import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.enums.AccountStatus;
 import com.gaotianchi.resourceservice.persistence.enums.RoleType;
@@ -46,6 +47,14 @@ public class UserService implements UserDetailsService {
         userEntity.setRegistrationDateTime(OffsetDateTime.now());
         userEntity = userRepo.save(userEntity);
         return new UserResponse(userEntity);
+    }
+
+    public UserResponse setAvatar(String email, Long imageId) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        ImageEntity imageEntity = entityFounderService.getImageOrNotFound(imageId);
+        userEntity.setAvatar(imageEntity);
+        userEntity = userRepo.save(userEntity);
+        return new UserResponse(userEntity, true);
     }
 
 

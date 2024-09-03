@@ -18,9 +18,17 @@ public class UserResponse {
     private String accountStatus;
     private TimeZone timeZone;
     private Integer score = 0;
+    private ImageResponse avatar;
 
     public UserResponse(UserEntity userEntity) {
         setupData(userEntity);
+    }
+
+    public UserResponse(UserEntity userEntity, boolean avatar) {
+        setupData(userEntity);
+        if (avatar) {
+            this.avatar = new ImageResponse(userEntity.getAvatar());
+        }
     }
 
     public void setupData(UserEntity userEntity) {

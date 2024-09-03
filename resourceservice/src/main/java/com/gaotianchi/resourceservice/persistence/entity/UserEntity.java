@@ -47,6 +47,9 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "userEntity")
     private Collection<AccessRecordEntity> accessRecordEntities = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private Collection<ImageEntity> imageEntities = new ArrayList<>();
+
     @ManyToOne
     private LevelEntity level;
 

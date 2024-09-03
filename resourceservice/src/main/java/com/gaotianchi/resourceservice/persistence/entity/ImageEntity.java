@@ -22,6 +22,9 @@ public class ImageEntity {
     private String alt;
 
     @ManyToOne
+    private UserEntity user;
+
+    @ManyToOne
     private ArticleEntity article;
 
     @OneToMany(mappedBy = "cover")

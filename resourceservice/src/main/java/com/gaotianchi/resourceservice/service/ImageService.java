@@ -2,9 +2,11 @@ package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.config.StorageProperties;
 import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
+import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.error.ImageNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
+import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.enums.ArticleImageType;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
@@ -21,8 +23,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class ImageService {
@@ -32,20 +36,31 @@ public class ImageService {
     private final ImageRepo imageRepo;
     private final StorageProperties storageProperties;
     private final CompressionService compressionService;
+    private final EntityFounderService entityFounderService;
 
     @Autowired
-    public ImageService(ArticleRepo articleRepo, StorageService storageService, ImageRepo imageRepo, StorageProperties storageProperties, CompressionService compressionService) {
+    public ImageService(ArticleRepo articleRepo, StorageService storageService, ImageRepo imageRepo, StorageProperties storageProperties, CompressionService compressionService, EntityFounderService entityFounderService) {
         this.articleRepo = articleRepo;
         this.storageService = storageService;
         this.imageRepo = imageRepo;
         this.storageProperties = storageProperties;
         this.compressionService = compressionService;
+        this.entityFounderService = entityFounderService;
     }
 
-    public ImageResponse newImage(MultipartFile file) throws IOException {
+    public ImageResponse newImage(MultipartFile file, String email) throws IOException, EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         ImageEntity imageEntity = saveImage(file);
+        imageEntity.setUser(userEntity);
         imageEntity = imageRepo.save(imageEntity);
         return new ImageResponse(imageEntity);
+    }
+
+    public List<ImageResponse> listImages(String email) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        return userEntity.getImageEntities().stream()
+                .map(ImageResponse::new)
+                .collect(Collectors.toList());
     }
 
     public ImageEntity createArticleImage(MultipartFile file, Long articleId) throws IOException, ArticleNotFoundException {
