@@ -1,14 +1,14 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.entity.CommentEntity;
+import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
+import com.gaotianchi.resourceservice.error.CommentNotFoundException;
+import com.gaotianchi.resourceservice.error.UserNotFoundException;
+import com.gaotianchi.resourceservice.persistence.entity.CommentEntity;
 import com.gaotianchi.resourceservice.service.CommentService;
-import com.gaotianchi.resourceservice.web.dto.CommentDto;
-import com.gaotianchi.resourceservice.web.dto.UpdateCommentDto;
-import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
-import com.gaotianchi.resourceservice.web.error.CommentNotFoundException;
-import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
-import com.gaotianchi.resourceservice.web.otd.CommentOtd;
-import com.gaotianchi.resourceservice.web.otd.CommentWithRepliesOtd;
+import com.gaotianchi.resourceservice.web.request.CommentDto;
+import com.gaotianchi.resourceservice.web.request.UpdateCommentDto;
+import com.gaotianchi.resourceservice.web.response.CommentOtd;
+import com.gaotianchi.resourceservice.web.response.CommentWithRepliesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,10 +1,10 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.entity.ImageEntity;
+import com.gaotianchi.resourceservice.error.ImageNotFoundException;
+import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.service.ImageService;
-import com.gaotianchi.resourceservice.web.error.ImageNotFoundException;
-import com.gaotianchi.resourceservice.web.otd.ArticleImageOtd;
-import com.gaotianchi.resourceservice.web.otd.ImageOtd;
+import com.gaotianchi.resourceservice.web.response.ArticleImageOtd;
+import com.gaotianchi.resourceservice.web.response.ImageOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

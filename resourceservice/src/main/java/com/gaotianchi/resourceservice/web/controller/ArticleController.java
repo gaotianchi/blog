@@ -1,14 +1,14 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.entity.ArticleEntity;
-import com.gaotianchi.resourceservice.entity.ImageEntity;
-import com.gaotianchi.resourceservice.entity.SeriesEntity;
-import com.gaotianchi.resourceservice.entity.TagEntity;
+import com.gaotianchi.resourceservice.error.*;
+import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
+import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
+import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
+import com.gaotianchi.resourceservice.persistence.entity.TagEntity;
 import com.gaotianchi.resourceservice.service.ArticleService;
-import com.gaotianchi.resourceservice.web.dto.DraftDto;
-import com.gaotianchi.resourceservice.web.dto.UpdateContentDto;
-import com.gaotianchi.resourceservice.web.error.*;
-import com.gaotianchi.resourceservice.web.otd.*;
+import com.gaotianchi.resourceservice.web.request.DraftDto;
+import com.gaotianchi.resourceservice.web.request.UpdateContentDto;
+import com.gaotianchi.resourceservice.web.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,13 +1,13 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.entity.*;
-import com.gaotianchi.resourceservice.enums.ArticleStatus;
-import com.gaotianchi.resourceservice.repo.*;
-import com.gaotianchi.resourceservice.web.error.*;
-import com.gaotianchi.resourceservice.web.otd.ArticleCommentsOtd;
-import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
-import com.gaotianchi.resourceservice.web.otd.CommentWithRepliesOtd;
-import com.gaotianchi.resourceservice.web.otd.TagOtd;
+import com.gaotianchi.resourceservice.error.*;
+import com.gaotianchi.resourceservice.persistence.entity.*;
+import com.gaotianchi.resourceservice.persistence.enums.ArticleStatus;
+import com.gaotianchi.resourceservice.persistence.repo.*;
+import com.gaotianchi.resourceservice.web.response.ArticleCommentsOtd;
+import com.gaotianchi.resourceservice.web.response.ArticleOtd;
+import com.gaotianchi.resourceservice.web.response.CommentWithRepliesOtd;
+import com.gaotianchi.resourceservice.web.response.TagOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,10 +1,10 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.entity.UserEntity;
+import com.gaotianchi.resourceservice.error.UserAlreadyExistException;
+import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.service.UserService;
-import com.gaotianchi.resourceservice.web.dto.RegistrationDto;
-import com.gaotianchi.resourceservice.web.error.UserAlreadyExistException;
-import com.gaotianchi.resourceservice.web.otd.UserOtd;
+import com.gaotianchi.resourceservice.web.request.RegistrationDto;
+import com.gaotianchi.resourceservice.web.response.UserOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

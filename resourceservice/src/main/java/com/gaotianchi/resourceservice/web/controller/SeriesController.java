@@ -1,14 +1,14 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.entity.SeriesEntity;
+import com.gaotianchi.resourceservice.error.ImageNotFoundException;
+import com.gaotianchi.resourceservice.error.SeriesNotFoundException;
+import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.service.SeriesService;
-import com.gaotianchi.resourceservice.web.dto.SeriesDto;
-import com.gaotianchi.resourceservice.web.dto.UpdateSeriesCoverDto;
-import com.gaotianchi.resourceservice.web.dto.UpdateSeriesInfoDto;
-import com.gaotianchi.resourceservice.web.error.ImageNotFoundException;
-import com.gaotianchi.resourceservice.web.error.SeriesNotFoundException;
-import com.gaotianchi.resourceservice.web.otd.SeriesOtd;
-import com.gaotianchi.resourceservice.web.otd.SeriesWithArticlesOtd;
+import com.gaotianchi.resourceservice.web.request.SeriesDto;
+import com.gaotianchi.resourceservice.web.request.UpdateSeriesCoverDto;
+import com.gaotianchi.resourceservice.web.request.UpdateSeriesInfoDto;
+import com.gaotianchi.resourceservice.web.response.SeriesOtd;
+import com.gaotianchi.resourceservice.web.response.SeriesWithArticlesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

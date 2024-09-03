@@ -20,9 +20,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+jwt:
+  secret: daf66e01593f61a15b857cf433aae03a005812b31234e149036bcc8dee755dbb
+  expiration: 604800000
 logging:
   level:
-    org.springframework.security: debug
+    org:
+      springframework:
+        security: DEBUG
 storage:
   root-location: "src/main/resources/static"
   article-image-uri: "uploads/articleImage"

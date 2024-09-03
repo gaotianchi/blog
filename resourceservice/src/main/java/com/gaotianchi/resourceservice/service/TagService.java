@@ -1,14 +1,14 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.entity.ArticleEntity;
-import com.gaotianchi.resourceservice.entity.TagEntity;
-import com.gaotianchi.resourceservice.repo.ArticleRepo;
-import com.gaotianchi.resourceservice.repo.TagRepo;
-import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
-import com.gaotianchi.resourceservice.web.error.TagAlreadyExistException;
-import com.gaotianchi.resourceservice.web.error.TagNotFoundException;
-import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
-import com.gaotianchi.resourceservice.web.otd.TagOtd;
+import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
+import com.gaotianchi.resourceservice.error.TagAlreadyExistException;
+import com.gaotianchi.resourceservice.error.TagNotFoundException;
+import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
+import com.gaotianchi.resourceservice.persistence.entity.TagEntity;
+import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
+import com.gaotianchi.resourceservice.persistence.repo.TagRepo;
+import com.gaotianchi.resourceservice.web.response.ArticleOtd;
+import com.gaotianchi.resourceservice.web.response.TagOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

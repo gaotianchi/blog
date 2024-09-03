@@ -1,9 +1,9 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.entity.UserEntity;
-import com.gaotianchi.resourceservice.repo.UserRepo;
-import com.gaotianchi.resourceservice.web.error.UserAlreadyExistException;
-import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
+import com.gaotianchi.resourceservice.error.UserAlreadyExistException;
+import com.gaotianchi.resourceservice.error.UserNotFoundException;
+import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
+import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

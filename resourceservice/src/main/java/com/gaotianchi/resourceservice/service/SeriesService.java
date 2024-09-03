@@ -1,14 +1,14 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.entity.ArticleEntity;
-import com.gaotianchi.resourceservice.entity.ImageEntity;
-import com.gaotianchi.resourceservice.entity.SeriesEntity;
-import com.gaotianchi.resourceservice.repo.ArticleRepo;
-import com.gaotianchi.resourceservice.repo.ImageRepo;
-import com.gaotianchi.resourceservice.repo.SeriesRepo;
-import com.gaotianchi.resourceservice.web.error.ImageNotFoundException;
-import com.gaotianchi.resourceservice.web.error.SeriesNotFoundException;
-import com.gaotianchi.resourceservice.web.otd.SeriesOtd;
+import com.gaotianchi.resourceservice.error.ImageNotFoundException;
+import com.gaotianchi.resourceservice.error.SeriesNotFoundException;
+import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
+import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
+import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
+import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
+import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
+import com.gaotianchi.resourceservice.persistence.repo.SeriesRepo;
+import com.gaotianchi.resourceservice.web.response.SeriesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

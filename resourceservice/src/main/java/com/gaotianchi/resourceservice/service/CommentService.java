@@ -1,17 +1,17 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.entity.ArticleEntity;
-import com.gaotianchi.resourceservice.entity.CommentEntity;
-import com.gaotianchi.resourceservice.entity.UserEntity;
-import com.gaotianchi.resourceservice.enums.CommentStatus;
-import com.gaotianchi.resourceservice.repo.ArticleRepo;
-import com.gaotianchi.resourceservice.repo.CommentRepo;
-import com.gaotianchi.resourceservice.repo.UserRepo;
-import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
-import com.gaotianchi.resourceservice.web.error.CommentNotFoundException;
-import com.gaotianchi.resourceservice.web.error.UserNotFoundException;
-import com.gaotianchi.resourceservice.web.otd.CommentOtd;
-import com.gaotianchi.resourceservice.web.otd.CommentWithRepliesOtd;
+import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
+import com.gaotianchi.resourceservice.error.CommentNotFoundException;
+import com.gaotianchi.resourceservice.error.UserNotFoundException;
+import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
+import com.gaotianchi.resourceservice.persistence.entity.CommentEntity;
+import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
+import com.gaotianchi.resourceservice.persistence.enums.CommentStatus;
+import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
+import com.gaotianchi.resourceservice.persistence.repo.CommentRepo;
+import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
+import com.gaotianchi.resourceservice.web.response.CommentOtd;
+import com.gaotianchi.resourceservice.web.response.CommentWithRepliesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
