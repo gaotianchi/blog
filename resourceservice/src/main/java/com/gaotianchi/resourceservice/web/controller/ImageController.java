@@ -5,6 +5,7 @@ import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.service.ImageService;
 import com.gaotianchi.resourceservice.web.response.ArticleImageOtd;
 import com.gaotianchi.resourceservice.web.response.ImageOtd;
+import com.gaotianchi.resourceservice.web.response.ImageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,16 @@ public class ImageController {
     @Autowired
     public ImageController(ImageService imageService) {
         this.imageService = imageService;
+    }
+
+    @PostMapping("/images/new")
+    public ResponseEntity<ImageResponse> newImage(@RequestParam("file") MultipartFile file) {
+        try {
+            ImageResponse imageResponse = imageService.newImage(file);
+            return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/images/articles/{articleId}/upload")

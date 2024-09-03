@@ -8,6 +8,7 @@ import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.enums.ArticleImageType;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
+import com.gaotianchi.resourceservice.web.response.ImageResponse;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,12 @@ public class ImageService {
         this.imageRepo = imageRepo;
         this.storageProperties = storageProperties;
         this.compressionService = compressionService;
+    }
+
+    public ImageResponse newImage(MultipartFile file) throws IOException {
+        ImageEntity imageEntity = saveImage(file);
+        imageEntity = imageRepo.save(imageEntity);
+        return new ImageResponse(imageEntity);
     }
 
     public ImageEntity createArticleImage(MultipartFile file, Long articleId) throws IOException, ArticleNotFoundException {

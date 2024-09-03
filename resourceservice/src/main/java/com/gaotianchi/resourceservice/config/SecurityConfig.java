@@ -21,8 +21,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers(HttpMethod.POST, "/users/new").anonymous()
-                                .requestMatchers(HttpMethod.POST, "/token/new").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/*/new").anonymous()
                                 .anyRequest().permitAll()
                 )
                 .formLogin(withDefaults());
