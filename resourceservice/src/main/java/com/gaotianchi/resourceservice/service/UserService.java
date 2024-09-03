@@ -1,49 +1,61 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.error.UserAlreadyExistException;
-import com.gaotianchi.resourceservice.error.UserNotFoundException;
+import com.gaotianchi.resourceservice.error.EntityAlreadyExistException;
+import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
+import com.gaotianchi.resourceservice.persistence.enums.AccountStatus;
+import com.gaotianchi.resourceservice.persistence.enums.RoleType;
+import com.gaotianchi.resourceservice.persistence.repo.RoleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
+import com.gaotianchi.resourceservice.web.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.time.OffsetDateTime;
+import java.util.Collections;
 
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
+    private final EntityFounderService entityFounderService;
+    private final RoleRepo roleRepo;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Autowired
-    public UserService(UserRepo userRepo) {
+    public UserService(UserRepo userRepo, EntityFounderService entityFounderService, RoleRepo roleRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.entityFounderService = entityFounderService;
+        this.roleRepo = roleRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public UserEntity createNewUser(String email) throws UserAlreadyExistException {
+    public UserResponse newUser(String penName, String email, String password) throws EntityAlreadyExistException {
         UserEntity userEntity = userRepo.findByEmail(email);
-        if (userEntity != null) throw new UserAlreadyExistException();
+        if (userEntity != null) throw new EntityAlreadyExistException(email);
         userEntity = new UserEntity();
         userEntity.setEmail(email);
-
-        return userRepo.save(userEntity);
+        userEntity.setPenName(penName);
+        userEntity.setAccountStatus(AccountStatus.ACTIVATED);
+        userEntity.setRoles(Collections.singletonList(roleRepo.findByRoleType(RoleType.SUBSCRIBER)));
+        userEntity.setPassword(passwordEncoder.encode(password));
+        userEntity.setRegistrationDateTime(OffsetDateTime.now());
+        userEntity = userRepo.save(userEntity);
+        return new UserResponse(userEntity);
     }
 
-    public void deleteUserData(Long id) throws UserNotFoundException {
-        UserEntity userEntity = getUserOrNotFound(id);
-        userRepo.delete(userEntity);
-    }
 
-    public UserEntity getUserOrNotFound(Long id) throws UserNotFoundException {
-        Optional<UserEntity> userEntity = userRepo.findById(id);
-        if (userEntity.isEmpty()) throw new UserNotFoundException();
-        return userEntity.get();
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepo.findByEmail(username);
+        try {
+            return entityFounderService.getUserOrNotFound(username);
+        } catch (EntityNotFoundException e) {
+            throw new UsernameNotFoundException("");
+        }
     }
 }

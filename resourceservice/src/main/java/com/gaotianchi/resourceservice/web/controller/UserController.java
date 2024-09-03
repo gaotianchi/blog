@@ -1,10 +1,9 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.error.UserAlreadyExistException;
-import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
+import com.gaotianchi.resourceservice.error.EntityAlreadyExistException;
 import com.gaotianchi.resourceservice.service.UserService;
-import com.gaotianchi.resourceservice.web.request.RegistrationDto;
-import com.gaotianchi.resourceservice.web.response.UserOtd;
+import com.gaotianchi.resourceservice.web.request.NewUserRequest;
+import com.gaotianchi.resourceservice.web.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +20,15 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/users")
-    public ResponseEntity<UserOtd> createNewUser(@RequestBody RegistrationDto registrationDto) {
+    @PostMapping("/users/new")
+    public ResponseEntity<UserResponse> newUser(@RequestBody NewUserRequest newUserRequest) {
         try {
-            UserEntity userEntity = userService.createNewUser(registrationDto.getEmail());
-            return new ResponseEntity<>(new UserOtd(userEntity), HttpStatus.CREATED);
-        } catch (UserAlreadyExistException e) {
+            UserResponse userResponse = userService.newUser(newUserRequest.getPenName(), newUserRequest.getEmail(), newUserRequest.getPassword());
+            return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
+        } catch (EntityAlreadyExistException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
     }
+
+
 }

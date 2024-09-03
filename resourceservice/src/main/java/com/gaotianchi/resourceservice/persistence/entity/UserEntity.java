@@ -9,10 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 @Entity
 @Getter
@@ -33,22 +30,22 @@ public class UserEntity implements UserDetails {
     private Integer score = 0;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private Collection<RoleEntity> roles;
+    private Collection<RoleEntity> roles = new ArrayList<>();
 
     @ManyToOne
     private ImageEntity avatar;
 
     @OneToMany(mappedBy = "author")
-    private Collection<ArticleEntity> articleEntities;
+    private Collection<ArticleEntity> articleEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "author")
-    private Collection<CommentEntity> commentEntities;
+    private Collection<CommentEntity> commentEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "voter")
-    private Collection<ArticleVoteRecordEntity> voteEntities;
+    private Collection<ArticleVoteRecordEntity> voteEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "userEntity")
-    private Collection<AccessRecordEntity> accessRecordEntities;
+    private Collection<AccessRecordEntity> accessRecordEntities = new ArrayList<>();
 
     @ManyToOne
     private LevelEntity level;

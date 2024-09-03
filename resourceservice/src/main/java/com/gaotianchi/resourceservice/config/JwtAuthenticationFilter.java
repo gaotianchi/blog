@@ -1,6 +1,6 @@
 package com.gaotianchi.resourceservice.config;
 
-import com.gaotianchi.resourceservice.service.JwtTokenProvider;
+import com.gaotianchi.resourceservice.service.TokenService;
 import com.gaotianchi.resourceservice.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,12 +20,12 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenService tokenService;
     private final UserService userService;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserService userService) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public JwtAuthenticationFilter(TokenService tokenService, UserService userService) {
+        this.tokenService = tokenService;
         this.userService = userService;
     }
 
@@ -35,9 +35,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = getTokenFromRequest(request);
         try {
-            if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
+            if (StringUtils.hasText(token) && tokenService.validateToken(token)) {
 
-                String username = jwtTokenProvider.getUsername(token);
+                String username = tokenService.getUsername(token);
                 UserDetails userDetails = userService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
