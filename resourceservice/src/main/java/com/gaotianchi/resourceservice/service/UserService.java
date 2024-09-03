@@ -17,7 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -69,6 +72,13 @@ public class UserService implements UserDetailsService {
         userEntity.setPassword(passwordEncoder.encode(newPassword));
         userEntity = userRepo.save(userEntity);
         return new UserResponse(userEntity);
+    }
+
+    public List<UserResponse> listUsers() {
+        Collection<UserEntity> userEntities = userRepo.findAll();
+        return userEntities.stream()
+                .map(UserResponse::new)
+                .collect(Collectors.toList());
     }
 
 

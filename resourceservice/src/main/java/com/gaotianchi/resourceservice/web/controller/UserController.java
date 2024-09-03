@@ -14,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class UserController {
     private final UserService userService;
@@ -31,6 +33,12 @@ public class UserController {
         } catch (EntityAlreadyExistException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
+    }
+
+    @GetMapping("/blogger/list-users")
+    public ResponseEntity<List<UserResponse>> listUsers() {
+        List<UserResponse> userResponses = userService.listUsers();
+        return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
 
 
@@ -63,5 +71,6 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
 
 }

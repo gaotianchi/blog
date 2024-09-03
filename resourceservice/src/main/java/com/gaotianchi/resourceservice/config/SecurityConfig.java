@@ -21,7 +21,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers(HttpMethod.POST, "/*/new").anonymous()
+                                .requestMatchers(HttpMethod.POST, "/users/**").anonymous()
+                                .requestMatchers("/blogger/**").permitAll()
                                 .anyRequest().permitAll()
                 )
                 .formLogin(withDefaults());
