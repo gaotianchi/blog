@@ -49,6 +49,13 @@ public class UserService implements UserDetailsService {
         return new UserResponse(userEntity);
     }
 
+    public UserResponse updateUserInfo(String email, String penName) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        userEntity.setPenName(penName);
+        userEntity = userRepo.save(userEntity);
+        return new UserResponse(userEntity);
+    }
+
     public UserResponse setAvatar(String email, Long imageId) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         ImageEntity imageEntity = entityFounderService.getImageOrNotFound(imageId);

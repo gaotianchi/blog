@@ -34,6 +34,7 @@ public class UserResponse {
     public void setupData(UserEntity userEntity) {
         this.id = userEntity.getId();
         this.email = userEntity.getEmail();
+        this.penName = userEntity.getPenName();
         this.lockedUntil = userEntity.getLockedUntil();
         this.registrationDateTime = userEntity.getRegistrationDateTime();
         this.accountStatus = userEntity.getAccountStatus().name();
