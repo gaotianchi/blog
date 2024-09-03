@@ -64,6 +64,13 @@ public class UserService implements UserDetailsService {
         return new UserResponse(userEntity, true);
     }
 
+    public UserResponse resetPassword(String email, String newPassword) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        userEntity.setPassword(passwordEncoder.encode(newPassword));
+        userEntity = userRepo.save(userEntity);
+        return new UserResponse(userEntity);
+    }
+
 
 
     @Override

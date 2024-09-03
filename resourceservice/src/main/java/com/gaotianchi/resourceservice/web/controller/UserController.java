@@ -4,6 +4,7 @@ import com.gaotianchi.resourceservice.error.EntityAlreadyExistException;
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.service.UserService;
 import com.gaotianchi.resourceservice.web.request.NewUserRequest;
+import com.gaotianchi.resourceservice.web.request.ResetPasswordRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateUserInfoRequest;
 import com.gaotianchi.resourceservice.web.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,16 @@ public class UserController {
     public ResponseEntity<UserResponse> updateInfo(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
         try {
             UserResponse userResponse = userService.updateUserInfo(userDetails.getUsername(), updateUserInfoRequest.getPenName());
+            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping("/users/reset-password")
+    public ResponseEntity<UserResponse> resetPassword(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        try {
+            UserResponse userResponse = userService.resetPassword(userDetails.getUsername(), resetPasswordRequest.getNewPassword());
             return new ResponseEntity<>(userResponse, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
