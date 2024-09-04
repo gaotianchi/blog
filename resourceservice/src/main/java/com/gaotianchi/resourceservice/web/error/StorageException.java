@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.error;
+package com.gaotianchi.resourceservice.web.error;
 
 
 public class StorageException extends RuntimeException {

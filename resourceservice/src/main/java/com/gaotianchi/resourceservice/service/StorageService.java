@@ -1,7 +1,7 @@
 package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.config.StorageProperties;
-import com.gaotianchi.resourceservice.error.StorageException;
+import com.gaotianchi.resourceservice.web.error.StorageException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

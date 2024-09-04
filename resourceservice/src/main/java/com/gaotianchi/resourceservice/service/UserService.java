@@ -1,13 +1,13 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.error.EntityAlreadyExistException;
-import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.enums.AccountStatus;
 import com.gaotianchi.resourceservice.persistence.enums.RoleType;
 import com.gaotianchi.resourceservice.persistence.repo.RoleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
+import com.gaotianchi.resourceservice.web.error.EntityAlreadyExistException;
+import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.SeriesResponse;
 import com.gaotianchi.resourceservice.web.response.UserResponse;

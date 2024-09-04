@@ -1,8 +1,8 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.error.EntityAlreadyExistException;
-import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.service.TagService;
+import com.gaotianchi.resourceservice.web.error.EntityAlreadyExistException;
+import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.request.NewTagRequest;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.TagResponse;

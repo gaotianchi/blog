@@ -1,11 +1,11 @@
 package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.config.StorageProperties;
-import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.enums.ArticleImageType;
 import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
+import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.response.ImageResponse;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Autowired;

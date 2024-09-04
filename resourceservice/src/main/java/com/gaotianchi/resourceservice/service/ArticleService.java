@@ -1,11 +1,11 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.*;
 import com.gaotianchi.resourceservice.persistence.enums.ArticleStatus;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
 import com.gaotianchi.resourceservice.persistence.repo.TagRepo;
+import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.CommentResponse;
 import com.gaotianchi.resourceservice.web.response.ImageResponse;

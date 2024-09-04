@@ -1,7 +1,7 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.*;
+import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

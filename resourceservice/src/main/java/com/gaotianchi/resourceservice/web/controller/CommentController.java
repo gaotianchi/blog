@@ -1,7 +1,7 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.service.CommentService;
+import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.request.NewCommentRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateCommentRequest;
 import com.gaotianchi.resourceservice.web.response.CommentResponse;
