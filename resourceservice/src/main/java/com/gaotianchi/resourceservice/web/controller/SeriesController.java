@@ -8,6 +8,7 @@ import com.gaotianchi.resourceservice.service.SeriesService;
 import com.gaotianchi.resourceservice.web.request.NewSeriesRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateSeriesCoverDto;
 import com.gaotianchi.resourceservice.web.request.UpdateSeriesInfoDto;
+import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.SeriesOtd;
 import com.gaotianchi.resourceservice.web.response.SeriesResponse;
 import com.gaotianchi.resourceservice.web.response.SeriesWithArticlesOtd;
@@ -50,18 +51,26 @@ public class SeriesController {
         }
     }
 
-
-
+    @GetMapping("/series/list-articles/{seriesId}")
+    public ResponseEntity<List<ArticleResponse>> listArticles(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long seriesId) {
+        try {
+            List<ArticleResponse> ArticleResponses = seriesService.listArticles(userDetails.getUsername(), seriesId);
+            return new ResponseEntity<>(ArticleResponses, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     @DeleteMapping("/series/delete/{id}")
     public ResponseEntity<Void> deleteSeries(@PathVariable Long id) {
         try {
             seriesService.deleteSeries(id);
             return null;
-        } catch (SeriesNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     @PatchMapping("/series/info/{id}")
     public ResponseEntity<SeriesOtd> updateSeriesInfo(@PathVariable Long id, @RequestBody UpdateSeriesInfoDto updateSeriesInfoDto) {
         try {
