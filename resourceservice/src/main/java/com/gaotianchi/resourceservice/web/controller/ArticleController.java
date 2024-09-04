@@ -75,11 +75,20 @@ public class ArticleController {
         }
     }
 
-
     @PatchMapping("/articles/update-content/{articleId}")
-    public ResponseEntity<ArticleResponse> updateContent(@PathVariable Long articleId, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
+    public ResponseEntity<ArticleResponse> updateContent(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
         try {
-            ArticleResponse articleResponse = articleService.updateContent(articleId, updateArticleContentRequest.getTitle(), updateArticleContentRequest.getBody(), updateArticleContentRequest.getSummary(), updateArticleContentRequest.getSlug());
+            ArticleResponse articleResponse = articleService.updateContent(userDetails.getUsername(), articleId, updateArticleContentRequest.getTitle(), updateArticleContentRequest.getBody(), updateArticleContentRequest.getSummary(), updateArticleContentRequest.getSlug());
+            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping("/articles/set-series/{articleId}/{seriesId}")
+    public ResponseEntity<ArticleResponse> setSeries(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long seriesId) {
+        try {
+            ArticleResponse articleResponse = articleService.setSeries(userDetails.getUsername(), articleId, seriesId);
             return new ResponseEntity<>(articleResponse, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

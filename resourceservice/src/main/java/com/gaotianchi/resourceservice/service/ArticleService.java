@@ -25,9 +25,10 @@ public class ArticleService {
     private final TagRepo tagRepo;
     private final ArticleCacheService articleCacheService;
     private final EntityFounderService entityFounderService;
+    private final EntityBelongService entityBelongService;
 
     @Autowired
-    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ImageRepo imageRepo, TagRepo tagRepo, ArticleCacheService articleCacheService, EntityFounderService entityFounderService) {
+    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ImageRepo imageRepo, TagRepo tagRepo, ArticleCacheService articleCacheService, EntityFounderService entityFounderService, EntityBelongService entityBelongService) {
         this.articleRepo = articleRepo;
         this.userRepo = userRepo;
         this.commentService = commentService;
@@ -36,6 +37,7 @@ public class ArticleService {
         this.tagRepo = tagRepo;
         this.articleCacheService = articleCacheService;
         this.entityFounderService = entityFounderService;
+        this.entityBelongService = entityBelongService;
     }
 
     public ArticleResponse newArticle(String email) throws EntityNotFoundException {
@@ -81,8 +83,11 @@ public class ArticleService {
                 .collect(Collectors.toList());
     }
 
-    public ArticleResponse updateContent(Long articleId, String title, String body, String summary, String slug) throws EntityNotFoundException {
+    public ArticleResponse updateContent(String email, Long articleId, String title, String body, String summary, String slug) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        if (!userEntity.getArticleEntities().contains(articleEntity))
+            throw new EntityNotFoundException("Article " + articleId);
         articleEntity.setTitle(title);
         articleEntity.setSlug(slug);
         articleEntity.setBody(body);
@@ -92,21 +97,22 @@ public class ArticleService {
         return new ArticleResponse(articleEntity);
     }
 
+    public ArticleResponse setSeries(String email, Long articleId, Long seriesId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
+        SeriesEntity seriesEntity = entityBelongService.seriesBelongToUser(email, seriesId);
+        articleEntity.setSeriesEntity(seriesEntity);
+        articleEntity = articleRepo.save(articleEntity);
+        return new ArticleResponse(articleEntity, true);
+    }
+
+
+
     public ArticleEntity getArticleOrNotFound(Long articleId) throws ArticleNotFoundException {
         Optional<ArticleEntity> article = articleRepo.findById(articleId);
         if (article.isEmpty()) throw new ArticleNotFoundException();
         return article.get();
     }
 
-    public ArticleEntity updateArticleContent(Long articleId, String title, String body, String summary, String slug) throws ArticleNotFoundException {
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        articleEntity.setTitle(title);
-        articleEntity.setSlug(slug);
-        articleEntity.setBody(body);
-        articleEntity.setSummary(summary);
-        articleEntity.setLastUpdatedDatetime(OffsetDateTime.now());
-        return articleRepo.save(articleEntity);
-    }
 
     public ArticleCommentsOtd getArticleCommentsOtd(Long id) throws CommentNotFoundException, ArticleNotFoundException {
         ArticleEntity articleEntity = getArticleOrNotFound(id);

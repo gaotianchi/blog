@@ -18,9 +18,17 @@ public class ArticleResponse {
     private OffsetDateTime lastUpdatedDatetime;
     private String articleStatus;
     private String slug;
+    private SeriesResponse series;
 
     public ArticleResponse(ArticleEntity articleEntity) {
         setupData(articleEntity);
+    }
+
+    public ArticleResponse(ArticleEntity articleEntity, boolean withSeries) {
+        setupData(articleEntity);
+        if (withSeries) {
+            this.series = new SeriesResponse(articleEntity.getSeriesEntity(), true);
+        }
     }
 
     private void setupData(ArticleEntity articleEntity) {
