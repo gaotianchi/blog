@@ -1,14 +1,14 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
-import com.gaotianchi.resourceservice.error.ImageNotFoundException;
-import com.gaotianchi.resourceservice.error.SeriesNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.*;
 import com.gaotianchi.resourceservice.persistence.enums.ArticleStatus;
-import com.gaotianchi.resourceservice.persistence.repo.*;
+import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
+import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
+import com.gaotianchi.resourceservice.persistence.repo.TagRepo;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.CommentResponse;
+import com.gaotianchi.resourceservice.web.response.ImageResponse;
 import com.gaotianchi.resourceservice.web.response.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,32 +17,25 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ArticleService {
     private final ArticleRepo articleRepo;
-    private final UserRepo userRepo;
     private final CommentService commentService;
-    private final SeriesRepo seriesRepo;
-    private final ImageRepo imageRepo;
     private final TagRepo tagRepo;
-    private final ArticleCacheService articleCacheService;
     private final EntityFounderService entityFounderService;
     private final EntityBelongService entityBelongService;
+    private final ImageRepo imageRepo;
 
     @Autowired
-    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ImageRepo imageRepo, TagRepo tagRepo, ArticleCacheService articleCacheService, EntityFounderService entityFounderService, EntityBelongService entityBelongService) {
+    public ArticleService(ArticleRepo articleRepo, CommentService commentService, TagRepo tagRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService, ImageRepo imageRepo) {
         this.articleRepo = articleRepo;
-        this.userRepo = userRepo;
         this.commentService = commentService;
-        this.seriesRepo = seriesRepo;
-        this.imageRepo = imageRepo;
         this.tagRepo = tagRepo;
-        this.articleCacheService = articleCacheService;
         this.entityFounderService = entityFounderService;
         this.entityBelongService = entityBelongService;
+        this.imageRepo = imageRepo;
     }
 
     public ArticleResponse newArticle(String email) throws EntityNotFoundException {
@@ -177,40 +170,33 @@ public class ArticleService {
         return commentResponses;
     }
 
-
-    public ArticleEntity getArticleOrNotFound(Long articleId) throws ArticleNotFoundException {
-        Optional<ArticleEntity> article = articleRepo.findById(articleId);
-        if (article.isEmpty()) throw new ArticleNotFoundException();
-        return article.get();
+    public ImageResponse addArticleImage(String email, Long articleId, Long imageId) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(userEntity, articleId);
+        ImageEntity imageEntity = entityBelongService.imageBelongToUser(userEntity, imageId);
+        if (articleEntity.getArticleImages().add(imageEntity)) {
+            articleRepo.save(articleEntity);
+        }
+        if (imageEntity.getArticles().add(articleEntity)) {
+            imageRepo.save(imageEntity);
+        }
+        return new ImageResponse(imageEntity);
     }
 
-
-
-    public SeriesEntity getSeriesOrNotFound(Long id) throws SeriesNotFoundException {
-        Optional<SeriesEntity> seriesEntity = seriesRepo.findById(id);
-        if (seriesEntity.isEmpty()) throw new SeriesNotFoundException();
-        return seriesEntity.get();
+    public void removeArticleImage(String email, Long articleId, Long imageId) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(userEntity, articleId);
+        ImageEntity imageEntity = entityBelongService.imageBelongToUser(userEntity, imageId);
+        if (articleEntity.getArticleImages().remove(imageEntity)) {
+            articleRepo.save(articleEntity);
+        }
+        if (imageEntity.getArticles().remove(articleEntity)) {
+            imageRepo.save(imageEntity);
+        }
     }
 
-    public SeriesEntity updateArticleSeries(Long articleId, Long seriesId) throws SeriesNotFoundException, ArticleNotFoundException {
-        SeriesEntity seriesEntity = getSeriesOrNotFound(seriesId);
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        articleEntity.setSeriesEntity(seriesEntity);
-        articleRepo.save(articleEntity);
-        return seriesEntity;
-    }
-
-    public ImageEntity getArticleImageOrNotFound(Long id) throws ImageNotFoundException {
-        Optional<ImageEntity> articleImageEntity = imageRepo.findById(id);
-        if (articleImageEntity.isEmpty()) throw new ImageNotFoundException();
-        return articleImageEntity.get();
-    }
-
-    public ImageEntity updateArticleCover(Long articleId, Long coverId) throws ArticleNotFoundException, ImageNotFoundException {
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        ImageEntity imageEntity = getArticleImageOrNotFound(coverId);
-        articleEntity.setCover(imageEntity);
-        articleRepo.save(articleEntity);
-        return imageEntity;
+    public List<ImageResponse> listArticleImages(Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        return articleEntity.getArticleImages().stream().map(ImageResponse::new).collect(Collectors.toList());
     }
 }

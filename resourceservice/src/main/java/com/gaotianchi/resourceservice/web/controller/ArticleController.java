@@ -1,14 +1,12 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
-import com.gaotianchi.resourceservice.error.ImageNotFoundException;
-import com.gaotianchi.resourceservice.error.SeriesNotFoundException;
-import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
-import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.service.ArticleService;
 import com.gaotianchi.resourceservice.web.request.UpdateArticleContentRequest;
-import com.gaotianchi.resourceservice.web.response.*;
+import com.gaotianchi.resourceservice.web.response.ArticleResponse;
+import com.gaotianchi.resourceservice.web.response.CommentResponse;
+import com.gaotianchi.resourceservice.web.response.ImageResponse;
+import com.gaotianchi.resourceservice.web.response.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -168,27 +166,33 @@ public class ArticleController {
         }
     }
 
-
-    @PatchMapping("/articles/{articleId}/series/{seriesId}")
-    public ResponseEntity<SeriesOtd> updateArticleSeries(@PathVariable Long articleId, @PathVariable Long seriesId) {
+    @PatchMapping("/articles/add-image/{articleId}/{imageId}")
+    public ResponseEntity<ImageResponse> addImage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long imageId) {
         try {
-            SeriesEntity seriesEntity = articleService.updateArticleSeries(articleId, seriesId);
-            return new ResponseEntity<>(new SeriesOtd(seriesEntity), HttpStatus.OK);
-        } catch (ArticleNotFoundException | SeriesNotFoundException e) {
+            ImageResponse imageResponse = articleService.addArticleImage(userDetails.getUsername(), articleId, imageId);
+            return new ResponseEntity<>(imageResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @PatchMapping("/articles/{articleId}/cover/{coverId}")
-    public ResponseEntity<ArticleImageOtd> updateArticleCover(@PathVariable Long articleId, @PathVariable Long coverId) {
+    @PatchMapping("/articles/remove-image/{articleId}/{imageId}")
+    public ResponseEntity<ImageResponse> removeImage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long imageId) {
         try {
-            ImageEntity imageEntity = articleService.updateArticleCover(articleId, coverId);
-            return new ResponseEntity<>(new ArticleImageOtd(imageEntity), HttpStatus.OK);
-        } catch (ArticleNotFoundException | ImageNotFoundException e) {
+            articleService.removeArticleImage(userDetails.getUsername(), articleId, imageId);
+            return null;
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-
-
+    @GetMapping("/articles/list-images/{articleId}")
+    public ResponseEntity<List<ImageResponse>> addImage(@PathVariable Long articleId) {
+        try {
+            List<ImageResponse> imageResponses = articleService.listArticleImages(articleId);
+            return new ResponseEntity<>(imageResponses, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

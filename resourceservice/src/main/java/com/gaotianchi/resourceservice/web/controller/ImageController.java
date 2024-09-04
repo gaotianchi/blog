@@ -4,7 +4,6 @@ import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.error.ImageNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.service.ImageService;
-import com.gaotianchi.resourceservice.web.response.ArticleImageOtd;
 import com.gaotianchi.resourceservice.web.response.ImageOtd;
 import com.gaotianchi.resourceservice.web.response.ImageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,15 +49,6 @@ public class ImageController {
         }
     }
 
-    @PostMapping("/images/articles/{articleId}/upload")
-    public ResponseEntity<ArticleImageOtd> uploadArticleImage(@RequestParam("file") MultipartFile file, @PathVariable Long articleId) {
-        try {
-            ImageEntity imageEntity = imageService.createArticleImage(file, articleId);
-            return new ResponseEntity<>(new ArticleImageOtd(imageEntity), HttpStatus.OK);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @PostMapping("/images/upload")
     public ResponseEntity<ImageOtd> uploadImage(@RequestParam("file") MultipartFile file) {

@@ -45,6 +45,6 @@ public class ArticleEntity {
     @OneToMany(mappedBy = "article")
     private Collection<CommentEntity> commentEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "article")
+    @ManyToMany(mappedBy = "articles")
     private Collection<ImageEntity> articleImages = new ArrayList<>();
 }

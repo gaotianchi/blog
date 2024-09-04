@@ -22,8 +22,22 @@ public class EntityBelongService {
         return articleEntity;
     }
 
+    public ArticleEntity articleBelongToUser(UserEntity userEntity, Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        if (!userEntity.getArticleEntities().contains(articleEntity))
+            throw new EntityNotFoundException("Article " + articleId);
+        return articleEntity;
+    }
+
     public ImageEntity imageBelongToUser(String email, Long coverId) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        ImageEntity imageEntity = entityFounderService.getImageOrNotFound(coverId);
+        if (!userEntity.getImageEntities().contains(imageEntity))
+            throw new EntityNotFoundException("Image " + coverId);
+        return imageEntity;
+    }
+
+    public ImageEntity imageBelongToUser(UserEntity userEntity, Long coverId) throws EntityNotFoundException {
         ImageEntity imageEntity = entityFounderService.getImageOrNotFound(coverId);
         if (!userEntity.getImageEntities().contains(imageEntity))
             throw new EntityNotFoundException("Image " + coverId);

@@ -63,12 +63,6 @@ public class ImageService {
                 .collect(Collectors.toList());
     }
 
-    public ImageEntity createArticleImage(MultipartFile file, Long articleId) throws IOException, ArticleNotFoundException {
-        ImageEntity imageEntity = saveImage(file);
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        imageEntity.setArticle(articleEntity);
-        return imageRepo.save(imageEntity);
-    }
 
     public ImageEntity createImage(MultipartFile file) throws IOException {
         ImageEntity imageEntity = saveImage(file);
