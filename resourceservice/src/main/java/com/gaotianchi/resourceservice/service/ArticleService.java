@@ -54,6 +54,7 @@ public class ArticleService {
     public ArticleResponse publishArticle(Long articleId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
         articleEntity.setArticleStatus(ArticleStatus.PUBLISHED);
+        articleEntity.setPublishDatetime(OffsetDateTime.now());
         articleEntity = articleRepo.save(articleEntity);
         return new ArticleResponse(articleEntity);
     }
