@@ -6,6 +6,7 @@ import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.TagEntity;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.TagRepo;
+import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,11 @@ public class TagService {
             articleRepo.saveAll(articleEntities);
         }
         tagRepo.delete(tagEntity);
+    }
+
+    public List<ArticleResponse> listArticles(Long id) throws EntityNotFoundException {
+        TagEntity tagEntity = entityFounderService.getTagOrNotFound(id);
+        return tagEntity.getArticles().stream().map(ArticleResponse::new).collect(Collectors.toList());
     }
 
     public TagResponse setArticle(String email, Long tagId, Long articleId) throws EntityNotFoundException {

@@ -125,6 +125,43 @@ public class ArticleService {
         articleRepo.save(articleEntity);
     }
 
+    public TagResponse addTag(String email, Long articleId, Long tagId) throws EntityNotFoundException {
+        TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
+        Collection<TagEntity> tagEntities = articleEntity.getTags();
+        Collection<ArticleEntity> articleEntities = tagEntity.getArticles();
+        if (!tagEntities.contains(tagEntity)) tagEntities.add(tagEntity);
+        if (!articleEntities.contains(articleEntity)) articleEntities.add(articleEntity);
+        articleEntity.setTags(tagEntities);
+        tagEntity.setArticles(articleEntities);
+        articleRepo.save(articleEntity);
+        tagEntity = tagRepo.save(tagEntity);
+        return new TagResponse(tagEntity);
+    }
+
+    public void removeTag(String email, Long tagId, Long articleId) throws EntityNotFoundException {
+        TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
+        Collection<TagEntity> tagEntities = articleEntity.getTags();
+        Collection<ArticleEntity> articleEntities = tagEntity.getArticles();
+        articleEntities.remove(articleEntity);
+        tagEntities.remove(tagEntity);
+        articleEntity.setTags(tagEntities);
+        articleRepo.save(articleEntity);
+        tagRepo.save(tagEntity);
+    }
+
+    public List<TagResponse> listTags(Long id) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
+        List<TagResponse> tagResponses = new ArrayList<>();
+        for (TagEntity tagEntity : articleEntity.getTags()) {
+            TagResponse tagResponse = new TagResponse(tagEntity);
+            tagResponses.add(tagResponse);
+        }
+        return tagResponses;
+    }
+
+
     public ArticleEntity getArticleOrNotFound(Long articleId) throws ArticleNotFoundException {
         Optional<ArticleEntity> article = articleRepo.findById(articleId);
         if (article.isEmpty()) throw new ArticleNotFoundException();
@@ -183,47 +220,12 @@ public class ArticleService {
         if (tagEntity.isEmpty()) throw new TagNotFoundException();
         return tagEntity.get();
     }
-    public void removeArticleTag(Long tagId, Long articleId) throws TagNotFoundException, ArticleNotFoundException {
-        TagEntity tagEntity = getTagOrNotFound(tagId);
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        Collection<TagEntity> tagEntities = articleEntity.getTags();
-        Collection<ArticleEntity> articleEntities = tagEntity.getArticles();
-        articleEntities.remove(articleEntity);
-        tagEntities.remove(tagEntity);
-        articleEntity.setTags(tagEntities);
-        articleRepo.save(articleEntity);
-        tagRepo.save(tagEntity);
-    }
 
-    public TagEntity addArticleTag(Long articleId, Long tagId) throws TagNotFoundException, ArticleNotFoundException {
-        TagEntity tagEntity = getTagOrNotFound(tagId);
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        Collection<TagEntity> tagEntities = articleEntity.getTags();
-        Collection<ArticleEntity> articleEntities = tagEntity.getArticles();
-        if (!tagEntities.contains(tagEntity)) tagEntities.add(tagEntity);
-        if (!articleEntities.contains(articleEntity)) articleEntities.add(articleEntity);
-        articleEntity.setTags(tagEntities);
-        tagEntity.setArticles(articleEntities);
-        articleRepo.save(articleEntity);
-        tagRepo.save(tagEntity);
-        return tagEntity;
-    }
 
     public ArticleOtd getArticleOtd(ArticleEntity articleEntity) {
         ArticleOtd articleOtd = new ArticleOtd(articleEntity);
         articleOtd.setLike(articleCacheService.getNumberOfArticleLike(articleEntity.getId()));
         articleOtd.setDislike(articleCacheService.getNumberOfArticleDislike(articleEntity.getId()));
         return articleOtd;
-    }
-
-
-    public List<TagOtd> getArticleTags(Long id) throws ArticleNotFoundException {
-        ArticleEntity articleEntity = getArticleOrNotFound(id);
-        List<TagOtd> tagOtds = new ArrayList<>();
-        for (TagEntity tagEntity : articleEntity.getTags()) {
-            TagOtd tagOtd = new TagOtd(tagEntity);
-            tagOtds.add(tagOtd);
-        }
-        return tagOtds;
     }
 }

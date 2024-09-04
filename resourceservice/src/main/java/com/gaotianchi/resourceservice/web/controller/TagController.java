@@ -4,6 +4,7 @@ import com.gaotianchi.resourceservice.error.EntityAlreadyExistException;
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.service.TagService;
 import com.gaotianchi.resourceservice.web.request.NewTagRequest;
+import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,16 @@ public class TagController {
         try {
             tagService.deleteTag(id);
             return null;
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/tags/list-articles/{id}")
+    public ResponseEntity<List<ArticleResponse>> listArticles(@PathVariable Long id) {
+        try {
+            List<ArticleResponse> articleResponses = tagService.listArticles(id);
+            return new ResponseEntity<>(articleResponses, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

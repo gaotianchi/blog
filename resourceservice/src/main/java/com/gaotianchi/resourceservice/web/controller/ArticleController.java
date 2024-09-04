@@ -3,7 +3,6 @@ package com.gaotianchi.resourceservice.web.controller;
 import com.gaotianchi.resourceservice.error.*;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
-import com.gaotianchi.resourceservice.persistence.entity.TagEntity;
 import com.gaotianchi.resourceservice.service.ArticleService;
 import com.gaotianchi.resourceservice.web.request.UpdateArticleContentRequest;
 import com.gaotianchi.resourceservice.web.response.*;
@@ -125,6 +124,38 @@ public class ArticleController {
         }
     }
 
+
+    @PatchMapping("/articles/add-tag/{articleId}/{tagId}")
+    public ResponseEntity<TagResponse> addArticleTag(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long tagId) {
+        try {
+            TagResponse tagResponse = articleService.addTag(userDetails.getUsername(), articleId, tagId);
+            return new ResponseEntity<>(tagResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping("/articles/remove-tag/{articleId}/{tagId}")
+    public ResponseEntity<Void> removeArticleTag(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long tagId) {
+        try {
+            articleService.removeTag(userDetails.getUsername(), tagId, articleId);
+            return null;
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/articles/list-tags/{id}")
+    public ResponseEntity<List<TagResponse>> getArticleTags(@PathVariable Long id) {
+        try {
+            List<TagResponse> tagResponses = articleService.listTags(id);
+            return new ResponseEntity<>(tagResponses, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
     @GetMapping("/articles/{articleId}/comments")
     public ResponseEntity<ArticleCommentsOtd> getArticleComments(@PathVariable Long articleId) {
         try {
@@ -155,35 +186,6 @@ public class ArticleController {
         }
     }
 
-    @PatchMapping("/articles/{articleId}/remove/tags/{tagId}")
-    public ResponseEntity<Void> removeArticleTag(@PathVariable Long articleId, @PathVariable Long tagId) {
-        try {
-            articleService.removeArticleTag(tagId, articleId);
-            return null;
-        } catch (TagNotFoundException | ArticleNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 
-
-    @PatchMapping("/articles/{articleId}/add/tags/{tagId}")
-    public ResponseEntity<TagOtd> addArticleTag(@PathVariable Long articleId, @PathVariable Long tagId) {
-        try {
-            TagEntity tagEntity = articleService.addArticleTag(articleId, tagId);
-            return new ResponseEntity<>(new TagOtd(tagEntity), HttpStatus.OK);
-        } catch (TagNotFoundException | ArticleNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @GetMapping("/articles/{id}/tags/all")
-    public ResponseEntity<List<TagOtd>> getArticleTags(@PathVariable Long id) {
-        try {
-            List<TagOtd> tagOtds = articleService.getArticleTags(id);
-            return new ResponseEntity<>(tagOtds, HttpStatus.OK);
-        } catch (ArticleNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 
 }
