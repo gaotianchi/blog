@@ -1,12 +1,11 @@
 package com.gaotianchi.resourceservice.web.controller;
 
 import com.gaotianchi.resourceservice.error.*;
-import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.persistence.entity.TagEntity;
 import com.gaotianchi.resourceservice.service.ArticleService;
-import com.gaotianchi.resourceservice.web.request.UpdateContentDto;
+import com.gaotianchi.resourceservice.web.request.UpdateArticleContentRequest;
 import com.gaotianchi.resourceservice.web.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -77,17 +76,16 @@ public class ArticleController {
     }
 
 
-    @PatchMapping("/articles/content/{articleId}")
-    public ResponseEntity<ArticleOtd> updateArticleContent(@PathVariable Long articleId, @RequestBody UpdateContentDto updateContentDto) {
+    @PatchMapping("/articles/update-content/{articleId}")
+    public ResponseEntity<ArticleResponse> updateContent(@PathVariable Long articleId, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
         try {
-            ArticleEntity articleEntity = articleService.updateArticleContent(articleId, updateContentDto.getTitle(), updateContentDto.getBody(), updateContentDto.getSummary(), updateContentDto.getSlug());
-            return new ResponseEntity<>(new ArticleOtd(articleEntity), HttpStatus.OK);
-        } catch (ArticleNotFoundException e) {
+            ArticleResponse articleResponse = articleService.updateContent(articleId, updateArticleContentRequest.getTitle(), updateArticleContentRequest.getBody(), updateArticleContentRequest.getSummary(), updateArticleContentRequest.getSlug());
+            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/articles/{articleId}/comments")
     public ResponseEntity<ArticleCommentsOtd> getArticleComments(@PathVariable Long articleId) {
         try {

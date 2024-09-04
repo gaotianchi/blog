@@ -81,6 +81,17 @@ public class ArticleService {
                 .collect(Collectors.toList());
     }
 
+    public ArticleResponse updateContent(Long articleId, String title, String body, String summary, String slug) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        articleEntity.setTitle(title);
+        articleEntity.setSlug(slug);
+        articleEntity.setBody(body);
+        articleEntity.setSummary(summary);
+        articleEntity.setLastUpdatedDatetime(OffsetDateTime.now());
+        articleEntity = articleRepo.save(articleEntity);
+        return new ArticleResponse(articleEntity);
+    }
+
     public ArticleEntity getArticleOrNotFound(Long articleId) throws ArticleNotFoundException {
         Optional<ArticleEntity> article = articleRepo.findById(articleId);
         if (article.isEmpty()) throw new ArticleNotFoundException();
