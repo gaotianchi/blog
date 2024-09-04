@@ -1,6 +1,6 @@
 package com.gaotianchi.resourceservice.error;
 
-public class EntityNotFoundException extends Exception {
+public class EntityNotFoundException extends ApplicationException {
 
     public EntityNotFoundException(final String entity) {
         super(entity + " is not found.");
