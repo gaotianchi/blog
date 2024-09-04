@@ -1,14 +1,8 @@
 package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
-import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
-import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
-import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
-import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
-import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
-import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
-import com.gaotianchi.resourceservice.persistence.repo.SeriesRepo;
-import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
+import com.gaotianchi.resourceservice.persistence.entity.*;
+import com.gaotianchi.resourceservice.persistence.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +14,15 @@ public class EntityFounderService {
     private final ImageRepo imageRepo;
     private final ArticleRepo articleRepo;
     private final SeriesRepo seriesRepo;
+    private final TagRepo tagRepo;
 
     @Autowired
-    public EntityFounderService(UserRepo userRepo, ImageRepo imageRepo, ArticleRepo articleRepo, SeriesRepo seriesRepo) {
+    public EntityFounderService(UserRepo userRepo, ImageRepo imageRepo, ArticleRepo articleRepo, SeriesRepo seriesRepo, TagRepo tagRepo) {
         this.userRepo = userRepo;
         this.imageRepo = imageRepo;
         this.articleRepo = articleRepo;
         this.seriesRepo = seriesRepo;
+        this.tagRepo = tagRepo;
     }
 
     public UserEntity getUserOrNotFound(Long id) throws EntityNotFoundException {
@@ -58,5 +54,11 @@ public class EntityFounderService {
         Optional<SeriesEntity> seriesEntity = seriesRepo.findById(id);
         if (seriesEntity.isEmpty()) throw new EntityNotFoundException("Series " + id);
         return seriesEntity.get();
+    }
+
+    public TagEntity getTagOrNotFound(Long id) throws EntityNotFoundException {
+        Optional<TagEntity> tagEntity = tagRepo.findById(id);
+        if (tagEntity.isEmpty()) throw new EntityNotFoundException("Tag " + id);
+        return tagEntity.get();
     }
 }

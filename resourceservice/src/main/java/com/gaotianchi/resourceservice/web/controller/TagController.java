@@ -1,13 +1,10 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
-import com.gaotianchi.resourceservice.error.TagAlreadyExistException;
-import com.gaotianchi.resourceservice.error.TagNotFoundException;
-import com.gaotianchi.resourceservice.persistence.entity.TagEntity;
+import com.gaotianchi.resourceservice.error.EntityAlreadyExistException;
+import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.service.TagService;
-import com.gaotianchi.resourceservice.web.request.TagDto;
-import com.gaotianchi.resourceservice.web.response.ArticleOtd;
-import com.gaotianchi.resourceservice.web.response.TagOtd;
+import com.gaotianchi.resourceservice.web.request.NewTagRequest;
+import com.gaotianchi.resourceservice.web.response.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +14,7 @@ import java.util.List;
 
 @RestController
 public class TagController {
+
     private final TagService tagService;
 
     @Autowired
@@ -25,14 +23,22 @@ public class TagController {
     }
 
     @PostMapping("/tags/new")
-    public ResponseEntity<TagOtd> newTag(@RequestBody TagDto tagDto) {
+    public ResponseEntity<TagResponse> newTag(@RequestBody NewTagRequest newTagRequest) {
         try {
-            TagEntity tagEntity = tagService.createNewTag(tagDto.getName(), tagDto.getArticleId());
-            return new ResponseEntity<>(new TagOtd(tagEntity), HttpStatus.OK);
-        } catch (ArticleNotFoundException e) {
+            TagResponse tagResponse = tagService.newTag(newTagRequest.getName());
+            return new ResponseEntity<>(tagResponse, HttpStatus.OK);
+        } catch (EntityAlreadyExistException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (TagAlreadyExistException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping("/tags/list")
+    public ResponseEntity<List<TagResponse>> listTags() {
+        try {
+            List<TagResponse> tagResponses = tagService.listTags();
+            return new ResponseEntity<>(tagResponses, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -41,25 +47,7 @@ public class TagController {
         try {
             tagService.deleteTag(id);
             return null;
-        } catch (TagNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-    @GetMapping("/tags/all")
-    public ResponseEntity<List<TagOtd>> getAllTags() {
-        try {
-            List<TagOtd> tagOtds = tagService.getAllTags();
-            return new ResponseEntity<>(tagOtds, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @GetMapping("/tags/{id}/articles/all")
-    public ResponseEntity<List<ArticleOtd>> getAllArticlesFromTag(@PathVariable Long id) {
-        try {
-            List<ArticleOtd> articleOtds = tagService.getAllArticlesFromTags(id);
-            return new ResponseEntity<>(articleOtds, HttpStatus.OK);
-        } catch (TagNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

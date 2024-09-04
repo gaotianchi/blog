@@ -1,90 +1,71 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
-import com.gaotianchi.resourceservice.error.TagAlreadyExistException;
-import com.gaotianchi.resourceservice.error.TagNotFoundException;
+import com.gaotianchi.resourceservice.error.EntityAlreadyExistException;
+import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.TagEntity;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.TagRepo;
-import com.gaotianchi.resourceservice.web.response.ArticleOtd;
-import com.gaotianchi.resourceservice.web.response.TagOtd;
+import com.gaotianchi.resourceservice.web.response.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class TagService {
     private final ArticleRepo articleRepo;
     private final TagRepo tagRepo;
     private final ArticleService articleService;
+    private final EntityFounderService entityFounderService;
+    private final EntityBelongService entityBelongService;
 
     @Autowired
-    public TagService(ArticleRepo articleRepo, TagRepo tagRepo, ArticleService articleService) {
+    public TagService(ArticleRepo articleRepo, TagRepo tagRepo, ArticleService articleService, EntityFounderService entityFounderService, EntityBelongService entityBelongService) {
         this.articleRepo = articleRepo;
         this.tagRepo = tagRepo;
         this.articleService = articleService;
+        this.entityFounderService = entityFounderService;
+        this.entityBelongService = entityBelongService;
     }
 
-    public TagEntity createNewTag(String name, Long articleId) throws ArticleNotFoundException, TagAlreadyExistException {
+    public TagResponse newTag(String name) throws EntityAlreadyExistException {
         TagEntity tagEntity = tagRepo.findByName(name);
-        if (tagEntity != null) throw new TagAlreadyExistException();
+        if (tagEntity != null) throw new EntityAlreadyExistException("Tag " + name);
         tagEntity = new TagEntity();
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        Collection<ArticleEntity> articleEntities = tagEntity.getArticles();
-        articleEntities.add(articleEntity);
-        tagEntity.setArticles(articleEntities);
         tagEntity.setCreationDatetime(OffsetDateTime.now());
         tagEntity.setName(name);
-        return tagRepo.save(tagEntity);
+        tagEntity = tagRepo.save(tagEntity);
+        return new TagResponse(tagEntity);
     }
 
-    public ArticleEntity getArticleOrNotFound(Long articleId) throws ArticleNotFoundException {
-        Optional<ArticleEntity> article = articleRepo.findById(articleId);
-        if (article.isEmpty()) throw new ArticleNotFoundException();
-        return article.get();
+    public List<TagResponse> listTags() {
+        Collection<TagEntity> tagEntities = tagRepo.findAll();
+        return tagEntities.stream().map(TagResponse::new).collect(Collectors.toList());
     }
 
-    public void deleteTag(Long id) throws TagNotFoundException {
-        TagEntity tagEntity = getTagOrNotFound(id);
-        if (!tagEntity.getArticles().isEmpty()) {
-            for (ArticleEntity articleEntity : tagEntity.getArticles()) {
+    public void deleteTag(Long id) throws EntityNotFoundException {
+        TagEntity tagEntity = entityFounderService.getTagOrNotFound(id);
+        Collection<ArticleEntity> articleEntities = tagEntity.getArticles();
+        if (!articleEntities.isEmpty()) {
+            for (ArticleEntity articleEntity : articleEntities) {
                 articleEntity.getTags().removeIf(t -> Objects.equals(t.getId(), id));
             }
-            articleRepo.saveAll(tagEntity.getArticles());
+            articleRepo.saveAll(articleEntities);
         }
         tagRepo.delete(tagEntity);
     }
 
-    public TagEntity getTagOrNotFound(Long id) throws TagNotFoundException {
-        Optional<TagEntity> tagEntity = tagRepo.findById(id);
-        if (tagEntity.isEmpty()) throw new TagNotFoundException();
-        return tagEntity.get();
+    public TagResponse setArticle(String email, Long tagId, Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
+        TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
+        if (!tagEntity.getArticles().contains(articleEntity)) tagEntity.getArticles().add(articleEntity);
+        tagEntity = tagRepo.save(tagEntity);
+        return new TagResponse(tagEntity);
     }
 
-    public List<TagOtd> getAllTags() {
-        List<TagOtd> tagOtds = new ArrayList<>();
-        for (TagEntity tagEntity : tagRepo.findAll()) {
-            tagOtds.add(new TagOtd(tagEntity));
-        }
-        return tagOtds;
-    }
-
-    public TagEntity getTagOrNotFound(String name) throws TagNotFoundException {
-        TagEntity tagEntity = tagRepo.findByName(name);
-        if (tagEntity == null) throw new TagNotFoundException();
-        return tagEntity;
-    }
-
-    public List<ArticleOtd> getAllArticlesFromTags(Long id) throws TagNotFoundException {
-        TagEntity tagEntity = getTagOrNotFound(id);
-        List<ArticleOtd> articleOtds = new ArrayList<>();
-        for (ArticleEntity articleEntity : tagEntity.getArticles()) {
-            ArticleOtd articleOtd = articleService.getArticleOtd(articleEntity);
-            articleOtds.add(articleOtd);
-        }
-        return articleOtds;
-    }
 }
