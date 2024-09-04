@@ -40,11 +40,11 @@ public class ArticleEntity {
     private UserEntity author;
 
     @OneToMany(mappedBy = "target")
-    private Collection<ArticleVoteRecordEntity> articleVoteRecordEntities;
+    private Collection<ArticleVoteRecordEntity> articleVoteRecordEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "article")
-    private Collection<CommentEntity> commentEntities;
+    private Collection<CommentEntity> commentEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "article")
-    private Collection<ImageEntity> articleImages;
+    private Collection<ImageEntity> articleImages = new ArrayList<>();
 }

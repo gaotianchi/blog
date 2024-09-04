@@ -2,6 +2,7 @@ package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.error.CommentNotFoundException;
+import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.error.UserNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.CommentEntity;
@@ -11,6 +12,7 @@ import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.CommentRepo;
 import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
 import com.gaotianchi.resourceservice.web.response.CommentOtd;
+import com.gaotianchi.resourceservice.web.response.CommentResponse;
 import com.gaotianchi.resourceservice.web.response.CommentWithRepliesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,31 +26,40 @@ public class CommentService {
     private final ArticleRepo articleRepo;
     private final CommentRepo commentRepo;
     private final CommentCacheService commentCacheService;
+    private final EntityFounderService entityFounderService;
 
     @Autowired
-    public CommentService(UserRepo userRepo, ArticleRepo articleRepo, CommentRepo commentRepo, CommentCacheService commentCacheService) {
+    public CommentService(UserRepo userRepo, ArticleRepo articleRepo, CommentRepo commentRepo, CommentCacheService commentCacheService, EntityFounderService entityFounderService) {
         this.userRepo = userRepo;
         this.articleRepo = articleRepo;
         this.commentRepo = commentRepo;
         this.commentCacheService = commentCacheService;
+        this.entityFounderService = entityFounderService;
     }
 
-    public CommentEntity newComment(String body, Long userId, Long articleId, Optional<Long> parentCommentId) throws UserNotFoundException, ArticleNotFoundException, CommentNotFoundException {
-        UserEntity userEntity = getUserOrNotFound(userId);
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
+    public CommentResponse newComment(String email, String body, Long articleId, Optional<Long> parentCommentId) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
         CommentEntity commentEntity = new CommentEntity();
         commentEntity.setArticle(articleEntity);
         commentEntity.setAuthor(userEntity);
         commentEntity.setBody(body);
         if (parentCommentId.isPresent()) {
-            CommentEntity parentComment = getCommentOrNotFound(parentCommentId.get());
+            CommentEntity parentComment = entityFounderService.getCommentOrNotFound(parentCommentId.get());
             commentEntity.setParentComment(parentComment);
         }
         commentEntity.setCommentStatus(CommentStatus.PUBLISHED);
         commentEntity.setCreationDatetime(OffsetDateTime.now());
         commentEntity.setLastUpdatedDatetime(OffsetDateTime.now());
-        return commentRepo.save(commentEntity);
+        commentEntity = commentRepo.save(commentEntity);
+        return new CommentResponse(commentEntity);
     }
+
+    public CommentResponse getCommentTree(Long id) throws EntityNotFoundException {
+        CommentEntity commentEntity = entityFounderService.getCommentOrNotFound(id);
+        return new CommentResponse(commentEntity, true);
+    }
+
 
     public void deleteComment(Long id) throws CommentNotFoundException {
         CommentEntity commentEntity = getCommentOrNotFound(id);

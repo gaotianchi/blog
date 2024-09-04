@@ -15,14 +15,16 @@ public class EntityFounderService {
     private final ArticleRepo articleRepo;
     private final SeriesRepo seriesRepo;
     private final TagRepo tagRepo;
+    private final CommentRepo commentRepo;
 
     @Autowired
-    public EntityFounderService(UserRepo userRepo, ImageRepo imageRepo, ArticleRepo articleRepo, SeriesRepo seriesRepo, TagRepo tagRepo) {
+    public EntityFounderService(UserRepo userRepo, ImageRepo imageRepo, ArticleRepo articleRepo, SeriesRepo seriesRepo, TagRepo tagRepo, CommentRepo commentRepo) {
         this.userRepo = userRepo;
         this.imageRepo = imageRepo;
         this.articleRepo = articleRepo;
         this.seriesRepo = seriesRepo;
         this.tagRepo = tagRepo;
+        this.commentRepo = commentRepo;
     }
 
     public UserEntity getUserOrNotFound(Long id) throws EntityNotFoundException {
@@ -43,6 +45,11 @@ public class EntityFounderService {
         return articleEntity.get();
     }
 
+    public CommentEntity getCommentOrNotFound(Long id) throws EntityNotFoundException {
+        Optional<CommentEntity> commentEntity = commentRepo.findById(id);
+        if (commentEntity.isEmpty()) throw new EntityNotFoundException("Comment " + id);
+        return commentEntity.get();
+    }
 
     public ImageEntity getImageOrNotFound(Long imageId) throws EntityNotFoundException {
         Optional<ImageEntity> imageEntity = imageRepo.findById(imageId);

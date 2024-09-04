@@ -161,6 +161,17 @@ public class ArticleService {
         return tagResponses;
     }
 
+    public List<CommentResponse> listArticleComments(Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        List<CommentResponse> commentResponses = new ArrayList<>();
+        for (CommentEntity commentEntity : articleEntity.getCommentEntities()) {
+            if (commentEntity.getParentComment() == null) {
+                commentResponses.add(commentService.getCommentTree(commentEntity.getId()));
+            }
+        }
+        return commentResponses;
+    }
+
 
     public ArticleEntity getArticleOrNotFound(Long articleId) throws ArticleNotFoundException {
         Optional<ArticleEntity> article = articleRepo.findById(articleId);

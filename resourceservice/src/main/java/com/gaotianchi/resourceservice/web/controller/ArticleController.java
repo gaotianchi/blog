@@ -155,6 +155,16 @@ public class ArticleController {
         }
     }
 
+    @GetMapping("/articles/list-comment-trees/{articleId}")
+    public ResponseEntity<List<CommentResponse>> listCommentTrees(@PathVariable Long articleId) {
+        try {
+            List<CommentResponse> commentResponses = articleService.listArticleComments(articleId);
+            return new ResponseEntity<>(commentResponses, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 
     @GetMapping("/articles/{articleId}/comments")
     public ResponseEntity<ArticleCommentsOtd> getArticleComments(@PathVariable Long articleId) {
