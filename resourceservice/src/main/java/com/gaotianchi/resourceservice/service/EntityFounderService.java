@@ -3,9 +3,11 @@ package com.gaotianchi.resourceservice.service;
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
+import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
+import com.gaotianchi.resourceservice.persistence.repo.SeriesRepo;
 import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,12 +19,14 @@ public class EntityFounderService {
     private final UserRepo userRepo;
     private final ImageRepo imageRepo;
     private final ArticleRepo articleRepo;
+    private final SeriesRepo seriesRepo;
 
     @Autowired
-    public EntityFounderService(UserRepo userRepo, ImageRepo imageRepo, ArticleRepo articleRepo) {
+    public EntityFounderService(UserRepo userRepo, ImageRepo imageRepo, ArticleRepo articleRepo, SeriesRepo seriesRepo) {
         this.userRepo = userRepo;
         this.imageRepo = imageRepo;
         this.articleRepo = articleRepo;
+        this.seriesRepo = seriesRepo;
     }
 
     public UserEntity getUserOrNotFound(Long id) throws EntityNotFoundException {
@@ -48,5 +52,11 @@ public class EntityFounderService {
         Optional<ImageEntity> imageEntity = imageRepo.findById(imageId);
         if (imageEntity.isEmpty()) throw new EntityNotFoundException("Image " + imageId);
         return imageEntity.get();
+    }
+
+    public SeriesEntity getSeriesOrNotFound(Long id) throws EntityNotFoundException {
+        Optional<SeriesEntity> seriesEntity = seriesRepo.findById(id);
+        if (seriesEntity.isEmpty()) throw new EntityNotFoundException("Series " + id);
+        return seriesEntity.get();
     }
 }

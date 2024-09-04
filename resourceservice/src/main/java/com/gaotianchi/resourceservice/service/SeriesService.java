@@ -1,14 +1,17 @@
 package com.gaotianchi.resourceservice.service;
 
+import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.error.ImageNotFoundException;
 import com.gaotianchi.resourceservice.error.SeriesNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
+import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
 import com.gaotianchi.resourceservice.persistence.repo.SeriesRepo;
 import com.gaotianchi.resourceservice.web.response.SeriesOtd;
+import com.gaotianchi.resourceservice.web.response.SeriesResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,21 +25,26 @@ public class SeriesService {
     private final ImageRepo imageRepo;
     private final SeriesRepo seriesRepo;
     private final ArticleRepo articleRepo;
+    private final EntityFounderService entityFounderService;
 
     @Autowired
-    public SeriesService(ImageRepo imageRepo, SeriesRepo seriesRepo, ArticleRepo articleRepo) {
+    public SeriesService(ImageRepo imageRepo, SeriesRepo seriesRepo, ArticleRepo articleRepo, EntityFounderService entityFounderService) {
         this.imageRepo = imageRepo;
         this.seriesRepo = seriesRepo;
         this.articleRepo = articleRepo;
+        this.entityFounderService = entityFounderService;
     }
 
-    public SeriesEntity newSeries(String name, Long coverId) throws ImageNotFoundException {
-        ImageEntity imageEntity = getArticleImageOrNotFound(coverId);
+    public SeriesResponse newSeries(String email, String name, Long coverId) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        ImageEntity imageEntity = entityFounderService.getImageOrNotFound(coverId);
         SeriesEntity seriesEntity = new SeriesEntity();
+        seriesEntity.setUser(userEntity);
         seriesEntity.setCreationDatetime(OffsetDateTime.now());
         seriesEntity.setName(name);
         seriesEntity.setCover(imageEntity);
-        return seriesRepo.save(seriesEntity);
+        seriesEntity = seriesRepo.save(seriesEntity);
+        return new SeriesResponse(seriesEntity);
     }
 
     public ImageEntity getArticleImageOrNotFound(Long id) throws ImageNotFoundException {

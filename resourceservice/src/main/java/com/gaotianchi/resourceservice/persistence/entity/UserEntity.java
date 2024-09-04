@@ -38,6 +38,9 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "author")
     private Collection<ArticleEntity> articleEntities = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private Collection<SeriesEntity> seriesEntities = new ArrayList<>();
+
     @OneToMany(mappedBy = "author")
     private Collection<CommentEntity> commentEntities = new ArrayList<>();
 

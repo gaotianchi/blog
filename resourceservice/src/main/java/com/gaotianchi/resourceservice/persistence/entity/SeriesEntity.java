@@ -21,6 +21,9 @@ public class SeriesEntity {
     @ManyToOne
     private ImageEntity cover;
 
+    @ManyToOne
+    private UserEntity user;
+
     @OneToMany(mappedBy = "seriesEntity")
     private Collection<ArticleEntity> articleEntities = new ArrayList<>();
 }

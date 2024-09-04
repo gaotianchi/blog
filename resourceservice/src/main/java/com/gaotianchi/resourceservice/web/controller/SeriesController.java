@@ -1,17 +1,21 @@
 package com.gaotianchi.resourceservice.web.controller;
 
+import com.gaotianchi.resourceservice.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.error.ImageNotFoundException;
 import com.gaotianchi.resourceservice.error.SeriesNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.service.SeriesService;
-import com.gaotianchi.resourceservice.web.request.SeriesDto;
+import com.gaotianchi.resourceservice.web.request.NewSeriesRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateSeriesCoverDto;
 import com.gaotianchi.resourceservice.web.request.UpdateSeriesInfoDto;
 import com.gaotianchi.resourceservice.web.response.SeriesOtd;
+import com.gaotianchi.resourceservice.web.response.SeriesResponse;
 import com.gaotianchi.resourceservice.web.response.SeriesWithArticlesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,14 +31,15 @@ public class SeriesController {
     }
 
     @PostMapping("/series/new")
-    public ResponseEntity<SeriesOtd> newSeries(@RequestBody SeriesDto seriesDto) {
+    public ResponseEntity<SeriesResponse> newSeries(@AuthenticationPrincipal UserDetails userDetails, @RequestBody NewSeriesRequest newSeriesRequest) {
         try {
-            SeriesEntity seriesEntity = seriesService.newSeries(seriesDto.getName(), seriesDto.getCoverId());
-            return new ResponseEntity<>(new SeriesOtd(seriesEntity), HttpStatus.OK);
-        } catch (ImageNotFoundException e) {
+            SeriesResponse seriesResponse = seriesService.newSeries(userDetails.getUsername(), newSeriesRequest.getName(), newSeriesRequest.getCoverId());
+            return new ResponseEntity<>(seriesResponse, HttpStatus.CREATED);
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     @DeleteMapping("/series/delete/{id}")
     public ResponseEntity<Void> deleteSeries(@PathVariable Long id) {
         try {
