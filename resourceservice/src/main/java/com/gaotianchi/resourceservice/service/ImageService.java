@@ -1,14 +1,10 @@
 package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.config.StorageProperties;
-import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
-import com.gaotianchi.resourceservice.error.ImageNotFoundException;
-import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.enums.ArticleImageType;
-import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
 import com.gaotianchi.resourceservice.web.response.ImageResponse;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
@@ -24,14 +20,12 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
 public class ImageService {
 
-    private final ArticleRepo articleRepo;
     private final StorageService storageService;
     private final ImageRepo imageRepo;
     private final StorageProperties storageProperties;
@@ -40,8 +34,7 @@ public class ImageService {
     private final EntityBelongService entityBelongService;
 
     @Autowired
-    public ImageService(ArticleRepo articleRepo, StorageService storageService, ImageRepo imageRepo, StorageProperties storageProperties, CompressionService compressionService, EntityFounderService entityFounderService, EntityBelongService entityBelongService) {
-        this.articleRepo = articleRepo;
+    public ImageService(StorageService storageService, ImageRepo imageRepo, StorageProperties storageProperties, CompressionService compressionService, EntityFounderService entityFounderService, EntityBelongService entityBelongService) {
         this.storageService = storageService;
         this.imageRepo = imageRepo;
         this.storageProperties = storageProperties;
@@ -110,18 +103,6 @@ public class ImageService {
         return compressionService.compress(src, dst);
     }
 
-
-    public ArticleEntity getArticleOrNotFound(Long  articleId) throws ArticleNotFoundException {
-        Optional<ArticleEntity> articleEntity = articleRepo.findById(articleId);
-        if (articleEntity.isEmpty()) throw new ArticleNotFoundException();
-        return articleEntity.get();
-    }
-
-    public ImageEntity getArticleImageOrNotFound(Long id) throws ImageNotFoundException {
-        Optional<ImageEntity> articleImageEntity = imageRepo.findById(id);
-        if (articleImageEntity.isEmpty()) throw new ImageNotFoundException();
-        return articleImageEntity.get();
-    }
 
     public static String generateUniqueFileName() {
         long timestamp = System.currentTimeMillis();
