@@ -19,6 +19,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SeriesService {
@@ -44,7 +45,14 @@ public class SeriesService {
         seriesEntity.setName(name);
         seriesEntity.setCover(imageEntity);
         seriesEntity = seriesRepo.save(seriesEntity);
-        return new SeriesResponse(seriesEntity);
+        return new SeriesResponse(seriesEntity, true);
+    }
+
+    public List<SeriesResponse> listSeries(String email) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        return userEntity.getSeriesEntities().stream()
+                .map(seriesEntity -> new SeriesResponse(seriesEntity, true))
+                .collect(Collectors.toList());
     }
 
     public ImageEntity getArticleImageOrNotFound(Long id) throws ImageNotFoundException {

@@ -40,6 +40,19 @@ public class SeriesController {
         }
     }
 
+    @GetMapping("/series/list")
+    public ResponseEntity<List<SeriesResponse>> newSeries(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            List<SeriesResponse> seriesResponses = seriesService.listSeries(userDetails.getUsername());
+            return new ResponseEntity<>(seriesResponses, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
+
     @DeleteMapping("/series/delete/{id}")
     public ResponseEntity<Void> deleteSeries(@PathVariable Long id) {
         try {
