@@ -4,10 +4,7 @@ import com.gaotianchi.resourceservice.error.*;
 import com.gaotianchi.resourceservice.persistence.entity.*;
 import com.gaotianchi.resourceservice.persistence.enums.ArticleStatus;
 import com.gaotianchi.resourceservice.persistence.repo.*;
-import com.gaotianchi.resourceservice.web.response.ArticleCommentsOtd;
-import com.gaotianchi.resourceservice.web.response.ArticleOtd;
-import com.gaotianchi.resourceservice.web.response.CommentWithRepliesOtd;
-import com.gaotianchi.resourceservice.web.response.TagOtd;
+import com.gaotianchi.resourceservice.web.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +23,10 @@ public class ArticleService {
     private final ImageRepo imageRepo;
     private final TagRepo tagRepo;
     private final ArticleCacheService articleCacheService;
+    private final EntityFounderService entityFounderService;
 
     @Autowired
-    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ImageRepo imageRepo, TagRepo tagRepo, ArticleCacheService articleCacheService) {
+    public ArticleService(ArticleRepo articleRepo, UserRepo userRepo, CommentService commentService, SeriesRepo seriesRepo, ImageRepo imageRepo, TagRepo tagRepo, ArticleCacheService articleCacheService, EntityFounderService entityFounderService) {
         this.articleRepo = articleRepo;
         this.userRepo = userRepo;
         this.commentService = commentService;
@@ -36,6 +34,19 @@ public class ArticleService {
         this.imageRepo = imageRepo;
         this.tagRepo = tagRepo;
         this.articleCacheService = articleCacheService;
+        this.entityFounderService = entityFounderService;
+    }
+
+    public ArticleResponse newArticle(String email) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        ArticleEntity articleEntity = new ArticleEntity();
+        articleEntity.setAuthor(userEntity);
+        articleEntity = articleRepo.save(articleEntity);
+        articleEntity.setSlug("Post_" + articleEntity.getId());
+        articleEntity.setArticleStatus(ArticleStatus.DRAFT);
+        articleEntity.setCreationDatetime(OffsetDateTime.now());
+        articleEntity.setLastUpdatedDatetime(OffsetDateTime.now());
+        return new ArticleResponse(articleEntity);
     }
 
     public ArticleEntity createNewDraft(Long userId) throws UserNotFoundException {

@@ -12,6 +12,8 @@ import com.gaotianchi.resourceservice.web.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +25,16 @@ public class ArticleController {
     @Autowired
     public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
+    }
+
+    @PostMapping("/articles/new")
+    public ResponseEntity<ArticleResponse> newArticle(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            ArticleResponse articleResponse = articleService.newArticle(userDetails.getUsername());
+            return new ResponseEntity<>(articleResponse, HttpStatus.CREATED);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/articles/draft")
