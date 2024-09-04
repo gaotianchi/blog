@@ -111,6 +111,20 @@ public class ArticleService {
         articleRepo.save(articleEntity);
     }
 
+    public ArticleResponse setCover(String email, Long articleId, Long coverId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
+        ImageEntity imageEntity = entityBelongService.imageBelongToUser(email, coverId);
+        articleEntity.setCover(imageEntity);
+        articleEntity = articleRepo.save(articleEntity);
+        return new ArticleResponse(articleEntity, false, true);
+    }
+
+    public void removeCover(String email, Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
+        articleEntity.setCover(null);
+        articleRepo.save(articleEntity);
+    }
+
     public ArticleEntity getArticleOrNotFound(Long articleId) throws ArticleNotFoundException {
         Optional<ArticleEntity> article = articleRepo.findById(articleId);
         if (article.isEmpty()) throw new ArticleNotFoundException();

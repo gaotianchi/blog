@@ -19,6 +19,7 @@ public class ArticleResponse {
     private String articleStatus;
     private String slug;
     private SeriesResponse series;
+    private ImageResponse cover;
 
     public ArticleResponse(ArticleEntity articleEntity) {
         setupData(articleEntity);
@@ -28,6 +29,16 @@ public class ArticleResponse {
         setupData(articleEntity);
         if (withSeries) {
             this.series = new SeriesResponse(articleEntity.getSeriesEntity(), true);
+        }
+    }
+
+    public ArticleResponse(ArticleEntity articleEntity, boolean withSeries, boolean withCover) {
+        setupData(articleEntity);
+        if (withSeries) {
+            this.series = new SeriesResponse(articleEntity.getSeriesEntity(), true);
+        }
+        if (withCover) {
+            this.cover = new ImageResponse(articleEntity.getCover());
         }
     }
 

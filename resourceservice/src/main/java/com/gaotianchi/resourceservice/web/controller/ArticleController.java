@@ -105,6 +105,26 @@ public class ArticleController {
         }
     }
 
+    @PatchMapping("/articles/set-cover/{articleId}/{coverId}")
+    public ResponseEntity<ArticleResponse> setCover(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long coverId) {
+        try {
+            ArticleResponse articleResponse = articleService.setCover(userDetails.getUsername(), articleId, coverId);
+            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping("/articles/remove-cover/{articleId}")
+    public ResponseEntity<Void> removeCover(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
+        try {
+            articleService.removeCover(userDetails.getUsername(), articleId);
+            return null;
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/articles/{articleId}/comments")
     public ResponseEntity<ArticleCommentsOtd> getArticleComments(@PathVariable Long articleId) {
         try {
