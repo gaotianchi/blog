@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ArticleService {
@@ -46,6 +47,7 @@ public class ArticleService {
         articleEntity.setArticleStatus(ArticleStatus.DRAFT);
         articleEntity.setCreationDatetime(OffsetDateTime.now());
         articleEntity.setLastUpdatedDatetime(OffsetDateTime.now());
+        articleEntity = articleRepo.save(articleEntity);
         return new ArticleResponse(articleEntity);
     }
 
@@ -70,45 +72,12 @@ public class ArticleService {
         return new ArticleResponse(articleEntity);
     }
 
-    public ArticleEntity createNewDraft(Long userId) throws UserNotFoundException {
-        Optional<UserEntity> author = userRepo.findById(userId);
-        if (author.isEmpty()) throw new UserNotFoundException();
-        ArticleEntity articleEntity = new ArticleEntity();
-        articleEntity.setAuthor(author.get());
-        articleEntity = articleRepo.save(articleEntity);
-        articleEntity.setSlug("Post_" + articleEntity.getId());
-        articleEntity.setArticleStatus(ArticleStatus.DRAFT);
-        articleEntity.setCreationDatetime(OffsetDateTime.now());
-        articleEntity.setLastUpdatedDatetime(OffsetDateTime.now());
-        return articleRepo.save(articleEntity);
-    }
-
-    public ArticleEntity throwInTrashCan(Long articleId) throws ArticleNotFoundException {
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        articleEntity.setArticleStatus(ArticleStatus.TRASH);
-        return articleRepo.save(articleEntity);
-    }
-
-    public void deleteTrash(Long articleId) throws ArticleNotFoundException, UnExpectedStatusException {
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        if (articleEntity.getArticleStatus() != ArticleStatus.TRASH) throw new UnExpectedStatusException();
-        articleRepo.delete(articleEntity);
-    }
-
-    public ArticleEntity publishDraft(Long articleId) throws ArticleNotFoundException, UnExpectedStatusException {
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        if (articleEntity.getArticleStatus() != ArticleStatus.DRAFT) throw new UnExpectedStatusException();
-        articleEntity.setArticleStatus(ArticleStatus.PUBLISHED);
-        articleEntity.setPublishDatetime(OffsetDateTime.now());
-        return articleRepo.save(articleEntity);
-    }
-
-
-    public ArticleEntity convertToDraft(Long articleId) throws UnExpectedStatusException, ArticleNotFoundException {
-        ArticleEntity articleEntity = getArticleOrNotFound(articleId);
-        if (articleEntity.getArticleStatus() == ArticleStatus.DRAFT ) throw new UnExpectedStatusException();
-        articleEntity.setArticleStatus(ArticleStatus.DRAFT);
-        return articleRepo.save(articleEntity);
+    public List<ArticleResponse> listArticles(String email) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        Collection<ArticleEntity> articleEntities = userEntity.getArticleEntities();
+        return articleEntities.stream()
+                .map(ArticleResponse::new)
+                .collect(Collectors.toList());
     }
 
     public ArticleEntity getArticleOrNotFound(Long articleId) throws ArticleNotFoundException {

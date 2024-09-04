@@ -59,8 +59,18 @@ public class ArticleController {
     @PatchMapping("/articles/trash/{articleId}")
     public ResponseEntity<ArticleResponse> setToTrash(@PathVariable Long articleId) {
         try {
-            ArticleResponse articleResponse = articleService.setToDraft(articleId);
+            ArticleResponse articleResponse = articleService.setToTrash(articleId);
             return new ResponseEntity<>(articleResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/articles/list")
+    public ResponseEntity<List<ArticleResponse>> listArticles(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            List<ArticleResponse> articleResponses = articleService.listArticles(userDetails.getUsername());
+            return new ResponseEntity<>(articleResponses, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
