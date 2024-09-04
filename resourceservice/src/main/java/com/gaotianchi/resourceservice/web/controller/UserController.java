@@ -6,6 +6,8 @@ import com.gaotianchi.resourceservice.service.UserService;
 import com.gaotianchi.resourceservice.web.request.NewUserRequest;
 import com.gaotianchi.resourceservice.web.request.ResetPasswordRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateUserInfoRequest;
+import com.gaotianchi.resourceservice.web.response.ArticleResponse;
+import com.gaotianchi.resourceservice.web.response.SeriesResponse;
 import com.gaotianchi.resourceservice.web.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -91,5 +93,24 @@ public class UserController {
         }
     }
 
+    @GetMapping("/users/list-articles")
+    public ResponseEntity<List<ArticleResponse>> listArticles(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            List<ArticleResponse> articleResponses = userService.listArticles(userDetails.getUsername());
+            return new ResponseEntity<>(articleResponses, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/users/list-series")
+    public ResponseEntity<List<SeriesResponse>> listSeries(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            List<SeriesResponse> seriesResponses = userService.listSeries(userDetails.getUsername());
+            return new ResponseEntity<>(seriesResponses, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

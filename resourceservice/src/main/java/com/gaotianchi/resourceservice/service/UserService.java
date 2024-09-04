@@ -8,6 +8,8 @@ import com.gaotianchi.resourceservice.persistence.enums.AccountStatus;
 import com.gaotianchi.resourceservice.persistence.enums.RoleType;
 import com.gaotianchi.resourceservice.persistence.repo.RoleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
+import com.gaotianchi.resourceservice.web.response.ArticleResponse;
+import com.gaotianchi.resourceservice.web.response.SeriesResponse;
 import com.gaotianchi.resourceservice.web.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -95,7 +97,15 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
+    public List<ArticleResponse> listArticles(String email) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        return userEntity.getArticleEntities().stream().map(ArticleResponse::new).collect(Collectors.toList());
+    }
 
+    public List<SeriesResponse> listSeries(String email) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        return userEntity.getSeriesEntities().stream().map(seriesEntity -> new SeriesResponse(seriesEntity, true)).collect(Collectors.toList());
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

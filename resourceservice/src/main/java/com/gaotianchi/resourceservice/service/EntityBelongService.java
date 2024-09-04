@@ -24,6 +24,14 @@ public class EntityBelongService {
         return articleEntity;
     }
 
+    public ArticleEntity articleBelongToSeries(Long articleId, Long seriesId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        SeriesEntity seriesEntity = entityFounderService.getSeriesOrNotFound(seriesId);
+        if (!seriesEntity.getArticleEntities().contains(articleEntity))
+            throw new EntityNotFoundException("Series " + articleId);
+        return articleEntity;
+    }
+
     public SeriesEntity seriesBelongToUser(String email, Long seriesId) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         SeriesEntity seriesEntity = entityFounderService.getSeriesOrNotFound(seriesId);

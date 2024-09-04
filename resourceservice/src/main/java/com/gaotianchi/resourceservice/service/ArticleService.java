@@ -105,7 +105,11 @@ public class ArticleService {
         return new ArticleResponse(articleEntity, true);
     }
 
-
+    public void removeSeries(String email, Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
+        articleEntity.setSeriesEntity(null);
+        articleRepo.save(articleEntity);
+    }
 
     public ArticleEntity getArticleOrNotFound(Long articleId) throws ArticleNotFoundException {
         Optional<ArticleEntity> article = articleRepo.findById(articleId);
@@ -144,12 +148,6 @@ public class ArticleService {
         articleEntity.setSeriesEntity(seriesEntity);
         articleRepo.save(articleEntity);
         return seriesEntity;
-    }
-
-    public void removeArticleSeries(Long id) throws ArticleNotFoundException {
-        ArticleEntity articleEntity = getArticleOrNotFound(id);
-        articleEntity.setSeriesEntity(null);
-        articleRepo.save(articleEntity);
     }
 
     public ImageEntity getArticleImageOrNotFound(Long id) throws ImageNotFoundException {

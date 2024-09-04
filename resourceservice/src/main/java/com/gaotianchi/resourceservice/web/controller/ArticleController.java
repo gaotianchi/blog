@@ -95,6 +95,16 @@ public class ArticleController {
         }
     }
 
+    @PatchMapping("/articles/remove-series/{articleId}")
+    public ResponseEntity<Void> removeSeries(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
+        try {
+            articleService.removeSeries(userDetails.getUsername(), articleId);
+            return null;
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/articles/{articleId}/comments")
     public ResponseEntity<ArticleCommentsOtd> getArticleComments(@PathVariable Long articleId) {
         try {
@@ -114,15 +124,7 @@ public class ArticleController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @PatchMapping("/articles/{id}/series/remove")
-    public ResponseEntity<Void> removeArticleSeries(@PathVariable Long id) {
-        try {
-            articleService.removeArticleSeries(id);
-            return null;
-        } catch (ArticleNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+
     @PatchMapping("/articles/{articleId}/cover/{coverId}")
     public ResponseEntity<ArticleImageOtd> updateArticleCover(@PathVariable Long articleId, @PathVariable Long coverId) {
         try {
