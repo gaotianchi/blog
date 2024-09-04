@@ -62,9 +62,9 @@ public class SeriesController {
     }
 
     @DeleteMapping("/series/delete/{id}")
-    public ResponseEntity<Void> deleteSeries(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSeries(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         try {
-            seriesService.deleteSeries(id);
+            seriesService.deleteSeries(userDetails.getUsername(), id);
             return null;
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

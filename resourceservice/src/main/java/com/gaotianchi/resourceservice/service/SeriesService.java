@@ -65,8 +65,11 @@ public class SeriesService {
         return seriesEntity.getArticleEntities().stream().map(ArticleResponse::new).collect(Collectors.toList());
     }
 
-    public void deleteSeries(Long id) throws EntityNotFoundException {
-        SeriesEntity seriesEntity = entityFounderService.getSeriesOrNotFound(id);
+    public void deleteSeries(String email, Long seriesId) throws EntityNotFoundException {
+        SeriesEntity seriesEntity = entityFounderService.getSeriesOrNotFound(seriesId);
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        if (!userEntity.getSeriesEntities().contains(seriesEntity))
+            throw new EntityNotFoundException("Series " + seriesId);
         Collection<ArticleEntity> articleEntities = seriesEntity.getArticleEntities();
         for (ArticleEntity articleEntity : articleEntities) {
             articleEntity.setSeriesEntity(null);
