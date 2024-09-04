@@ -1,10 +1,7 @@
 package com.gaotianchi.resourceservice.web.controller;
 
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
-import com.gaotianchi.resourceservice.error.ImageNotFoundException;
-import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.service.ImageService;
-import com.gaotianchi.resourceservice.web.response.ImageOtd;
 import com.gaotianchi.resourceservice.web.response.ImageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,25 +46,15 @@ public class ImageController {
         }
     }
 
-
-    @PostMapping("/images/upload")
-    public ResponseEntity<ImageOtd> uploadImage(@RequestParam("file") MultipartFile file) {
+    @DeleteMapping("/images/delete/{imageId}")
+    public ResponseEntity<Void> deleteImage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long imageId) {
         try {
-            ImageEntity imageEntity = imageService.createImage(file);
-            return new ResponseEntity<>(new ImageOtd(imageEntity), HttpStatus.OK);
+            imageService.deleteImage(userDetails.getUsername(), imageId);
+            return null;
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    @DeleteMapping("/images/delete/{id}")
-    public ResponseEntity<Void> deleteArticleImage(@PathVariable Long id) {
-        try {
-            imageService.deleteImage(id);
-        } catch (ImageNotFoundException | IOException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
-    }
-
 }

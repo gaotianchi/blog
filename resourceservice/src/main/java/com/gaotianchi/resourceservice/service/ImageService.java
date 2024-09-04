@@ -37,15 +37,17 @@ public class ImageService {
     private final StorageProperties storageProperties;
     private final CompressionService compressionService;
     private final EntityFounderService entityFounderService;
+    private final EntityBelongService entityBelongService;
 
     @Autowired
-    public ImageService(ArticleRepo articleRepo, StorageService storageService, ImageRepo imageRepo, StorageProperties storageProperties, CompressionService compressionService, EntityFounderService entityFounderService) {
+    public ImageService(ArticleRepo articleRepo, StorageService storageService, ImageRepo imageRepo, StorageProperties storageProperties, CompressionService compressionService, EntityFounderService entityFounderService, EntityBelongService entityBelongService) {
         this.articleRepo = articleRepo;
         this.storageService = storageService;
         this.imageRepo = imageRepo;
         this.storageProperties = storageProperties;
         this.compressionService = compressionService;
         this.entityFounderService = entityFounderService;
+        this.entityBelongService = entityBelongService;
     }
 
     public ImageResponse newImage(MultipartFile file, String email) throws IOException, EntityNotFoundException {
@@ -64,11 +66,6 @@ public class ImageService {
     }
 
 
-    public ImageEntity createImage(MultipartFile file) throws IOException {
-        ImageEntity imageEntity = saveImage(file);
-        return imageRepo.save(imageEntity);
-    }
-
     public ImageEntity saveImage(MultipartFile file) throws IOException {
         if (file.isEmpty()) throw new FileNotFoundException();
         String fileDirName = generateUniqueFileName();
@@ -85,9 +82,8 @@ public class ImageService {
         return imageEntity;
     }
 
-
-    public void deleteImage(Long imageId) throws ImageNotFoundException, IOException {
-        ImageEntity imageEntity = getArticleImageOrNotFound(imageId);
+    public void deleteImage(String email, Long imageId) throws IOException, EntityNotFoundException {
+        ImageEntity imageEntity = entityBelongService.imageBelongToUser(email, imageId);
         Path fileDirPath = findImageByDirName(imageEntity.getFileDirName());
         deleteImages(fileDirPath, imageEntity.getFileExtension());
         imageRepo.delete(imageEntity);

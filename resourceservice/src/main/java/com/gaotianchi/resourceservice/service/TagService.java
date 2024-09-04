@@ -21,15 +21,13 @@ import java.util.stream.Collectors;
 public class TagService {
     private final ArticleRepo articleRepo;
     private final TagRepo tagRepo;
-    private final ArticleService articleService;
     private final EntityFounderService entityFounderService;
     private final EntityBelongService entityBelongService;
 
     @Autowired
-    public TagService(ArticleRepo articleRepo, TagRepo tagRepo, ArticleService articleService, EntityFounderService entityFounderService, EntityBelongService entityBelongService) {
+    public TagService(ArticleRepo articleRepo, TagRepo tagRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService) {
         this.articleRepo = articleRepo;
         this.tagRepo = tagRepo;
-        this.articleService = articleService;
         this.entityFounderService = entityFounderService;
         this.entityBelongService = entityBelongService;
     }

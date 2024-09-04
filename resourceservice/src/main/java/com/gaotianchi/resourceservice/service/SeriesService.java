@@ -1,38 +1,30 @@
 package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
-import com.gaotianchi.resourceservice.error.ImageNotFoundException;
-import com.gaotianchi.resourceservice.error.SeriesNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
-import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
 import com.gaotianchi.resourceservice.persistence.repo.SeriesRepo;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
-import com.gaotianchi.resourceservice.web.response.SeriesOtd;
 import com.gaotianchi.resourceservice.web.response.SeriesResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class SeriesService {
-    private final ImageRepo imageRepo;
     private final SeriesRepo seriesRepo;
     private final ArticleRepo articleRepo;
     private final EntityFounderService entityFounderService;
 
     @Autowired
-    public SeriesService(ImageRepo imageRepo, SeriesRepo seriesRepo, ArticleRepo articleRepo, EntityFounderService entityFounderService) {
-        this.imageRepo = imageRepo;
+    public SeriesService(SeriesRepo seriesRepo, ArticleRepo articleRepo, EntityFounderService entityFounderService) {
         this.seriesRepo = seriesRepo;
         this.articleRepo = articleRepo;
         this.entityFounderService = entityFounderService;
@@ -76,42 +68,5 @@ public class SeriesService {
         }
         articleRepo.saveAll(articleEntities);
         seriesRepo.delete(seriesEntity);
-    }
-
-    public ImageEntity getArticleImageOrNotFound(Long id) throws ImageNotFoundException {
-        Optional<ImageEntity> articleImageEntity = imageRepo.findById(id);
-        if (articleImageEntity.isEmpty()) throw new ImageNotFoundException();
-        return articleImageEntity.get();
-    }
-
-    public SeriesEntity getSeriesEntityOrNotFound(Long id) throws SeriesNotFoundException {
-        Optional<SeriesEntity> seriesEntity = seriesRepo.findById(id);
-        if (seriesEntity.isEmpty()) throw new SeriesNotFoundException();
-        return seriesEntity.get();
-    }
-
-    public SeriesEntity updateSeriesInfo(Long id, String name) throws SeriesNotFoundException {
-        SeriesEntity seriesEntity = getSeriesEntityOrNotFound(id);
-        seriesEntity.setName(name);
-        return seriesRepo.save(seriesEntity);
-    }
-    public SeriesEntity updateSeriesCover(Long id, Long coverId) throws SeriesNotFoundException, ImageNotFoundException {
-        SeriesEntity seriesEntity = getSeriesEntityOrNotFound(id);
-        ImageEntity imageEntity = getArticleImageOrNotFound(coverId);
-        seriesEntity.setCover(imageEntity);
-        return seriesRepo.save(seriesEntity);
-    }
-
-    public SeriesEntity getSeriesInfo(Long id) throws SeriesNotFoundException {
-        return getSeriesEntityOrNotFound(id);
-    }
-
-
-    public List<SeriesOtd> getAllSeries() {
-        List<SeriesOtd> seriesOtds = new ArrayList<>();
-        for (SeriesEntity seriesEntity : seriesRepo.findAll()) {
-            seriesOtds.add(new SeriesOtd(seriesEntity));
-        }
-        return seriesOtds;
     }
 }
