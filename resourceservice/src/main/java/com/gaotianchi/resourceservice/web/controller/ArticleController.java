@@ -6,7 +6,6 @@ import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.persistence.entity.TagEntity;
 import com.gaotianchi.resourceservice.service.ArticleService;
-import com.gaotianchi.resourceservice.web.request.DraftDto;
 import com.gaotianchi.resourceservice.web.request.UpdateContentDto;
 import com.gaotianchi.resourceservice.web.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,67 +36,37 @@ public class ArticleController {
         }
     }
 
-    @PostMapping("/articles/draft")
-    public ResponseEntity<ArticleOtd> createNewDraft(@RequestBody DraftDto draftDto) {
-        try {
-            ArticleEntity articleEntity = articleService.createNewDraft(draftDto.getUserId());
-            return new ResponseEntity<>(articleService.getArticleOtd(articleEntity), HttpStatus.CREATED);
-        } catch (UserNotFoundException e) {
-            return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @PatchMapping("/articles/trash/{articleId}")
-    public ResponseEntity<ArticleOtd> throwInTrashCan(@PathVariable Long articleId) {
-        try {
-            ArticleEntity articleEntity = articleService.throwInTrashCan(articleId);
-            return new ResponseEntity<>(articleService.getArticleOtd(articleEntity), HttpStatus.OK);
-        } catch (ArticleNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @DeleteMapping("/articles/delete/{articleId}")
-    public ResponseEntity<Void> deleteTrash(@PathVariable Long articleId) {
-        try {
-            articleService.deleteTrash(articleId);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (ArticleNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (UnExpectedStatusException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     @PatchMapping("/articles/publish/{articleId}")
-    public ResponseEntity<ArticleOtd> publishDraft(@PathVariable Long articleId) {
+    public ResponseEntity<ArticleResponse> publishArticle(@PathVariable Long articleId) {
         try {
-            ArticleEntity articleEntity = articleService.publishDraft(articleId);
-            return new ResponseEntity<>(articleService.getArticleOtd(articleEntity), HttpStatus.OK);
-        } catch (ArticleNotFoundException e) {
+            ArticleResponse articleResponse = articleService.publishArticle(articleId);
+            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (UnExpectedStatusException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PatchMapping("/articles/draft/{articleId}")
-    public ResponseEntity<ArticleOtd> convertToDraft(@PathVariable Long articleId) {
+    public ResponseEntity<ArticleResponse> setToDraft(@PathVariable Long articleId) {
         try {
-            ArticleEntity articleEntity = articleService.convertToDraft(articleId);
-            return new ResponseEntity<>(articleService.getArticleOtd(articleEntity), HttpStatus.OK);
-        } catch (ArticleNotFoundException e) {
+            ArticleResponse articleResponse = articleService.setToDraft(articleId);
+            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (UnExpectedStatusException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PatchMapping("/articles/trash/{articleId}")
+    public ResponseEntity<ArticleResponse> setToTrash(@PathVariable Long articleId) {
+        try {
+            ArticleResponse articleResponse = articleService.setToDraft(articleId);
+            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
     @PatchMapping("/articles/content/{articleId}")
     public ResponseEntity<ArticleOtd> updateArticleContent(@PathVariable Long articleId, @RequestBody UpdateContentDto updateContentDto) {
         try {

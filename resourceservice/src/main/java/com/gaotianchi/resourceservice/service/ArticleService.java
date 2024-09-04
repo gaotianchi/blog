@@ -49,6 +49,27 @@ public class ArticleService {
         return new ArticleResponse(articleEntity);
     }
 
+    public ArticleResponse publishArticle(Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        articleEntity.setArticleStatus(ArticleStatus.PUBLISHED);
+        articleEntity = articleRepo.save(articleEntity);
+        return new ArticleResponse(articleEntity);
+    }
+
+    public ArticleResponse setToDraft(Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        articleEntity.setArticleStatus(ArticleStatus.DRAFT);
+        articleEntity = articleRepo.save(articleEntity);
+        return new ArticleResponse(articleEntity);
+    }
+
+    public ArticleResponse setToTrash(Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        articleEntity.setArticleStatus(ArticleStatus.TRASH);
+        articleEntity = articleRepo.save(articleEntity);
+        return new ArticleResponse(articleEntity);
+    }
+
     public ArticleEntity createNewDraft(Long userId) throws UserNotFoundException {
         Optional<UserEntity> author = userRepo.findById(userId);
         if (author.isEmpty()) throw new UserNotFoundException();
