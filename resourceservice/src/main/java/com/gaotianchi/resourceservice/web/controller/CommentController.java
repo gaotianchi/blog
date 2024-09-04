@@ -1,14 +1,10 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.error.CommentNotFoundException;
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
-import com.gaotianchi.resourceservice.persistence.entity.CommentEntity;
 import com.gaotianchi.resourceservice.service.CommentService;
 import com.gaotianchi.resourceservice.web.request.NewCommentRequest;
-import com.gaotianchi.resourceservice.web.request.UpdateCommentDto;
-import com.gaotianchi.resourceservice.web.response.CommentOtd;
+import com.gaotianchi.resourceservice.web.request.UpdateCommentRequest;
 import com.gaotianchi.resourceservice.web.response.CommentResponse;
-import com.gaotianchi.resourceservice.web.response.CommentWithRepliesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,29 +45,21 @@ public class CommentController {
     }
 
     @DeleteMapping("/comments/delete/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         try {
-            commentService.deleteComment(id);
+            commentService.deleteComment(userDetails.getUsername(), id);
             return null;
-        } catch (CommentNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     @PatchMapping("/comments/update/{id}")
-    public ResponseEntity<CommentOtd> updateComment(@PathVariable Long id, @RequestBody UpdateCommentDto updateCommentDto) {
+    public ResponseEntity<CommentResponse> updateComment(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, @RequestBody UpdateCommentRequest updateCommentRequest) {
         try {
-            CommentEntity commentEntity = commentService.updateCommentContent(id, updateCommentDto.getBody());
-            return new ResponseEntity<>(commentService.getCommentOtd(commentEntity), HttpStatus.OK);
-        } catch (CommentNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-    @GetMapping("/comments/{id}")
-    public ResponseEntity<CommentWithRepliesOtd> getComment(@PathVariable Long id) {
-        try {
-            CommentWithRepliesOtd commentWithRepliesOtd = commentService.getCommentWithReplies(id);
-            return new ResponseEntity<>(commentWithRepliesOtd, HttpStatus.OK);
-        } catch (CommentNotFoundException e) {
+            CommentResponse commentResponse = commentService.updateCommentContent(userDetails.getUsername(), id, updateCommentRequest.getBody());
+            return new ResponseEntity<>(commentResponse, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

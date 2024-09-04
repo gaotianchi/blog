@@ -1,9 +1,7 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
 import com.gaotianchi.resourceservice.error.CommentNotFoundException;
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
-import com.gaotianchi.resourceservice.error.UserNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.CommentEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
@@ -11,7 +9,6 @@ import com.gaotianchi.resourceservice.persistence.enums.CommentStatus;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.CommentRepo;
 import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
-import com.gaotianchi.resourceservice.web.response.CommentOtd;
 import com.gaotianchi.resourceservice.web.response.CommentResponse;
 import com.gaotianchi.resourceservice.web.response.CommentWithRepliesOtd;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +24,16 @@ public class CommentService {
     private final CommentRepo commentRepo;
     private final CommentCacheService commentCacheService;
     private final EntityFounderService entityFounderService;
+    private final EntityBelongService entityBelongService;
 
     @Autowired
-    public CommentService(UserRepo userRepo, ArticleRepo articleRepo, CommentRepo commentRepo, CommentCacheService commentCacheService, EntityFounderService entityFounderService) {
+    public CommentService(UserRepo userRepo, ArticleRepo articleRepo, CommentRepo commentRepo, CommentCacheService commentCacheService, EntityFounderService entityFounderService, EntityBelongService entityBelongService) {
         this.userRepo = userRepo;
         this.articleRepo = articleRepo;
         this.commentRepo = commentRepo;
         this.commentCacheService = commentCacheService;
         this.entityFounderService = entityFounderService;
+        this.entityBelongService = entityBelongService;
     }
 
     public CommentResponse newComment(String email, String body, Long articleId, Optional<Long> parentCommentId) throws EntityNotFoundException {
@@ -61,25 +60,19 @@ public class CommentService {
     }
 
 
-    public void deleteComment(Long id) throws CommentNotFoundException {
-        CommentEntity commentEntity = getCommentOrNotFound(id);
+    public void deleteComment(String email, Long id) throws EntityNotFoundException {
+        CommentEntity commentEntity = entityBelongService.commentBelongToUser(email, id);
         commentEntity.setCommentStatus(CommentStatus.DELETED);
         commentEntity.setBody(null);
         commentRepo.save(commentEntity);
     }
 
-    public CommentEntity updateCommentContent(Long id, String body) throws CommentNotFoundException {
-        CommentEntity commentEntity = getCommentOrNotFound(id);
+    public CommentResponse updateCommentContent(String email, Long id, String body) throws EntityNotFoundException {
+        CommentEntity commentEntity = entityBelongService.commentBelongToUser(email, id);
         commentEntity.setBody(body);
         commentEntity.setLastUpdatedDatetime(OffsetDateTime.now());
-        return commentRepo.save(commentEntity);
-    }
-
-    public CommentOtd getCommentOtd(CommentEntity commentEntity) {
-        CommentOtd commentOtd = new CommentOtd(commentEntity);
-        commentOtd.setLike(commentCacheService.getNumberOfCommentLike(commentEntity.getId()));
-        commentOtd.setDislike(commentCacheService.getNumberOfCommentDislike(commentEntity.getId()));
-        return commentOtd;
+        commentEntity = commentRepo.save(commentEntity);
+        return new CommentResponse(commentEntity);
     }
 
     public void setCommentLikeAndDislikeNumber(CommentWithRepliesOtd commentWithRepliesOtd) {
@@ -92,33 +85,9 @@ public class CommentService {
         }
     }
 
-    public CommentWithRepliesOtd getCommentWithReplies(Long id) throws CommentNotFoundException {
-        CommentEntity commentEntity = getCommentOrNotFound(id);
-        CommentWithRepliesOtd commentWithRepliesOtd = new CommentWithRepliesOtd(commentEntity);
-        setCommentLikeAndDislikeNumber(commentWithRepliesOtd);
-        return commentWithRepliesOtd;
-    }
     public CommentWithRepliesOtd getCommentWithReplies(CommentEntity commentEntity) throws CommentNotFoundException {
         CommentWithRepliesOtd commentWithRepliesOtd = new CommentWithRepliesOtd(commentEntity);
         setCommentLikeAndDislikeNumber(commentWithRepliesOtd);
         return commentWithRepliesOtd;
-    }
-
-    public UserEntity getUserOrNotFound(Long id) throws UserNotFoundException {
-        Optional<UserEntity> userEntity = userRepo.findById(id);
-        if (userEntity.isEmpty()) throw new UserNotFoundException();
-        return userEntity.get();
-    }
-
-    public ArticleEntity getArticleOrNotFound(Long id) throws ArticleNotFoundException {
-        Optional<ArticleEntity> articleEntity = articleRepo.findById(id);
-        if (articleEntity.isEmpty()) throw new ArticleNotFoundException();
-        return articleEntity.get();
-    }
-
-    public CommentEntity getCommentOrNotFound(Long id) throws CommentNotFoundException {
-        Optional<CommentEntity> commentEntity = commentRepo.findById(id);
-        if (commentEntity.isEmpty()) throw new CommentNotFoundException();
-        return commentEntity.get();
     }
 }

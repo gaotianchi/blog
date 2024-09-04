@@ -1,6 +1,9 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.error.*;
+import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
+import com.gaotianchi.resourceservice.error.EntityNotFoundException;
+import com.gaotianchi.resourceservice.error.ImageNotFoundException;
+import com.gaotianchi.resourceservice.error.SeriesNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
 import com.gaotianchi.resourceservice.service.ArticleService;
@@ -165,16 +168,6 @@ public class ArticleController {
         }
     }
 
-
-    @GetMapping("/articles/{articleId}/comments")
-    public ResponseEntity<ArticleCommentsOtd> getArticleComments(@PathVariable Long articleId) {
-        try {
-            ArticleCommentsOtd articleCommentsOtd = articleService.getArticleCommentsOtd(articleId);
-            return new ResponseEntity<>(articleCommentsOtd, HttpStatus.OK);
-        } catch (ArticleNotFoundException | CommentNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 
     @PatchMapping("/articles/{articleId}/series/{seriesId}")
     public ResponseEntity<SeriesOtd> updateArticleSeries(@PathVariable Long articleId, @PathVariable Long seriesId) {

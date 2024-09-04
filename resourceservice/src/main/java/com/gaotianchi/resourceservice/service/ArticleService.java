@@ -1,10 +1,15 @@
 package com.gaotianchi.resourceservice.service;
 
-import com.gaotianchi.resourceservice.error.*;
+import com.gaotianchi.resourceservice.error.ArticleNotFoundException;
+import com.gaotianchi.resourceservice.error.EntityNotFoundException;
+import com.gaotianchi.resourceservice.error.ImageNotFoundException;
+import com.gaotianchi.resourceservice.error.SeriesNotFoundException;
 import com.gaotianchi.resourceservice.persistence.entity.*;
 import com.gaotianchi.resourceservice.persistence.enums.ArticleStatus;
 import com.gaotianchi.resourceservice.persistence.repo.*;
-import com.gaotianchi.resourceservice.web.response.*;
+import com.gaotianchi.resourceservice.web.response.ArticleResponse;
+import com.gaotianchi.resourceservice.web.response.CommentResponse;
+import com.gaotianchi.resourceservice.web.response.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -180,23 +185,6 @@ public class ArticleService {
     }
 
 
-    public ArticleCommentsOtd getArticleCommentsOtd(Long id) throws CommentNotFoundException, ArticleNotFoundException {
-        ArticleEntity articleEntity = getArticleOrNotFound(id);
-        ArticleCommentsOtd articleCommentsOtd = new ArticleCommentsOtd();
-        List<CommentWithRepliesOtd> commentWithRepliesOtds = new ArrayList<>();
-        if (articleEntity.getCommentEntities().isEmpty()) {
-            articleCommentsOtd.setCommentWithRepliesOtds(commentWithRepliesOtds);
-            return articleCommentsOtd;
-        }
-        for (CommentEntity commentEntity : articleEntity.getCommentEntities()) {
-            if (commentEntity.getParentComment() == null) {
-                CommentWithRepliesOtd commentWithRepliesOtd = commentService.getCommentWithReplies(commentEntity);
-                commentWithRepliesOtds.add(commentWithRepliesOtd);
-            }
-        }
-        articleCommentsOtd.setCommentWithRepliesOtds(commentWithRepliesOtds);
-        return articleCommentsOtd;
-    }
 
     public SeriesEntity getSeriesOrNotFound(Long id) throws SeriesNotFoundException {
         Optional<SeriesEntity> seriesEntity = seriesRepo.findById(id);
@@ -218,25 +206,11 @@ public class ArticleService {
         return articleImageEntity.get();
     }
 
-
     public ImageEntity updateArticleCover(Long articleId, Long coverId) throws ArticleNotFoundException, ImageNotFoundException {
         ArticleEntity articleEntity = getArticleOrNotFound(articleId);
         ImageEntity imageEntity = getArticleImageOrNotFound(coverId);
         articleEntity.setCover(imageEntity);
         articleRepo.save(articleEntity);
         return imageEntity;
-    }
-    public TagEntity getTagOrNotFound(Long id) throws TagNotFoundException {
-        Optional<TagEntity> tagEntity = tagRepo.findById(id);
-        if (tagEntity.isEmpty()) throw new TagNotFoundException();
-        return tagEntity.get();
-    }
-
-
-    public ArticleOtd getArticleOtd(ArticleEntity articleEntity) {
-        ArticleOtd articleOtd = new ArticleOtd(articleEntity);
-        articleOtd.setLike(articleCacheService.getNumberOfArticleLike(articleEntity.getId()));
-        articleOtd.setDislike(articleCacheService.getNumberOfArticleDislike(articleEntity.getId()));
-        return articleOtd;
     }
 }

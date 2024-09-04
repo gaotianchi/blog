@@ -1,10 +1,7 @@
 package com.gaotianchi.resourceservice.service;
 
 import com.gaotianchi.resourceservice.error.EntityNotFoundException;
-import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
-import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
-import com.gaotianchi.resourceservice.persistence.entity.SeriesEntity;
-import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
+import com.gaotianchi.resourceservice.persistence.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +28,14 @@ public class EntityBelongService {
         if (!userEntity.getImageEntities().contains(imageEntity))
             throw new EntityNotFoundException("Image " + coverId);
         return imageEntity;
+    }
+
+    public CommentEntity commentBelongToUser(String email, Long commentId) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+        CommentEntity commentEntity = entityFounderService.getCommentOrNotFound(commentId);
+        if (!userEntity.getCommentEntities().contains(commentEntity))
+            throw new EntityNotFoundException("Comment " + commentId);
+        return commentEntity;
     }
 
     public ArticleEntity articleBelongToSeries(Long articleId, Long seriesId) throws EntityNotFoundException {
