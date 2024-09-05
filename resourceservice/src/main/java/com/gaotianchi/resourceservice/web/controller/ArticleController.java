@@ -3,10 +3,7 @@ package com.gaotianchi.resourceservice.web.controller;
 import com.gaotianchi.resourceservice.service.ArticleService;
 import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.request.UpdateArticleContentRequest;
-import com.gaotianchi.resourceservice.web.response.ArticleResponse;
-import com.gaotianchi.resourceservice.web.response.CommentResponse;
-import com.gaotianchi.resourceservice.web.response.ImageResponse;
-import com.gaotianchi.resourceservice.web.response.TagResponse;
+import com.gaotianchi.resourceservice.web.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,19 +33,15 @@ public class ArticleController {
     }
 
     @PatchMapping("/articles/publish/{articleId}")
-    public ResponseEntity<ArticleResponse> publishArticle(@PathVariable Long articleId) {
-        try {
-            ArticleResponse articleResponse = articleService.publishArticle(articleId);
-            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<ArticleResponse> publishArticle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
+        ArticleResponse articleResponse = articleService.publishArticle(userDetails.getUsername(), articleId);
+        return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/draft/{articleId}")
-    public ResponseEntity<ArticleResponse> setToDraft(@PathVariable Long articleId) {
+    public ResponseEntity<ArticleResponse> setToDraft(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
         try {
-            ArticleResponse articleResponse = articleService.setToDraft(articleId);
+            ArticleResponse articleResponse = articleService.setToDraft(userDetails.getUsername(), articleId);
             return new ResponseEntity<>(articleResponse, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -56,9 +49,9 @@ public class ArticleController {
     }
 
     @PatchMapping("/articles/trash/{articleId}")
-    public ResponseEntity<ArticleResponse> setToTrash(@PathVariable Long articleId) {
+    public ResponseEntity<ArticleResponse> setToTrash(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
         try {
-            ArticleResponse articleResponse = articleService.setToTrash(articleId);
+            ArticleResponse articleResponse = articleService.setToTrash(userDetails.getUsername(), articleId);
             return new ResponseEntity<>(articleResponse, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

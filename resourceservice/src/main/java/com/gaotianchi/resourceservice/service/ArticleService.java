@@ -51,23 +51,23 @@ public class ArticleService {
         return new ArticleResponse(articleEntity);
     }
 
-    public ArticleResponse publishArticle(Long articleId) throws EntityNotFoundException {
-        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+    public ArticleResponse publishArticle(String email, Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         articleEntity.setArticleStatus(ArticleStatus.PUBLISHED);
         articleEntity.setPublishDatetime(OffsetDateTime.now());
         articleEntity = articleRepo.save(articleEntity);
         return new ArticleResponse(articleEntity);
     }
 
-    public ArticleResponse setToDraft(Long articleId) throws EntityNotFoundException {
-        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+    public ArticleResponse setToDraft(String email, Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         articleEntity.setArticleStatus(ArticleStatus.DRAFT);
         articleEntity = articleRepo.save(articleEntity);
         return new ArticleResponse(articleEntity);
     }
 
-    public ArticleResponse setToTrash(Long articleId) throws EntityNotFoundException {
-        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+    public ArticleResponse setToTrash(String email, Long articleId) throws EntityNotFoundException {
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         articleEntity.setArticleStatus(ArticleStatus.TRASH);
         articleEntity = articleRepo.save(articleEntity);
         return new ArticleResponse(articleEntity);
@@ -82,10 +82,7 @@ public class ArticleService {
     }
 
     public ArticleResponse updateContent(String email, Long articleId, String title, String body, String summary, String slug) throws EntityNotFoundException {
-        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
-        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
-        if (!userEntity.getArticleEntities().contains(articleEntity))
-            throw new EntityNotFoundException("Article " + articleId);
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         articleEntity.setTitle(title);
         articleEntity.setSlug(slug);
         articleEntity.setBody(body);
