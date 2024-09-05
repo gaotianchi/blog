@@ -1,12 +1,9 @@
 package com.gaotianchi.resourceservice.web.controller;
 
 import com.gaotianchi.resourceservice.service.ArticleService;
-import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.request.UpdateArticleContentRequest;
 import com.gaotianchi.resourceservice.web.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +20,9 @@ public class ArticleController {
     }
 
     @PostMapping("/articles/new")
-    public ResponseEntity<ArticleResponse> newArticle(@AuthenticationPrincipal UserDetails userDetails) {
-        try {
-            ArticleResponse articleResponse = articleService.newArticle(userDetails.getUsername());
-            return new ResponseEntity<>(articleResponse, HttpStatus.CREATED);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<ArticleResponse> newArticle(@AuthenticationPrincipal UserDetails userDetails) {
+        ArticleResponse articleResponse = articleService.newArticle(userDetails.getUsername());
+        return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/publish/{articleId}")
@@ -39,153 +32,92 @@ public class ArticleController {
     }
 
     @PatchMapping("/articles/draft/{articleId}")
-    public ResponseEntity<ArticleResponse> setToDraft(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
-        try {
-            ArticleResponse articleResponse = articleService.setToDraft(userDetails.getUsername(), articleId);
-            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<ArticleResponse> setToDraft(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
+        ArticleResponse articleResponse = articleService.setToDraft(userDetails.getUsername(), articleId);
+        return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/trash/{articleId}")
-    public ResponseEntity<ArticleResponse> setToTrash(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
-        try {
-            ArticleResponse articleResponse = articleService.setToTrash(userDetails.getUsername(), articleId);
-            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<ArticleResponse> setToTrash(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
+        ArticleResponse articleResponse = articleService.setToTrash(userDetails.getUsername(), articleId);
+        return APIResponse.success(articleResponse);
     }
 
     @GetMapping("/articles/list")
-    public ResponseEntity<List<ArticleResponse>> listArticles(@AuthenticationPrincipal UserDetails userDetails) {
-        try {
-            List<ArticleResponse> articleResponses = articleService.listArticles(userDetails.getUsername());
-            return new ResponseEntity<>(articleResponses, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<List<ArticleResponse>> listArticles(@AuthenticationPrincipal UserDetails userDetails) {
+        List<ArticleResponse> articleResponses = articleService.listArticles(userDetails.getUsername());
+        return APIResponse.success(articleResponses);
     }
 
     @PatchMapping("/articles/update-content/{articleId}")
-    public ResponseEntity<ArticleResponse> updateContent(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
-        try {
-            ArticleResponse articleResponse = articleService.updateContent(userDetails.getUsername(), articleId, updateArticleContentRequest.getTitle(), updateArticleContentRequest.getBody(), updateArticleContentRequest.getSummary(), updateArticleContentRequest.getSlug());
-            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<ArticleResponse> updateContent(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
+        ArticleResponse articleResponse = articleService.updateContent(userDetails.getUsername(), articleId, updateArticleContentRequest.getTitle(), updateArticleContentRequest.getBody(), updateArticleContentRequest.getSummary(), updateArticleContentRequest.getSlug());
+        return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/set-series/{articleId}/{seriesId}")
-    public ResponseEntity<ArticleResponse> setSeries(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long seriesId) {
-        try {
-            ArticleResponse articleResponse = articleService.setSeries(userDetails.getUsername(), articleId, seriesId);
-            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<ArticleResponse> setSeries(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long seriesId) {
+        ArticleResponse articleResponse = articleService.setSeries(userDetails.getUsername(), articleId, seriesId);
+        return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/remove-series/{articleId}")
-    public ResponseEntity<Void> removeSeries(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
-        try {
-            articleService.removeSeries(userDetails.getUsername(), articleId);
-            return null;
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<Void> removeSeries(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
+        articleService.removeSeries(userDetails.getUsername(), articleId);
+        return APIResponse.success();
     }
 
     @PatchMapping("/articles/set-cover/{articleId}/{coverId}")
-    public ResponseEntity<ArticleResponse> setCover(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long coverId) {
-        try {
-            ArticleResponse articleResponse = articleService.setCover(userDetails.getUsername(), articleId, coverId);
-            return new ResponseEntity<>(articleResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<ArticleResponse> setCover(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long coverId) {
+        ArticleResponse articleResponse = articleService.setCover(userDetails.getUsername(), articleId, coverId);
+        return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/remove-cover/{articleId}")
-    public ResponseEntity<Void> removeCover(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
-        try {
-            articleService.removeCover(userDetails.getUsername(), articleId);
-            return null;
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<Void> removeCover(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
+        articleService.removeCover(userDetails.getUsername(), articleId);
+        return APIResponse.success();
     }
 
-
     @PatchMapping("/articles/add-tag/{articleId}/{tagId}")
-    public ResponseEntity<TagResponse> addArticleTag(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long tagId) {
-        try {
-            TagResponse tagResponse = articleService.addTag(userDetails.getUsername(), articleId, tagId);
-            return new ResponseEntity<>(tagResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<TagResponse> addArticleTag(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long tagId) {
+        TagResponse tagResponse = articleService.addTag(userDetails.getUsername(), articleId, tagId);
+        return APIResponse.success(tagResponse);
     }
 
     @PatchMapping("/articles/remove-tag/{articleId}/{tagId}")
-    public ResponseEntity<Void> removeArticleTag(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long tagId) {
-        try {
-            articleService.removeTag(userDetails.getUsername(), tagId, articleId);
-            return null;
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<Void> removeArticleTag(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long tagId) {
+        articleService.removeTag(userDetails.getUsername(), tagId, articleId);
+        return APIResponse.success();
     }
 
     @GetMapping("/articles/list-tags/{id}")
-    public ResponseEntity<List<TagResponse>> getArticleTags(@PathVariable Long id) {
-        try {
-            List<TagResponse> tagResponses = articleService.listTags(id);
-            return new ResponseEntity<>(tagResponses, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<List<TagResponse>> getArticleTags(@PathVariable Long id) {
+        List<TagResponse> tagResponses = articleService.listTags(id);
+        return APIResponse.success(tagResponses);
     }
 
     @GetMapping("/articles/list-comment-trees/{articleId}")
-    public ResponseEntity<List<CommentResponse>> listCommentTrees(@PathVariable Long articleId) {
-        try {
-            List<CommentResponse> commentResponses = articleService.listArticleComments(articleId);
-            return new ResponseEntity<>(commentResponses, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<List<CommentResponse>> listCommentTrees(@PathVariable Long articleId) {
+        List<CommentResponse> commentResponses = articleService.listArticleComments(articleId);
+        return APIResponse.success(commentResponses);
     }
 
     @PatchMapping("/articles/add-image/{articleId}/{imageId}")
-    public ResponseEntity<ImageResponse> addImage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long imageId) {
-        try {
-            ImageResponse imageResponse = articleService.addArticleImage(userDetails.getUsername(), articleId, imageId);
-            return new ResponseEntity<>(imageResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<ImageResponse> addImage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long imageId) {
+        ImageResponse imageResponse = articleService.addArticleImage(userDetails.getUsername(), articleId, imageId);
+        return APIResponse.success(imageResponse);
     }
 
     @PatchMapping("/articles/remove-image/{articleId}/{imageId}")
-    public ResponseEntity<ImageResponse> removeImage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long imageId) {
-        try {
-            articleService.removeArticleImage(userDetails.getUsername(), articleId, imageId);
-            return null;
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<ImageResponse> removeImage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long imageId) {
+        articleService.removeArticleImage(userDetails.getUsername(), articleId, imageId);
+        return APIResponse.success();
     }
 
     @GetMapping("/articles/list-images/{articleId}")
-    public ResponseEntity<List<ImageResponse>> addImage(@PathVariable Long articleId) {
-        try {
-            List<ImageResponse> imageResponses = articleService.listArticleImages(articleId);
-            return new ResponseEntity<>(imageResponses, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<List<ImageResponse>> addImage(@PathVariable Long articleId) {
+        List<ImageResponse> imageResponses = articleService.listArticleImages(articleId);
+        return APIResponse.success(imageResponses);
     }
 }

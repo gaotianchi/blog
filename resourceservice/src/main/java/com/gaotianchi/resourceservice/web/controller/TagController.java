@@ -1,14 +1,11 @@
 package com.gaotianchi.resourceservice.web.controller;
 
 import com.gaotianchi.resourceservice.service.TagService;
-import com.gaotianchi.resourceservice.web.error.EntityAlreadyExistException;
-import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.request.NewTagRequest;
+import com.gaotianchi.resourceservice.web.response.APIResponse;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,42 +21,26 @@ public class TagController {
     }
 
     @PostMapping("/tags/new")
-    public ResponseEntity<TagResponse> newTag(@RequestBody NewTagRequest newTagRequest) {
-        try {
-            TagResponse tagResponse = tagService.newTag(newTagRequest.getName());
-            return new ResponseEntity<>(tagResponse, HttpStatus.OK);
-        } catch (EntityAlreadyExistException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<TagResponse> newTag(@RequestBody NewTagRequest newTagRequest) {
+        TagResponse tagResponse = tagService.newTag(newTagRequest.getName());
+        return APIResponse.success(tagResponse);
     }
 
     @GetMapping("/tags/list")
-    public ResponseEntity<List<TagResponse>> listTags() {
-        try {
-            List<TagResponse> tagResponses = tagService.listTags();
-            return new ResponseEntity<>(tagResponses, HttpStatus.OK);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public APIResponse<List<TagResponse>> listTags() {
+        List<TagResponse> tagResponses = tagService.listTags();
+        return APIResponse.success(tagResponses);
     }
 
     @DeleteMapping("/tags/delete/{id}")
-    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
-        try {
-            tagService.deleteTag(id);
-            return null;
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<Void> deleteTag(@PathVariable Long id) {
+        tagService.deleteTag(id);
+        return APIResponse.success();
     }
 
     @GetMapping("/tags/list-articles/{id}")
-    public ResponseEntity<List<ArticleResponse>> listArticles(@PathVariable Long id) {
-        try {
-            List<ArticleResponse> articleResponses = tagService.listArticles(id);
-            return new ResponseEntity<>(articleResponses, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<List<ArticleResponse>> listArticles(@PathVariable Long id) {
+        List<ArticleResponse> articleResponses = tagService.listArticles(id);
+        return APIResponse.success(articleResponses);
     }
 }

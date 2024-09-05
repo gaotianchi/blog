@@ -1,17 +1,14 @@
 package com.gaotianchi.resourceservice.web.controller;
 
 import com.gaotianchi.resourceservice.service.UserService;
-import com.gaotianchi.resourceservice.web.error.EntityAlreadyExistException;
-import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.request.NewUserRequest;
 import com.gaotianchi.resourceservice.web.request.ResetPasswordRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateUserInfoRequest;
+import com.gaotianchi.resourceservice.web.response.APIResponse;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.SeriesResponse;
 import com.gaotianchi.resourceservice.web.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -28,89 +25,56 @@ public class UserController {
     }
 
     @PostMapping("/users/new")
-    public ResponseEntity<UserResponse> newUser(@RequestBody NewUserRequest newUserRequest) {
-        try {
-            UserResponse userResponse = userService.newUser(newUserRequest.getPenName(), newUserRequest.getEmail(), newUserRequest.getPassword());
-            return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
-        } catch (EntityAlreadyExistException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+    public APIResponse<UserResponse> newUser(@RequestBody NewUserRequest newUserRequest) {
+        UserResponse userResponse = userService.newUser(newUserRequest.getPenName(), newUserRequest.getEmail(), newUserRequest.getPassword());
+        return APIResponse.success(userResponse);
     }
 
     @GetMapping("/blogger/list-users")
-    public ResponseEntity<List<UserResponse>> listUsers() {
+    public APIResponse<List<UserResponse>> listUsers() {
         List<UserResponse> userResponses = userService.listUsers();
-        return new ResponseEntity<>(userResponses, HttpStatus.OK);
+        return APIResponse.success(userResponses);
     }
 
     @PatchMapping("/users/deregister")
-    public ResponseEntity<UserResponse> deregister(@AuthenticationPrincipal UserDetails userDetails) {
-        try {
-            UserResponse userResponse = userService.deregister(userDetails.getUsername());
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<UserResponse> deregister(@AuthenticationPrincipal UserDetails userDetails) {
+        UserResponse userResponse = userService.deregister(userDetails.getUsername());
+        return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/blogger/lock/{userId}")
-    public ResponseEntity<UserResponse> lockUser(@PathVariable Long userId) {
-        try {
-            UserResponse userResponse = userService.lockUser(userId);
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<UserResponse> lockUser(@PathVariable Long userId) {
+        UserResponse userResponse = userService.lockUser(userId);
+        return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/set-avatar/{imageId}")
-    public ResponseEntity<UserResponse> setAvtar(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long imageId) {
-        try {
-            UserResponse userResponse = userService.setAvatar(userDetails.getUsername(), imageId);
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<UserResponse> setAvatar(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long imageId) {
+        UserResponse userResponse = userService.setAvatar(userDetails.getUsername(), imageId);
+        return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/update-info")
-    public ResponseEntity<UserResponse> updateInfo(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
-        try {
-            UserResponse userResponse = userService.updateUserInfo(userDetails.getUsername(), updateUserInfoRequest.getPenName());
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<UserResponse> updateInfo(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
+        UserResponse userResponse = userService.updateUserInfo(userDetails.getUsername(), updateUserInfoRequest.getPenName());
+        return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/reset-password")
-    public ResponseEntity<UserResponse> resetPassword(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ResetPasswordRequest resetPasswordRequest) {
-        try {
-            UserResponse userResponse = userService.resetPassword(userDetails.getUsername(), resetPasswordRequest.getNewPassword());
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<UserResponse> resetPassword(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        UserResponse userResponse = userService.resetPassword(userDetails.getUsername(), resetPasswordRequest.getNewPassword());
+        return APIResponse.success(userResponse);
     }
 
     @GetMapping("/users/list-articles")
-    public ResponseEntity<List<ArticleResponse>> listArticles(@AuthenticationPrincipal UserDetails userDetails) {
-        try {
-            List<ArticleResponse> articleResponses = userService.listArticles(userDetails.getUsername());
-            return new ResponseEntity<>(articleResponses, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<List<ArticleResponse>> listArticles(@AuthenticationPrincipal UserDetails userDetails) {
+        List<ArticleResponse> articleResponses = userService.listArticles(userDetails.getUsername());
+        return APIResponse.success(articleResponses);
     }
 
     @GetMapping("/users/list-series")
-    public ResponseEntity<List<SeriesResponse>> listSeries(@AuthenticationPrincipal UserDetails userDetails) {
-        try {
-            List<SeriesResponse> seriesResponses = userService.listSeries(userDetails.getUsername());
-            return new ResponseEntity<>(seriesResponses, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<List<SeriesResponse>> listSeries(@AuthenticationPrincipal UserDetails userDetails) {
+        List<SeriesResponse> seriesResponses = userService.listSeries(userDetails.getUsername());
+        return APIResponse.success(seriesResponses);
     }
-
 }
