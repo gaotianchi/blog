@@ -27,7 +27,7 @@ logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        security: debug
 storage:
   root-location: "src/main/resources/static"
   article-image-uri: "uploads/articleImage"
