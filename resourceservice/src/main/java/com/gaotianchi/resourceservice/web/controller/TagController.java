@@ -1,22 +1,18 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.entity.TagEntity;
-import com.gaotianchi.resourceservice.service.TagService;
-import com.gaotianchi.resourceservice.web.dto.TagDto;
-import com.gaotianchi.resourceservice.web.error.ArticleNotFoundException;
-import com.gaotianchi.resourceservice.web.error.TagAlreadyExistException;
-import com.gaotianchi.resourceservice.web.error.TagNotFoundException;
-import com.gaotianchi.resourceservice.web.otd.ArticleOtd;
-import com.gaotianchi.resourceservice.web.otd.TagOtd;
+import com.gaotianchi.resourceservice.service.tagservice.TagService;
+import com.gaotianchi.resourceservice.web.request.NewTagRequest;
+import com.gaotianchi.resourceservice.web.response.APIResponse;
+import com.gaotianchi.resourceservice.web.response.ArticleResponse;
+import com.gaotianchi.resourceservice.web.response.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 public class TagController {
+
     private final TagService tagService;
 
     @Autowired
@@ -25,42 +21,26 @@ public class TagController {
     }
 
     @PostMapping("/tags/new")
-    public ResponseEntity<TagOtd> newTag(@RequestBody TagDto tagDto) {
-        try {
-            TagEntity tagEntity = tagService.createNewTag(tagDto.getName(), tagDto.getArticleId());
-            return new ResponseEntity<>(new TagOtd(tagEntity), HttpStatus.OK);
-        } catch (ArticleNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (TagAlreadyExistException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+    public APIResponse<TagResponse> newTag(@RequestBody NewTagRequest newTagRequest) {
+        TagResponse tagResponse = tagService.newTag(newTagRequest.getName());
+        return APIResponse.success(tagResponse);
+    }
+
+    @GetMapping("/tags/list")
+    public APIResponse<List<TagResponse>> listTags() {
+        List<TagResponse> tagResponses = tagService.listTags();
+        return APIResponse.success(tagResponses);
     }
 
     @DeleteMapping("/tags/delete/{id}")
-    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
-        try {
-            tagService.deleteTag(id);
-            return null;
-        } catch (TagNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public APIResponse<Void> deleteTag(@PathVariable Long id) {
+        tagService.deleteTag(id);
+        return APIResponse.success();
     }
-    @GetMapping("/tags/all")
-    public ResponseEntity<List<TagOtd>> getAllTags() {
-        try {
-            List<TagOtd> tagOtds = tagService.getAllTags();
-            return new ResponseEntity<>(tagOtds, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @GetMapping("/tags/{id}/articles/all")
-    public ResponseEntity<List<ArticleOtd>> getAllArticlesFromTag(@PathVariable Long id) {
-        try {
-            List<ArticleOtd> articleOtds = tagService.getAllArticlesFromTags(id);
-            return new ResponseEntity<>(articleOtds, HttpStatus.OK);
-        } catch (TagNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+
+    @GetMapping("/tags/list-articles/{id}")
+    public APIResponse<List<ArticleResponse>> listArticles(@PathVariable Long id) {
+        List<ArticleResponse> articleResponses = tagService.listArticles(id);
+        return APIResponse.success(articleResponses);
     }
 }
