@@ -1,12 +1,17 @@
 package com.gaotianchi.resourceservice.config;
 
-import com.gaotianchi.resourceservice.service.TokenService;
 import com.gaotianchi.resourceservice.service.UserService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,28 +21,32 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.Key;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final TokenService tokenService;
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
     private final UserService userService;
 
     @Autowired
-    public JwtAuthenticationFilter(TokenService tokenService, UserService userService) {
-        this.tokenService = tokenService;
+    public JwtAuthenticationFilter(UserService userService) {
         this.userService = userService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        String token = getTokenFromRequest(request);
-
-        if (StringUtils.hasText(token) && tokenService.validateToken(token)) {
-
-            String username = tokenService.getUsername(token);
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+        try {
+            String token = getTokenFromRequest(request);
+            Jwts.parserBuilder()
+                    .setSigningKey(key())
+                    .build()
+                    .parse(token);
+            String username = getUsername(token);
             UserDetails userDetails = userService.loadUserByUsername(username);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     userDetails,
@@ -46,11 +55,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             );
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            SecurityContextHolder.clearContext();
+            filterChain.doFilter(request, response);
         }
-        filterChain.doFilter(request, response);
     }
 
-    private String getTokenFromRequest(HttpServletRequest request) {
+    public String getUsername(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
+
+    private Key key() {
+        return Keys.hmacShaKeyFor(
+                Decoders.BASE64.decode(jwtSecret)
+        );
+    }
+
+    public String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);

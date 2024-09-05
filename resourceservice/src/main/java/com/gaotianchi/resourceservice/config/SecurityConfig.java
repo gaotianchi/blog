@@ -28,7 +28,10 @@ public class SecurityConfig {
                                 .requestMatchers("/blogger/**").hasRole("BLOGGER")
                                 .anyRequest().permitAll()
                 )
-                .formLogin(withDefaults());
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)  // 捕获认证异常
+                        .accessDeniedHandler(customAccessDeniedHandler)  // 捕获授权异常
+                );
         return http.build();
     }
 
