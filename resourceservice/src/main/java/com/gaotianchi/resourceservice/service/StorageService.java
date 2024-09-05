@@ -23,7 +23,8 @@ public class StorageService {
         try {
             if (file.isEmpty()) throw new FileNotFoundException();
             Path targetLocation = Paths.get(storageProperties.getRootLocation()).resolve(relativePath).normalize();
-            if (Files.exists(targetLocation)) throw new FileAlreadyExistsException("文件" + targetLocation + "已经存在！");
+            if (Files.exists(targetLocation))
+                throw new FileAlreadyExistsException("文件" + targetLocation + "已经存在！");
             if (!Files.exists(targetLocation.getParent())) Files.createDirectories(targetLocation.getParent());
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return getResourceUrl(relativePath);

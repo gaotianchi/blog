@@ -43,6 +43,23 @@ public class ImageService {
         this.entityBelongService = entityBelongService;
     }
 
+    public static String generateUniqueFileName() {
+        long timestamp = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String formattedDate = sdf.format(new Date(timestamp));
+        int randomNum = new Random().nextInt(10000);
+        return formattedDate + "_" + randomNum;
+    }
+
+    public static String getFileExtension(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        if (fileName != null && fileName.contains(".")) {
+            int lastDotIndex = fileName.lastIndexOf('.');
+            return fileName.substring(lastDotIndex);
+        }
+        throw new InvalidFileNameException(fileName, "检索不到文件格式！");
+    }
+
     public ImageResponse newImage(MultipartFile file, String email) throws IOException, EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         ImageEntity imageEntity = saveImage(file);
@@ -57,7 +74,6 @@ public class ImageService {
                 .map(ImageResponse::new)
                 .collect(Collectors.toList());
     }
-
 
     public ImageEntity saveImage(MultipartFile file) throws IOException {
         if (file.isEmpty()) throw new FileNotFoundException();
@@ -94,30 +110,11 @@ public class ImageService {
         Files.delete(fileDirPath);
     }
 
-
     public String storeOriginalArticleImage(MultipartFile file, Path relativePath) {
         return storageService.store(file, relativePath);
     }
 
     public String storeThumbnailArticleImage(Path src, Path dst) throws IOException {
         return compressionService.compress(src, dst);
-    }
-
-
-    public static String generateUniqueFileName() {
-        long timestamp = System.currentTimeMillis();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        String formattedDate = sdf.format(new Date(timestamp));
-        int randomNum = new Random().nextInt(10000);
-        return formattedDate + "_" + randomNum;
-    }
-
-    public static String getFileExtension(MultipartFile file) {
-        String fileName = file.getOriginalFilename();
-        if (fileName != null && fileName.contains(".")) {
-            int lastDotIndex = fileName.lastIndexOf('.');
-            return fileName.substring(lastDotIndex);
-        }
-        throw new InvalidFileNameException(fileName, "检索不到文件格式！");
     }
 }
