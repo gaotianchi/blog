@@ -4,6 +4,7 @@ import com.gaotianchi.resourceservice.persistence.entity.*;
 import com.gaotianchi.resourceservice.persistence.repo.*;
 import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,45 +28,40 @@ public class EntityFounderService {
         this.commentRepo = commentRepo;
     }
 
+    private <T> T findOrThrow(Optional<T> entity, String entityName, Long id) throws EntityNotFoundException {
+        return entity.orElseThrow(() -> new EntityNotFoundException(entityName + " " + id));
+    }
+
+    private <T> T findByIdOrNotFound(JpaRepository<T, Long> repo, Long id, String entityName) throws EntityNotFoundException {
+        return findOrThrow(repo.findById(id), entityName, id);
+    }
+
     public UserEntity getUserOrNotFound(Long id) throws EntityNotFoundException {
-        Optional<UserEntity> userEntity = userRepo.findById(id);
-        if (userEntity.isEmpty()) throw new EntityNotFoundException("User " + id);
-        return userEntity.get();
+        return findByIdOrNotFound(userRepo, id, "User");
     }
 
     public UserEntity getUserOrNotFound(String email) throws EntityNotFoundException {
-        Optional<UserEntity> userEntity = Optional.ofNullable(userRepo.findByEmail(email));
-        if (userEntity.isEmpty()) throw new EntityNotFoundException("User " + email);
-        return userEntity.get();
+        return Optional.ofNullable(userRepo.findByEmail(email))
+                .orElseThrow(() -> new EntityNotFoundException("User " + email));
     }
 
     public ArticleEntity getArticleOrNotFound(Long id) throws EntityNotFoundException {
-        Optional<ArticleEntity> articleEntity = articleRepo.findById(id);
-        if (articleEntity.isEmpty()) throw new EntityNotFoundException("Article " + id);
-        return articleEntity.get();
+        return findByIdOrNotFound(articleRepo, id, "Article");
     }
 
     public CommentEntity getCommentOrNotFound(Long id) throws EntityNotFoundException {
-        Optional<CommentEntity> commentEntity = commentRepo.findById(id);
-        if (commentEntity.isEmpty()) throw new EntityNotFoundException("Comment " + id);
-        return commentEntity.get();
+        return findByIdOrNotFound(commentRepo, id, "Comment");
     }
 
-    public ImageEntity getImageOrNotFound(Long imageId) throws EntityNotFoundException {
-        Optional<ImageEntity> imageEntity = imageRepo.findById(imageId);
-        if (imageEntity.isEmpty()) throw new EntityNotFoundException("Image " + imageId);
-        return imageEntity.get();
+    public ImageEntity getImageOrNotFound(Long id) throws EntityNotFoundException {
+        return findByIdOrNotFound(imageRepo, id, "Image");
     }
 
     public SeriesEntity getSeriesOrNotFound(Long id) throws EntityNotFoundException {
-        Optional<SeriesEntity> seriesEntity = seriesRepo.findById(id);
-        if (seriesEntity.isEmpty()) throw new EntityNotFoundException("Series " + id);
-        return seriesEntity.get();
+        return findByIdOrNotFound(seriesRepo, id, "Series");
     }
 
     public TagEntity getTagOrNotFound(Long id) throws EntityNotFoundException {
-        Optional<TagEntity> tagEntity = tagRepo.findById(id);
-        if (tagEntity.isEmpty()) throw new EntityNotFoundException("Tag " + id);
-        return tagEntity.get();
+        return findByIdOrNotFound(tagRepo, id, "Tag");
     }
 }
