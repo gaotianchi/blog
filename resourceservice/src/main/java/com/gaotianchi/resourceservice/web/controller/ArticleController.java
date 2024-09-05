@@ -1,6 +1,6 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.service.ArticleService;
+import com.gaotianchi.resourceservice.service.articleservice.ArticleService;
 import com.gaotianchi.resourceservice.web.request.UpdateArticleContentRequest;
 import com.gaotianchi.resourceservice.web.response.*;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.service.ImageService;
+import com.gaotianchi.resourceservice.service.imageservice.ImageService;
 import com.gaotianchi.resourceservice.web.response.APIResponse;
 import com.gaotianchi.resourceservice.web.response.ImageResponse;
 import org.springframework.beans.factory.annotation.Autowired;

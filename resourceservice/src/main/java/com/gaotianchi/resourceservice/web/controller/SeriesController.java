@@ -1,6 +1,6 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.service.SeriesService;
+import com.gaotianchi.resourceservice.service.seriesservice.SeriesService;
 import com.gaotianchi.resourceservice.web.request.NewSeriesRequest;
 import com.gaotianchi.resourceservice.web.response.APIResponse;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;

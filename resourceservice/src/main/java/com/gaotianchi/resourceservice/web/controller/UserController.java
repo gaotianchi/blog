@@ -1,6 +1,6 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.service.UserService;
+import com.gaotianchi.resourceservice.service.userservice.UserService;
 import com.gaotianchi.resourceservice.web.request.NewUserRequest;
 import com.gaotianchi.resourceservice.web.request.ResetPasswordRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateUserInfoRequest;
@@ -50,13 +50,13 @@ public class UserController {
 
     @PatchMapping("/users/set-avatar/{imageId}")
     public APIResponse<UserResponse> setAvatar(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long imageId) {
-        UserResponse userResponse = userService.setAvatar(userDetails.getUsername(), imageId);
+        UserResponse userResponse = userService.updateAvatar(userDetails.getUsername(), imageId);
         return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/update-info")
     public APIResponse<UserResponse> updateInfo(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
-        UserResponse userResponse = userService.updateUserInfo(userDetails.getUsername(), updateUserInfoRequest.getPenName());
+        UserResponse userResponse = userService.updateInfo(userDetails.getUsername(), updateUserInfoRequest.getPenName());
         return APIResponse.success(userResponse);
     }
 

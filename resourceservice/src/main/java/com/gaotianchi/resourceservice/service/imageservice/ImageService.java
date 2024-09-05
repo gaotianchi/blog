@@ -1,10 +1,14 @@
-package com.gaotianchi.resourceservice.service;
+package com.gaotianchi.resourceservice.service.imageservice;
 
 import com.gaotianchi.resourceservice.config.StorageProperties;
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.enums.ArticleImageType;
 import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
+import com.gaotianchi.resourceservice.service.CompressionService;
+import com.gaotianchi.resourceservice.service.EntityBelongService;
+import com.gaotianchi.resourceservice.service.EntityFounderService;
+import com.gaotianchi.resourceservice.service.StorageService;
 import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.response.ImageResponse;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
@@ -24,7 +28,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
-public class ImageService {
+public class ImageService implements ImageServiceInterface {
 
     private final StorageService storageService;
     private final ImageRepo imageRepo;
@@ -60,7 +64,8 @@ public class ImageService {
         throw new InvalidFileNameException(fileName, "检索不到文件格式！");
     }
 
-    public ImageResponse newImage(MultipartFile file, String email) throws IOException, EntityNotFoundException {
+    @Override
+    public ImageResponse newImage(MultipartFile file, String email) throws EntityNotFoundException, IOException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         ImageEntity imageEntity = saveImage(file);
         imageEntity.setUser(userEntity);
@@ -68,6 +73,7 @@ public class ImageService {
         return new ImageResponse(imageEntity);
     }
 
+    @Override
     public List<ImageResponse> listImages(String email) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         return userEntity.getImageEntities().stream()
@@ -91,7 +97,8 @@ public class ImageService {
         return imageEntity;
     }
 
-    public void deleteImage(String email, Long imageId) throws IOException, EntityNotFoundException {
+    @Override
+    public void deleteImage(String email, Long imageId) throws EntityNotFoundException, IOException {
         ImageEntity imageEntity = entityBelongService.imageBelongToUser(email, imageId);
         Path fileDirPath = findImageByDirName(imageEntity.getFileDirName());
         deleteImages(fileDirPath, imageEntity.getFileExtension());

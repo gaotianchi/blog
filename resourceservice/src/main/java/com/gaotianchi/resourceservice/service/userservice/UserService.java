@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.service;
+package com.gaotianchi.resourceservice.service.userservice;
 
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
@@ -6,6 +6,7 @@ import com.gaotianchi.resourceservice.persistence.enums.AccountStatus;
 import com.gaotianchi.resourceservice.persistence.enums.RoleType;
 import com.gaotianchi.resourceservice.persistence.repo.RoleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
+import com.gaotianchi.resourceservice.service.EntityFounderService;
 import com.gaotianchi.resourceservice.web.error.EntityAlreadyExistException;
 import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService, UserServiceInterface {
     private final UserRepo userRepo;
     private final EntityFounderService entityFounderService;
     private final RoleRepo roleRepo;
@@ -40,6 +41,7 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     public UserResponse newUser(String penName, String email, String password) throws EntityAlreadyExistException {
         UserEntity userEntity = userRepo.findByEmail(email);
         if (userEntity != null) throw new EntityAlreadyExistException(email);
@@ -54,14 +56,16 @@ public class UserService implements UserDetailsService {
         return new UserResponse(userEntity);
     }
 
-    public UserResponse updateUserInfo(String email, String penName) throws EntityNotFoundException {
+    @Override
+    public UserResponse updateInfo(String email, String penName) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         userEntity.setPenName(penName);
         userEntity = userRepo.save(userEntity);
         return new UserResponse(userEntity);
     }
 
-    public UserResponse setAvatar(String email, Long imageId) throws EntityNotFoundException {
+    @Override
+    public UserResponse updateAvatar(String email, Long imageId) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         ImageEntity imageEntity = entityFounderService.getImageOrNotFound(imageId);
         userEntity.setAvatar(imageEntity);
@@ -69,6 +73,7 @@ public class UserService implements UserDetailsService {
         return new UserResponse(userEntity, true);
     }
 
+    @Override
     public UserResponse resetPassword(String email, String newPassword) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         userEntity.setPassword(passwordEncoder.encode(newPassword));
@@ -76,6 +81,7 @@ public class UserService implements UserDetailsService {
         return new UserResponse(userEntity);
     }
 
+    @Override
     public UserResponse deregister(String email) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         userEntity.setAccountStatus(AccountStatus.DEREGISTERED);
@@ -83,6 +89,7 @@ public class UserService implements UserDetailsService {
         return new UserResponse(userEntity);
     }
 
+    @Override
     public UserResponse lockUser(Long userId) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(userId);
         userEntity.setAccountStatus(AccountStatus.LOCKED);
@@ -90,6 +97,7 @@ public class UserService implements UserDetailsService {
         return new UserResponse(userEntity);
     }
 
+    @Override
     public List<UserResponse> listUsers() {
         Collection<UserEntity> userEntities = userRepo.findAll();
         return userEntities.stream()
@@ -97,11 +105,13 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<ArticleResponse> listArticles(String email) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         return userEntity.getArticleEntities().stream().map(ArticleResponse::new).collect(Collectors.toList());
     }
 
+    @Override
     public List<SeriesResponse> listSeries(String email) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         return userEntity.getSeriesEntities().stream().map(seriesEntity -> new SeriesResponse(seriesEntity, true)).collect(Collectors.toList());

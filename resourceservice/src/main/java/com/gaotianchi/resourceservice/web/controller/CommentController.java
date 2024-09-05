@@ -1,6 +1,6 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.service.CommentService;
+import com.gaotianchi.resourceservice.service.commentservice.CommentService;
 import com.gaotianchi.resourceservice.web.request.NewCommentRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateCommentRequest;
 import com.gaotianchi.resourceservice.web.response.APIResponse;
@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 public class CommentController {
@@ -24,7 +22,7 @@ public class CommentController {
 
     @PostMapping("/comments/new")
     public APIResponse<CommentResponse> newComment(@AuthenticationPrincipal UserDetails userDetails, @RequestBody NewCommentRequest newCommentRequest) {
-        CommentResponse commentResponse = commentService.newComment(userDetails.getUsername(), newCommentRequest.getBody(), newCommentRequest.getArticleId(), Optional.ofNullable(newCommentRequest.getParentId()));
+        CommentResponse commentResponse = commentService.newComment(userDetails.getUsername(), newCommentRequest.getBody(), newCommentRequest.getArticleId(), newCommentRequest.getParentId());
         return APIResponse.success(commentResponse);
     }
 
@@ -42,7 +40,7 @@ public class CommentController {
 
     @PatchMapping("/comments/update/{id}")
     public APIResponse<CommentResponse> updateComment(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, @RequestBody UpdateCommentRequest updateCommentRequest) {
-        CommentResponse commentResponse = commentService.updateCommentContent(userDetails.getUsername(), id, updateCommentRequest.getBody());
+        CommentResponse commentResponse = commentService.updateContent(userDetails.getUsername(), id, updateCommentRequest.getBody());
         return APIResponse.success(commentResponse);
     }
 }

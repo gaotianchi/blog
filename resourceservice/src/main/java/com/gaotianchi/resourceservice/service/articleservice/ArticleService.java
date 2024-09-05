@@ -1,10 +1,13 @@
-package com.gaotianchi.resourceservice.service;
+package com.gaotianchi.resourceservice.service.articleservice;
 
 import com.gaotianchi.resourceservice.persistence.entity.*;
 import com.gaotianchi.resourceservice.persistence.enums.ArticleStatus;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.ImageRepo;
 import com.gaotianchi.resourceservice.persistence.repo.TagRepo;
+import com.gaotianchi.resourceservice.service.EntityBelongService;
+import com.gaotianchi.resourceservice.service.EntityFounderService;
+import com.gaotianchi.resourceservice.service.commentservice.CommentService;
 import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.CommentResponse;
@@ -20,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ArticleService {
+public class ArticleService implements ArticleServiceInterface {
     private final ArticleRepo articleRepo;
     private final CommentService commentService;
     private final TagRepo tagRepo;
@@ -38,6 +41,7 @@ public class ArticleService {
         this.imageRepo = imageRepo;
     }
 
+    @Override
     public ArticleResponse newArticle(String email) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         ArticleEntity articleEntity = new ArticleEntity();
@@ -51,6 +55,7 @@ public class ArticleService {
         return new ArticleResponse(articleEntity);
     }
 
+    @Override
     public ArticleResponse publishArticle(String email, Long articleId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         articleEntity.setArticleStatus(ArticleStatus.PUBLISHED);
@@ -59,6 +64,7 @@ public class ArticleService {
         return new ArticleResponse(articleEntity);
     }
 
+    @Override
     public ArticleResponse setToDraft(String email, Long articleId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         articleEntity.setArticleStatus(ArticleStatus.DRAFT);
@@ -66,6 +72,7 @@ public class ArticleService {
         return new ArticleResponse(articleEntity);
     }
 
+    @Override
     public ArticleResponse setToTrash(String email, Long articleId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         articleEntity.setArticleStatus(ArticleStatus.TRASH);
@@ -73,6 +80,7 @@ public class ArticleService {
         return new ArticleResponse(articleEntity);
     }
 
+    @Override
     public List<ArticleResponse> listArticles(String email) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         Collection<ArticleEntity> articleEntities = userEntity.getArticleEntities();
@@ -81,6 +89,7 @@ public class ArticleService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public ArticleResponse updateContent(String email, Long articleId, String title, String body, String summary, String slug) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         articleEntity.setTitle(title);
@@ -92,6 +101,7 @@ public class ArticleService {
         return new ArticleResponse(articleEntity);
     }
 
+    @Override
     public ArticleResponse setSeries(String email, Long articleId, Long seriesId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         SeriesEntity seriesEntity = entityBelongService.seriesBelongToUser(email, seriesId);
@@ -100,12 +110,14 @@ public class ArticleService {
         return new ArticleResponse(articleEntity, true);
     }
 
+    @Override
     public void removeSeries(String email, Long articleId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         articleEntity.setSeriesEntity(null);
         articleRepo.save(articleEntity);
     }
 
+    @Override
     public ArticleResponse setCover(String email, Long articleId, Long coverId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         ImageEntity imageEntity = entityBelongService.imageBelongToUser(email, coverId);
@@ -114,12 +126,14 @@ public class ArticleService {
         return new ArticleResponse(articleEntity, false, true);
     }
 
+    @Override
     public void removeCover(String email, Long articleId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         articleEntity.setCover(null);
         articleRepo.save(articleEntity);
     }
 
+    @Override
     public TagResponse addTag(String email, Long articleId, Long tagId) throws EntityNotFoundException {
         TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
@@ -134,6 +148,7 @@ public class ArticleService {
         return new TagResponse(tagEntity);
     }
 
+    @Override
     public void removeTag(String email, Long tagId, Long articleId) throws EntityNotFoundException {
         TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
@@ -146,6 +161,7 @@ public class ArticleService {
         tagRepo.save(tagEntity);
     }
 
+    @Override
     public List<TagResponse> listTags(Long id) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
         List<TagResponse> tagResponses = new ArrayList<>();
@@ -156,6 +172,7 @@ public class ArticleService {
         return tagResponses;
     }
 
+    @Override
     public List<CommentResponse> listArticleComments(Long articleId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
         List<CommentResponse> commentResponses = new ArrayList<>();
@@ -167,6 +184,7 @@ public class ArticleService {
         return commentResponses;
     }
 
+    @Override
     public ImageResponse addArticleImage(String email, Long articleId, Long imageId) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(userEntity, articleId);
@@ -180,6 +198,7 @@ public class ArticleService {
         return new ImageResponse(imageEntity);
     }
 
+    @Override
     public void removeArticleImage(String email, Long articleId, Long imageId) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(userEntity, articleId);
@@ -192,6 +211,7 @@ public class ArticleService {
         }
     }
 
+    @Override
     public List<ImageResponse> listArticleImages(Long articleId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
         return articleEntity.getArticleImages().stream().map(ImageResponse::new).collect(Collectors.toList());

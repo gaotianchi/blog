@@ -1,9 +1,11 @@
-package com.gaotianchi.resourceservice.service;
+package com.gaotianchi.resourceservice.service.tagservice;
 
 import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.TagEntity;
 import com.gaotianchi.resourceservice.persistence.repo.ArticleRepo;
 import com.gaotianchi.resourceservice.persistence.repo.TagRepo;
+import com.gaotianchi.resourceservice.service.EntityBelongService;
+import com.gaotianchi.resourceservice.service.EntityFounderService;
 import com.gaotianchi.resourceservice.web.error.EntityAlreadyExistException;
 import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
@@ -18,7 +20,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class TagService {
+public class TagService implements TagServiceInterface {
     private final ArticleRepo articleRepo;
     private final TagRepo tagRepo;
     private final EntityFounderService entityFounderService;
@@ -32,6 +34,7 @@ public class TagService {
         this.entityBelongService = entityBelongService;
     }
 
+    @Override
     public TagResponse newTag(String name) throws EntityAlreadyExistException {
         TagEntity tagEntity = tagRepo.findByName(name);
         if (tagEntity != null) throw new EntityAlreadyExistException("Tag " + name);
@@ -42,11 +45,13 @@ public class TagService {
         return new TagResponse(tagEntity);
     }
 
+    @Override
     public List<TagResponse> listTags() {
         Collection<TagEntity> tagEntities = tagRepo.findAll();
         return tagEntities.stream().map(TagResponse::new).collect(Collectors.toList());
     }
 
+    @Override
     public void deleteTag(Long id) throws EntityNotFoundException {
         TagEntity tagEntity = entityFounderService.getTagOrNotFound(id);
         Collection<ArticleEntity> articleEntities = tagEntity.getArticles();
@@ -59,11 +64,13 @@ public class TagService {
         tagRepo.delete(tagEntity);
     }
 
+    @Override
     public List<ArticleResponse> listArticles(Long id) throws EntityNotFoundException {
         TagEntity tagEntity = entityFounderService.getTagOrNotFound(id);
         return tagEntity.getArticles().stream().map(ArticleResponse::new).collect(Collectors.toList());
     }
 
+    @Override
     public TagResponse setArticle(String email, Long tagId, Long articleId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);

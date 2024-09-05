@@ -1,6 +1,6 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.service.TagService;
+import com.gaotianchi.resourceservice.service.tagservice.TagService;
 import com.gaotianchi.resourceservice.web.request.NewTagRequest;
 import com.gaotianchi.resourceservice.web.response.APIResponse;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;

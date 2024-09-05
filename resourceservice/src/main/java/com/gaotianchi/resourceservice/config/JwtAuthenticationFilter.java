@@ -1,7 +1,7 @@
 package com.gaotianchi.resourceservice.config;
 
 import com.gaotianchi.resourceservice.service.TokenService;
-import com.gaotianchi.resourceservice.service.UserService;
+import com.gaotianchi.resourceservice.service.userservice.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
