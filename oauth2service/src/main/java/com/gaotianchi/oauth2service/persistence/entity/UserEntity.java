@@ -9,7 +9,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -19,14 +22,12 @@ public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue
     private Long id;
-    private String email;
+    private String username;
     private String password;
     private OffsetDateTime lockedUntil;
     private OffsetDateTime registrationDateTime;
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
-    private TimeZone timeZone;
-    private Integer score = 0;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<RoleEntity> roles = new ArrayList<>();
@@ -38,7 +39,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email;
+        return this.username;
     }
 
     @Override
