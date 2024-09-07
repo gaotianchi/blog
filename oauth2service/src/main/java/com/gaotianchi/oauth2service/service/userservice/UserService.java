@@ -45,6 +45,12 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
+    public UserResponse getInfo(String username) {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
+        return new UserResponse(userEntity);
+    }
+
+    @Override
     public UserResponse updateUsername(String username, String newUsername) {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         userEntity.setUsername(newUsername);

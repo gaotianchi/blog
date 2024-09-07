@@ -15,13 +15,13 @@ spring:
                 client:
                     public-client:
                         registration:
-                            client-id: "public-client"
+                            client-id: "blog-client"
                             client-authentication-methods:
                                 - "none"
                             authorization-grant-types:
                                 - "authorization_code"
                             redirect-uris:
-                                - "http://127.0.0.1:4200"
+                                - "http://localhost:3000/callback"
                             scopes:
                                 - "openid"
                                 - "profile"

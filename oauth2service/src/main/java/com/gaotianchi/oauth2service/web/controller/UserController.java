@@ -24,6 +24,12 @@ public class UserController {
         return APIResponse.success(userResponse);
     }
 
+    @GetMapping("/users/info")
+    public APIResponse<UserResponse> getInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        UserResponse userResponse = userService.getInfo(userDetails.getUsername());
+        return APIResponse.success(userResponse);
+    }
+
     @PatchMapping("/users/update-username")
     public APIResponse<UserResponse> updateUsername(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdateUsernameRequest updateUsernameRequest) {
         UserResponse userResponse = userService.updateUsername(userDetails.getUsername(), updateUsernameRequest.getUsername());
