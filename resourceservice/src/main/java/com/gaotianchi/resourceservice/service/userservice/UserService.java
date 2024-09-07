@@ -30,7 +30,7 @@ public class UserService implements UserServiceInterface {
 
     @Override
     public UserResponse newUser(String penName, String username) throws EntityAlreadyExistException {
-        UserEntity userEntity = userRepo.findByEmail(username);
+        UserEntity userEntity = userRepo.findByUsername(username);
         if (userEntity != null) throw new EntityAlreadyExistException(username);
         userEntity = new UserEntity();
         userEntity.setUsername(username);

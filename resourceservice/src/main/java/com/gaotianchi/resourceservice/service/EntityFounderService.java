@@ -40,9 +40,9 @@ public class EntityFounderService {
         return findByIdOrNotFound(userRepo, id, "User");
     }
 
-    public UserEntity getUserOrNotFound(String email) throws EntityNotFoundException {
-        return Optional.ofNullable(userRepo.findByEmail(email))
-                .orElseThrow(() -> new EntityNotFoundException("User " + email));
+    public UserEntity getUserOrNotFound(String username) throws EntityNotFoundException {
+        return Optional.ofNullable(userRepo.findByUsername(username))
+                .orElseThrow(() -> new EntityNotFoundException("User " + username));
     }
 
     public ArticleEntity getArticleOrNotFound(Long id) throws EntityNotFoundException {

@@ -2,10 +2,12 @@ package com.gaotianchi.resourceservice.event;
 
 import com.gaotianchi.resourceservice.persistence.entity.BehaviorEntity;
 import com.gaotianchi.resourceservice.persistence.entity.LevelEntity;
+import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.enums.BehaviorType;
 import com.gaotianchi.resourceservice.persistence.enums.LevelType;
 import com.gaotianchi.resourceservice.persistence.repo.BehaviorRepo;
 import com.gaotianchi.resourceservice.persistence.repo.LevelRepo;
+import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -16,11 +18,13 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
     private final LevelRepo levelRepo;
     private final BehaviorRepo behaviorRepo;
+    private final UserRepo userRepo;
 
     @Autowired
-    public SetupDataLoader(LevelRepo levelRepo, BehaviorRepo behaviorRepo) {
+    public SetupDataLoader(LevelRepo levelRepo, BehaviorRepo behaviorRepo, UserRepo userRepo) {
         this.levelRepo = levelRepo;
         this.behaviorRepo = behaviorRepo;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -32,6 +36,10 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             createBehaviorIfNotFound(behaviorType);
         }
 
+        UserEntity userEntity = new UserEntity();
+        userEntity.setPenName("高天驰");
+        userEntity.setUsername("gaotianchi");
+        userRepo.save(userEntity);
     }
     private void createLevelIfNotFound(LevelType levelType) {
         LevelEntity levelEntity = levelRepo.findByLevel(levelType);
