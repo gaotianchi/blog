@@ -1,17 +1,14 @@
 package com.gaotianchi.oauth2service.service.userservice;
 
-import com.gaotianchi.oauth2service.web.request.NewUserRequest;
-import com.gaotianchi.oauth2service.web.request.UpdatePasswordRequest;
-import com.gaotianchi.oauth2service.web.request.UpdateUsernameRequest;
 import com.gaotianchi.oauth2service.web.response.UserResponse;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserServiceInterface extends UserDetailsService {
-    UserResponse newUser(NewUserRequest newUserRequest);
+    UserResponse newUser(String username, String password);
 
-    UserResponse updateUsername(String username, UpdateUsernameRequest updateUsernameRequest);
+    UserResponse updateUsername(String username, String newUsername);
 
-    UserResponse updatePassword(String username, UpdatePasswordRequest updatePasswordRequest);
+    UserResponse updatePassword(String username, String newPassword);
 
     UserResponse deregister(String username);
 
