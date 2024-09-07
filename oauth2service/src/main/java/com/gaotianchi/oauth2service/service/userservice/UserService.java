@@ -32,7 +32,7 @@ public class UserService implements UserServiceInterface {
 
     @Override
     public UserResponse newUser(String username, String password) {
-        if (!entityFounderService.userExists(username))
+        if (entityFounderService.userExists(username))
             throw new EntityAlreadyExistException("User " + username);
         UserEntity userEntity = new UserEntity();
         userEntity.setAccountStatus(AccountStatus.ACTIVATED);

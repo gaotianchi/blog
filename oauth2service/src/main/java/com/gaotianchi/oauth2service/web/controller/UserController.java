@@ -8,10 +8,7 @@ import com.gaotianchi.oauth2service.web.response.APIResponse;
 import com.gaotianchi.oauth2service.web.response.UserResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -22,19 +19,19 @@ public class UserController {
     }
 
     @PostMapping("/users/new")
-    public APIResponse<UserResponse> newUser(NewUserRequest newUserRequest) {
+    public APIResponse<UserResponse> newUser(@RequestBody NewUserRequest newUserRequest) {
         UserResponse userResponse = userService.newUser(newUserRequest.getUsername(), newUserRequest.getPassword());
         return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/update-username")
-    public APIResponse<UserResponse> updateUsername(@AuthenticationPrincipal UserDetails userDetails, UpdateUsernameRequest updateUsernameRequest) {
+    public APIResponse<UserResponse> updateUsername(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdateUsernameRequest updateUsernameRequest) {
         UserResponse userResponse = userService.updateUsername(userDetails.getUsername(), updateUsernameRequest.getUsername());
         return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/update-password")
-    public APIResponse<UserResponse> updatePassword(@AuthenticationPrincipal UserDetails userDetails, UpdatePasswordRequest updatePasswordRequest) {
+    public APIResponse<UserResponse> updatePassword(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdatePasswordRequest updatePasswordRequest) {
         UserResponse userResponse = userService.updatePassword(userDetails.getUsername(), updatePasswordRequest.getPassword());
         return APIResponse.success(userResponse);
     }

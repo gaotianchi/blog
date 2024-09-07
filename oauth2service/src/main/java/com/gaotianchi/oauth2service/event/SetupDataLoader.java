@@ -15,6 +15,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -72,12 +73,13 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     private void createBlogger(List<RoleEntity> roleEntities) {
-        UserEntity blogger = userRepo.findByUsername("6159984@gmail.com");
+        UserEntity blogger = userRepo.findByUsername("gaotianchi");
         if (blogger == null) {
             blogger = new UserEntity();
-            blogger.setUsername("6159984@gmail.com");
+            blogger.setUsername("gaotianchi");
             blogger.setAccountStatus(AccountStatus.ACTIVATED);
-            blogger.setPassword(passwordEncoder.encode("{noop}password"));
+            blogger.setRegistrationDateTime(OffsetDateTime.now());
+            blogger.setPassword(passwordEncoder.encode("gaotianchi"));
             blogger.setRoles(roleEntities);
             userRepo.save(blogger);
         }

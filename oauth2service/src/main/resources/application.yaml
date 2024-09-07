@@ -10,9 +10,6 @@ spring:
         hibernate:
             ddl-auto: update
     security:
-        user:
-            name: "user"
-            password: "{noop}pass"
         oauth2:
             authorizationserver:
                 client:
@@ -35,7 +32,7 @@ logging:
     level:
         org:
             springframework:
-                security: info
+                security: debug
 
 server:
     port: 9000
