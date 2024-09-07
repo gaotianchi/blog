@@ -9,9 +9,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public interface UserServiceInterface extends UserDetailsService {
     UserResponse newUser(NewUserRequest newUserRequest);
 
-    UserResponse updateUsername(UpdateUsernameRequest updateUsernameRequest);
+    UserResponse updateUsername(String username, UpdateUsernameRequest updateUsernameRequest);
 
-    UserResponse updatePassword(UpdatePasswordRequest updatePasswordRequest);
+    UserResponse updatePassword(String username, UpdatePasswordRequest updatePasswordRequest);
 
     UserResponse deregister(String username);
 
