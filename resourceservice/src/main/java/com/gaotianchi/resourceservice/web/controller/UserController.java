@@ -2,7 +2,6 @@ package com.gaotianchi.resourceservice.web.controller;
 
 import com.gaotianchi.resourceservice.service.userservice.UserService;
 import com.gaotianchi.resourceservice.web.request.NewUserRequest;
-import com.gaotianchi.resourceservice.web.request.ResetPasswordRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateUserInfoRequest;
 import com.gaotianchi.resourceservice.web.response.APIResponse;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
@@ -26,7 +25,7 @@ public class UserController {
 
     @PostMapping("/users/new")
     public APIResponse<UserResponse> newUser(@RequestBody NewUserRequest newUserRequest) {
-        UserResponse userResponse = userService.newUser(newUserRequest.getPenName(), newUserRequest.getEmail(), newUserRequest.getPassword());
+        UserResponse userResponse = userService.newUser(newUserRequest.getPenName(), newUserRequest.getEmail());
         return APIResponse.success(userResponse);
     }
 
@@ -34,18 +33,6 @@ public class UserController {
     public APIResponse<List<UserResponse>> listUsers() {
         List<UserResponse> userResponses = userService.listUsers();
         return APIResponse.success(userResponses);
-    }
-
-    @PatchMapping("/users/deregister")
-    public APIResponse<UserResponse> deregister(@AuthenticationPrincipal UserDetails userDetails) {
-        UserResponse userResponse = userService.deregister(userDetails.getUsername());
-        return APIResponse.success(userResponse);
-    }
-
-    @PatchMapping("/blogger/lock/{userId}")
-    public APIResponse<UserResponse> lockUser(@PathVariable Long userId) {
-        UserResponse userResponse = userService.lockUser(userId);
-        return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/set-avatar/{imageId}")
@@ -57,12 +44,6 @@ public class UserController {
     @PatchMapping("/users/update-info")
     public APIResponse<UserResponse> updateInfo(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
         UserResponse userResponse = userService.updateInfo(userDetails.getUsername(), updateUserInfoRequest.getPenName());
-        return APIResponse.success(userResponse);
-    }
-
-    @PatchMapping("/users/reset-password")
-    public APIResponse<UserResponse> resetPassword(@AuthenticationPrincipal UserDetails userDetails, @RequestBody ResetPasswordRequest resetPasswordRequest) {
-        UserResponse userResponse = userService.resetPassword(userDetails.getUsername(), resetPasswordRequest.getNewPassword());
         return APIResponse.success(userResponse);
     }
 

@@ -7,22 +7,16 @@ import com.gaotianchi.resourceservice.web.response.UserResponse;
 import java.util.List;
 
 public interface UserServiceInterface {
-    UserResponse newUser(String penName, String email, String password);
+    UserResponse newUser(String penName, String username);
 
-    UserResponse updateInfo(String email, String penName);
+    UserResponse updateInfo(String username, String penName);
 
-    UserResponse updateAvatar(String email, Long imageId);
-
-    UserResponse resetPassword(String email, String newPassword);
-
-    UserResponse deregister(String email);
-
-    UserResponse lockUser(Long userId);
+    UserResponse updateAvatar(String username, Long imageId);
 
     List<UserResponse> listUsers();
 
-    List<ArticleResponse> listArticles(String email);
+    List<ArticleResponse> listArticles(String username);
 
-    List<SeriesResponse> listSeries(String email);
+    List<SeriesResponse> listSeries(String username);
 
 }
