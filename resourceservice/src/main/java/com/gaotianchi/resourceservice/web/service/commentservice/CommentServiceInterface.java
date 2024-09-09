@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.service.commentservice;
+package com.gaotianchi.resourceservice.web.service.commentservice;
 
 import com.gaotianchi.resourceservice.web.response.CommentResponse;
 import jakarta.annotation.Nullable;

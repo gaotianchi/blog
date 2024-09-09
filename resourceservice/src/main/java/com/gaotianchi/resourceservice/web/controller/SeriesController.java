@@ -1,10 +1,10 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.service.seriesservice.SeriesService;
 import com.gaotianchi.resourceservice.web.request.NewSeriesRequest;
 import com.gaotianchi.resourceservice.web.response.APIResponse;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.SeriesResponse;
+import com.gaotianchi.resourceservice.web.service.seriesservice.SeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

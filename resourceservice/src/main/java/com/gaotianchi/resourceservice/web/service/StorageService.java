@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.service;
+package com.gaotianchi.resourceservice.web.service;
 
 import com.gaotianchi.resourceservice.config.StorageProperties;
 import com.gaotianchi.resourceservice.web.error.StorageException;

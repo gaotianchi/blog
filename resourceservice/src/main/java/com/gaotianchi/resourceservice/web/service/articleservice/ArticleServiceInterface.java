@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.service.articleservice;
+package com.gaotianchi.resourceservice.web.service.articleservice;
 
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.CommentResponse;

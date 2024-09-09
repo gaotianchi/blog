@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.config;
+package com.gaotianchi.resourceservice.web.controller;
 
 import com.gaotianchi.resourceservice.web.error.EntityAlreadyExistException;
 import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;

@@ -1,5 +1,7 @@
 package com.gaotianchi.resourceservice.config;
 
+import com.gaotianchi.resourceservice.web.controller.CustomAccessDeniedHandler;
+import com.gaotianchi.resourceservice.web.controller.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +23,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
+                                .requestMatchers("/resource/article").hasAuthority("profile")
                                 .requestMatchers(HttpMethod.POST, "/users/new").permitAll()
                                 .requestMatchers("/users/**").hasRole("SUBSCRIBER")
                                 .requestMatchers("/blogger/**").hasRole("BLOGGER")

@@ -1,14 +1,14 @@
-package com.gaotianchi.resourceservice.service.userservice;
+package com.gaotianchi.resourceservice.web.service.userservice;
 
 import com.gaotianchi.resourceservice.persistence.entity.ImageEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.repo.UserRepo;
-import com.gaotianchi.resourceservice.service.EntityFounderService;
 import com.gaotianchi.resourceservice.web.error.EntityAlreadyExistException;
 import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.SeriesResponse;
 import com.gaotianchi.resourceservice.web.response.UserResponse;
+import com.gaotianchi.resourceservice.web.service.EntityFounderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

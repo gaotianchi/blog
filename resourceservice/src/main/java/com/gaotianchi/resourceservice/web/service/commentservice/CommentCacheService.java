@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.service.commentservice;
+package com.gaotianchi.resourceservice.web.service.commentservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

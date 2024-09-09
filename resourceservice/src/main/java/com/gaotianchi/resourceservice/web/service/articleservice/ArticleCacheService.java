@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.service.articleservice;
+package com.gaotianchi.resourceservice.web.service.articleservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

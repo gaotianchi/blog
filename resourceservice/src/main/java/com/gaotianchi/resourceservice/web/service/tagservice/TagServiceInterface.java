@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.service.tagservice;
+package com.gaotianchi.resourceservice.web.service.tagservice;
 
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.TagResponse;

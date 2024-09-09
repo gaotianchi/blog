@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.config;
+package com.gaotianchi.resourceservice.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaotianchi.resourceservice.persistence.enums.ResponseErrorCode;

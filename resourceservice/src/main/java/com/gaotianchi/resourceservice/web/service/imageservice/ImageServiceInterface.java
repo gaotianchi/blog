@@ -1,4 +1,4 @@
-package com.gaotianchi.resourceservice.service.imageservice;
+package com.gaotianchi.resourceservice.web.service.imageservice;
 
 import com.gaotianchi.resourceservice.web.response.ImageResponse;
 import org.springframework.web.multipart.MultipartFile;

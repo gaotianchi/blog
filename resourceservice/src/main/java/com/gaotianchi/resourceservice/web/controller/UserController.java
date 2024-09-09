@@ -1,12 +1,12 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.service.userservice.UserService;
 import com.gaotianchi.resourceservice.web.request.NewUserRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateUserInfoRequest;
 import com.gaotianchi.resourceservice.web.response.APIResponse;
 import com.gaotianchi.resourceservice.web.response.ArticleResponse;
 import com.gaotianchi.resourceservice.web.response.SeriesResponse;
 import com.gaotianchi.resourceservice.web.response.UserResponse;
+import com.gaotianchi.resourceservice.web.service.userservice.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

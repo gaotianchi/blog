@@ -1,10 +1,10 @@
 package com.gaotianchi.resourceservice.web.controller;
 
-import com.gaotianchi.resourceservice.service.commentservice.CommentService;
 import com.gaotianchi.resourceservice.web.request.NewCommentRequest;
 import com.gaotianchi.resourceservice.web.request.UpdateCommentRequest;
 import com.gaotianchi.resourceservice.web.response.APIResponse;
 import com.gaotianchi.resourceservice.web.response.CommentResponse;
+import com.gaotianchi.resourceservice.web.service.commentservice.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

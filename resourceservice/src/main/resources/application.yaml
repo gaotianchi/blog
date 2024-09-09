@@ -11,7 +11,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://127.0.0.1:9000/.well-known/jwks.json
+          jwk-set-uri: http://127.0.0.1:9000//oauth2/jwks
   datasource:
     url: jdbc:mysql://localhost:3306/blog_resource?createDatabaseIfNotExist=true
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -24,7 +24,10 @@ logging:
   level:
     org:
       springframework:
-        security: debug
+        security: trace
+        web: trace
+        oauth2: trace
+
 storage:
   root-location: "src/main/resources/static"
   article-image-uri: "uploads/articleImage"

@@ -1,14 +1,14 @@
-package com.gaotianchi.resourceservice.service.commentservice;
+package com.gaotianchi.resourceservice.web.service.commentservice;
 
 import com.gaotianchi.resourceservice.persistence.entity.ArticleEntity;
 import com.gaotianchi.resourceservice.persistence.entity.CommentEntity;
 import com.gaotianchi.resourceservice.persistence.entity.UserEntity;
 import com.gaotianchi.resourceservice.persistence.enums.CommentStatus;
 import com.gaotianchi.resourceservice.persistence.repo.CommentRepo;
-import com.gaotianchi.resourceservice.service.EntityBelongService;
-import com.gaotianchi.resourceservice.service.EntityFounderService;
 import com.gaotianchi.resourceservice.web.error.EntityNotFoundException;
 import com.gaotianchi.resourceservice.web.response.CommentResponse;
+import com.gaotianchi.resourceservice.web.service.EntityBelongService;
+import com.gaotianchi.resourceservice.web.service.EntityFounderService;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
