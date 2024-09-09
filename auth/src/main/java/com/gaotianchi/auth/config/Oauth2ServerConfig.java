@@ -55,7 +55,7 @@ public class Oauth2ServerConfig {
                 .redirectUri("http://localhost:8080/login/oauth2/code/blog-client")
                 .scope("profile")
                 .clientSettings(ClientSettings.builder()
-                        .requireAuthorizationConsent(true)
+                        .requireAuthorizationConsent(false)
                         .requireProofKey(true)
                         .build())
                 .tokenSettings(TokenSettings.builder()
