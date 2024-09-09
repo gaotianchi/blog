@@ -1,0 +1,35 @@
+server:
+    port: 8070
+
+logging:
+    level:
+        web: trace
+
+spring:
+    application:
+        name: auth
+    datasource:
+        url: jdbc:mysql://localhost:3306/blog_auth?createDatabaseIfNotExist=true
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: gaotianchi
+        password: 20040401
+    jpa:
+        hibernate:
+            ddl-auto: update
+    security:
+        oauth2:
+            authorizationserver:
+                client:
+                    public-client:
+                        registration:
+                            client-id: "blog-client"
+                            client-authentication-methods:
+                                - "none"
+                            authorization-grant-types:
+                                - "authorization_code"
+                            redirect-uris:
+                                - "http://localhost:8080/login/oauth2/code/blog-client"
+                            scopes:
+                                - "profile"
+                        require-authorization-consent: false
+                        require-proof-key: true

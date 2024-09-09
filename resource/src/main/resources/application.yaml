@@ -1,0 +1,34 @@
+server:
+  port: 8080
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  application:
+    name: resource
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://127.0.0.1:9000//oauth2/jwks
+  datasource:
+    url: jdbc:mysql://localhost:3306/blog_resource?createDatabaseIfNotExist=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: gaotianchi
+    password: 20040401
+  jpa:
+    hibernate:
+      ddl-auto: update
+logging:
+  level:
+    org:
+      springframework:
+        security: trace
+        web: trace
+        oauth2: trace
+
+storage:
+  root-location: "src/main/resources/static"
+  article-image-uri: "uploads/articleImage"
+  root-url: "http://localhost:8080"
