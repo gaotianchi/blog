@@ -17,15 +17,14 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 public class SecurityConfig {
-
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorizeRequests ->
-                        //convenient testing, open permissions
                         authorizeRequests.anyRequest().permitAll()
                 )
-                .oauth2Client(withDefaults());
+                .oauth2Client(withDefaults())
+        ;
         return http.build();
     }
 
@@ -37,10 +36,10 @@ public class SecurityConfig {
                 .build();
     }
 
+
     @Bean
     OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,
                                                           OAuth2AuthorizedClientRepository authorizedClientRepository) {
-
         OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder
                 .builder()
                 .authorizationCode()
@@ -48,7 +47,6 @@ public class SecurityConfig {
                 .build();
         DefaultOAuth2AuthorizedClientManager authorizedClientManager = new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientRepository);
         authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
-
         return authorizedClientManager;
     }
 }
