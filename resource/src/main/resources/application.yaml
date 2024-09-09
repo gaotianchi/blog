@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
 spring:
   servlet:
     multipart:
@@ -11,7 +11,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://127.0.0.1:9000//oauth2/jwks
+          jwk-set-uri: http://localhost:8070/oauth2/jwks
   datasource:
     url: jdbc:mysql://localhost:3306/blog_resource?createDatabaseIfNotExist=true
     driver-class-name: com.mysql.cj.jdbc.Driver
