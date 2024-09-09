@@ -1,4 +1,4 @@
-package com.gaotianchi.oauth2service.service;
+package com.gaotianchi.oauth2service.web.service;
 
 import com.gaotianchi.oauth2service.persistence.entity.RoleEntity;
 import com.gaotianchi.oauth2service.persistence.entity.UserEntity;

@@ -1,4 +1,4 @@
-package com.gaotianchi.oauth2service.config;
+package com.gaotianchi.oauth2service.web.controller;
 
 import com.gaotianchi.oauth2service.web.error.EntityAlreadyExistException;
 import com.gaotianchi.oauth2service.web.error.EntityNotFoundException;

@@ -1,3 +1,10 @@
+server:
+    port: 8070
+
+logging:
+    level:
+        web: trace
+
 spring:
     application:
         name: oauth2service
@@ -21,18 +28,8 @@ spring:
                             authorization-grant-types:
                                 - "authorization_code"
                             redirect-uris:
-                                - "http://localhost:3000/callback"
+                                - "http://localhost:8080/login/oauth2/code/blog-client"
                             scopes:
-                                - "openid"
                                 - "profile"
                         require-authorization-consent: false
                         require-proof-key: true
-
-logging:
-    level:
-        org:
-            springframework:
-                security: debug
-
-server:
-    port: 9000

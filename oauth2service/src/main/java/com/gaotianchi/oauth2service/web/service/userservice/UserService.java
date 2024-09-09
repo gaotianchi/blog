@@ -1,13 +1,13 @@
-package com.gaotianchi.oauth2service.service.userservice;
+package com.gaotianchi.oauth2service.web.service.userservice;
 
 import com.gaotianchi.oauth2service.persistence.entity.UserEntity;
 import com.gaotianchi.oauth2service.persistence.enums.AccountStatus;
 import com.gaotianchi.oauth2service.persistence.enums.RoleType;
 import com.gaotianchi.oauth2service.persistence.repo.UserRepo;
-import com.gaotianchi.oauth2service.service.EntityFounderService;
 import com.gaotianchi.oauth2service.web.error.EntityAlreadyExistException;
 import com.gaotianchi.oauth2service.web.error.EntityNotFoundException;
 import com.gaotianchi.oauth2service.web.response.UserResponse;
+import com.gaotianchi.oauth2service.web.service.EntityFounderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

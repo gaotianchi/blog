@@ -1,4 +1,4 @@
-package com.gaotianchi.oauth2service.service.userservice;
+package com.gaotianchi.oauth2service.web.service.userservice;
 
 import com.gaotianchi.oauth2service.web.response.UserResponse;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,11 +1,11 @@
 package com.gaotianchi.oauth2service.web.controller;
 
-import com.gaotianchi.oauth2service.service.userservice.UserService;
 import com.gaotianchi.oauth2service.web.request.NewUserRequest;
 import com.gaotianchi.oauth2service.web.request.UpdatePasswordRequest;
 import com.gaotianchi.oauth2service.web.request.UpdateUsernameRequest;
 import com.gaotianchi.oauth2service.web.response.APIResponse;
 import com.gaotianchi.oauth2service.web.response.UserResponse;
+import com.gaotianchi.oauth2service.web.service.userservice.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
