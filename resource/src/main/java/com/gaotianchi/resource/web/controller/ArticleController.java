@@ -5,7 +5,7 @@ import com.gaotianchi.resource.web.response.*;
 import com.gaotianchi.resource.web.service.articleservice.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,74 +20,74 @@ public class ArticleController {
     }
 
     @PostMapping("/articles/new")
-    public APIResponse<ArticleResponse> newArticle(@AuthenticationPrincipal UserDetails userDetails) {
-        ArticleResponse articleResponse = articleService.newArticle(userDetails.getUsername());
+    public APIResponse<ArticleResponse> newArticle(@AuthenticationPrincipal Jwt jwt) {
+        ArticleResponse articleResponse = articleService.newArticle(jwt.getSubject());
         return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/publish/{articleId}")
-    public APIResponse<ArticleResponse> publishArticle(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
-        ArticleResponse articleResponse = articleService.publishArticle(userDetails.getUsername(), articleId);
+    public APIResponse<ArticleResponse> publishArticle(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId) {
+        ArticleResponse articleResponse = articleService.publishArticle(jwt.getSubject(), articleId);
         return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/draft/{articleId}")
-    public APIResponse<ArticleResponse> setToDraft(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
-        ArticleResponse articleResponse = articleService.setToDraft(userDetails.getUsername(), articleId);
+    public APIResponse<ArticleResponse> setToDraft(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId) {
+        ArticleResponse articleResponse = articleService.setToDraft(jwt.getSubject(), articleId);
         return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/trash/{articleId}")
-    public APIResponse<ArticleResponse> setToTrash(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
-        ArticleResponse articleResponse = articleService.setToTrash(userDetails.getUsername(), articleId);
+    public APIResponse<ArticleResponse> setToTrash(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId) {
+        ArticleResponse articleResponse = articleService.setToTrash(jwt.getSubject(), articleId);
         return APIResponse.success(articleResponse);
     }
 
     @GetMapping("/articles/list")
-    public APIResponse<List<ArticleResponse>> listArticles(@AuthenticationPrincipal UserDetails userDetails) {
-        List<ArticleResponse> articleResponses = articleService.listArticles(userDetails.getUsername());
+    public APIResponse<List<ArticleResponse>> listArticles(@AuthenticationPrincipal Jwt jwt) {
+        List<ArticleResponse> articleResponses = articleService.listArticles(jwt.getSubject());
         return APIResponse.success(articleResponses);
     }
 
     @PatchMapping("/articles/update-content/{articleId}")
-    public APIResponse<ArticleResponse> updateContent(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
-        ArticleResponse articleResponse = articleService.updateContent(userDetails.getUsername(), articleId, updateArticleContentRequest.getTitle(), updateArticleContentRequest.getBody(), updateArticleContentRequest.getSummary(), updateArticleContentRequest.getSlug());
+    public APIResponse<ArticleResponse> updateContent(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
+        ArticleResponse articleResponse = articleService.updateContent(jwt.getSubject(), articleId, updateArticleContentRequest.getTitle(), updateArticleContentRequest.getBody(), updateArticleContentRequest.getSummary(), updateArticleContentRequest.getSlug());
         return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/set-series/{articleId}/{seriesId}")
-    public APIResponse<ArticleResponse> setSeries(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long seriesId) {
-        ArticleResponse articleResponse = articleService.setSeries(userDetails.getUsername(), articleId, seriesId);
+    public APIResponse<ArticleResponse> setSeries(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId, @PathVariable Long seriesId) {
+        ArticleResponse articleResponse = articleService.setSeries(jwt.getSubject(), articleId, seriesId);
         return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/remove-series/{articleId}")
-    public APIResponse<Void> removeSeries(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
-        articleService.removeSeries(userDetails.getUsername(), articleId);
+    public APIResponse<Void> removeSeries(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId) {
+        articleService.removeSeries(jwt.getSubject(), articleId);
         return APIResponse.success();
     }
 
     @PatchMapping("/articles/set-cover/{articleId}/{coverId}")
-    public APIResponse<ArticleResponse> setCover(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long coverId) {
-        ArticleResponse articleResponse = articleService.setCover(userDetails.getUsername(), articleId, coverId);
+    public APIResponse<ArticleResponse> setCover(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId, @PathVariable Long coverId) {
+        ArticleResponse articleResponse = articleService.setCover(jwt.getSubject(), articleId, coverId);
         return APIResponse.success(articleResponse);
     }
 
     @PatchMapping("/articles/remove-cover/{articleId}")
-    public APIResponse<Void> removeCover(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId) {
-        articleService.removeCover(userDetails.getUsername(), articleId);
+    public APIResponse<Void> removeCover(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId) {
+        articleService.removeCover(jwt.getSubject(), articleId);
         return APIResponse.success();
     }
 
     @PatchMapping("/articles/add-tag/{articleId}/{tagId}")
-    public APIResponse<TagResponse> addArticleTag(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long tagId) {
-        TagResponse tagResponse = articleService.addTag(userDetails.getUsername(), articleId, tagId);
+    public APIResponse<TagResponse> addArticleTag(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId, @PathVariable Long tagId) {
+        TagResponse tagResponse = articleService.addTag(jwt.getSubject(), articleId, tagId);
         return APIResponse.success(tagResponse);
     }
 
     @PatchMapping("/articles/remove-tag/{articleId}/{tagId}")
-    public APIResponse<Void> removeArticleTag(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long tagId) {
-        articleService.removeTag(userDetails.getUsername(), tagId, articleId);
+    public APIResponse<Void> removeArticleTag(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId, @PathVariable Long tagId) {
+        articleService.removeTag(jwt.getSubject(), tagId, articleId);
         return APIResponse.success();
     }
 
@@ -104,14 +104,14 @@ public class ArticleController {
     }
 
     @PatchMapping("/articles/add-image/{articleId}/{imageId}")
-    public APIResponse<ImageResponse> addImage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long imageId) {
-        ImageResponse imageResponse = articleService.addArticleImage(userDetails.getUsername(), articleId, imageId);
+    public APIResponse<ImageResponse> addImage(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId, @PathVariable Long imageId) {
+        ImageResponse imageResponse = articleService.addArticleImage(jwt.getSubject(), articleId, imageId);
         return APIResponse.success(imageResponse);
     }
 
     @PatchMapping("/articles/remove-image/{articleId}/{imageId}")
-    public APIResponse<ImageResponse> removeImage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long articleId, @PathVariable Long imageId) {
-        articleService.removeArticleImage(userDetails.getUsername(), articleId, imageId);
+    public APIResponse<ImageResponse> removeImage(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId, @PathVariable Long imageId) {
+        articleService.removeArticleImage(jwt.getSubject(), articleId, imageId);
         return APIResponse.success();
     }
 

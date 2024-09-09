@@ -9,7 +9,7 @@ import com.gaotianchi.resource.web.response.UserResponse;
 import com.gaotianchi.resource.web.service.userservice.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,26 +36,26 @@ public class UserController {
     }
 
     @PatchMapping("/users/set-avatar/{imageId}")
-    public APIResponse<UserResponse> setAvatar(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long imageId) {
-        UserResponse userResponse = userService.updateAvatar(userDetails.getUsername(), imageId);
+    public APIResponse<UserResponse> setAvatar(@AuthenticationPrincipal Jwt jwt, @PathVariable Long imageId) {
+        UserResponse userResponse = userService.updateAvatar(jwt.getSubject(), imageId);
         return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/update-info")
-    public APIResponse<UserResponse> updateInfo(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
-        UserResponse userResponse = userService.updateInfo(userDetails.getUsername(), updateUserInfoRequest.getPenName());
+    public APIResponse<UserResponse> updateInfo(@AuthenticationPrincipal Jwt jwt, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
+        UserResponse userResponse = userService.updateInfo(jwt.getSubject(), updateUserInfoRequest.getPenName());
         return APIResponse.success(userResponse);
     }
 
     @GetMapping("/users/list-articles")
-    public APIResponse<List<ArticleResponse>> listArticles(@AuthenticationPrincipal UserDetails userDetails) {
-        List<ArticleResponse> articleResponses = userService.listArticles(userDetails.getUsername());
+    public APIResponse<List<ArticleResponse>> listArticles(@AuthenticationPrincipal Jwt jwt) {
+        List<ArticleResponse> articleResponses = userService.listArticles(jwt.getSubject());
         return APIResponse.success(articleResponses);
     }
 
     @GetMapping("/users/list-series")
-    public APIResponse<List<SeriesResponse>> listSeries(@AuthenticationPrincipal UserDetails userDetails) {
-        List<SeriesResponse> seriesResponses = userService.listSeries(userDetails.getUsername());
+    public APIResponse<List<SeriesResponse>> listSeries(@AuthenticationPrincipal Jwt jwt) {
+        List<SeriesResponse> seriesResponses = userService.listSeries(jwt.getSubject());
         return APIResponse.success(seriesResponses);
     }
 }

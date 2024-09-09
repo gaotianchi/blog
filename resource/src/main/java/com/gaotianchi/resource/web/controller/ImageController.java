@@ -5,7 +5,7 @@ import com.gaotianchi.resource.web.response.ImageResponse;
 import com.gaotianchi.resource.web.service.imageservice.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,20 +23,20 @@ public class ImageController {
     }
 
     @PostMapping("/images/new")
-    public APIResponse<ImageResponse> newImage(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
-        ImageResponse imageResponse = imageService.newImage(file, userDetails.getUsername());
+    public APIResponse<ImageResponse> newImage(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal Jwt jwt) throws IOException {
+        ImageResponse imageResponse = imageService.newImage(file, jwt.getSubject());
         return APIResponse.success(imageResponse);
     }
 
     @GetMapping("/images/all")
-    public APIResponse<List<ImageResponse>> listImages(@AuthenticationPrincipal UserDetails userDetails) {
-        List<ImageResponse> imageResponses = imageService.listImages(userDetails.getUsername());
+    public APIResponse<List<ImageResponse>> listImages(@AuthenticationPrincipal Jwt jwt) {
+        List<ImageResponse> imageResponses = imageService.listImages(jwt.getSubject());
         return APIResponse.success(imageResponses);
     }
 
     @DeleteMapping("/images/delete/{imageId}")
-    public APIResponse<Void> deleteImage(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long imageId) throws IOException {
-        imageService.deleteImage(userDetails.getUsername(), imageId);
+    public APIResponse<Void> deleteImage(@AuthenticationPrincipal Jwt jwt, @PathVariable Long imageId) throws IOException {
+        imageService.deleteImage(jwt.getSubject(), imageId);
         return APIResponse.success();
     }
 }
