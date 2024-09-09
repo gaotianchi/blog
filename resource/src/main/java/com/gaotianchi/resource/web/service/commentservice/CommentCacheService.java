@@ -1,14 +1,12 @@
 package com.gaotianchi.resource.web.service.commentservice;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 public class CommentCacheService {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
+    //    @Autowired
     public CommentCacheService(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
