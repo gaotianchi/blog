@@ -21,7 +21,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/users/new").permitAll()
+                        .requestMatchers("/users/new").anonymous()
                         .requestMatchers("/users/**").hasRole("SUBSCRIBER")
                         .requestMatchers("/blogger/**").hasRole("BLOGGER")
                         .anyRequest().authenticated()
