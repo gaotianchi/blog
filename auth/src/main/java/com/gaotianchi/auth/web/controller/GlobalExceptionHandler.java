@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.io.IOException;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
@@ -22,13 +20,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public <T> APIResponse<T> handleEntityAlreadyExistException(EntityAlreadyExistException e) {
         return APIResponse.fail(409, e.getLocalizedMessage());
-    }
-
-    @ExceptionHandler(IOException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public <T> APIResponse<T> handleIoException(IOException e) {
-        System.out.println("unknown exception: " + e.getMessage());
-        return APIResponse.fail(400, e.getLocalizedMessage());
     }
 
     @ExceptionHandler(Exception.class)
