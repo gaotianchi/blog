@@ -33,3 +33,16 @@ spring:
                                 - "profile"
                         require-authorization-consent: false
                         require-proof-key: true
+                    admin-client:
+                        registration:
+                            client-id: "admin-client"
+                            client-authentication-methods:
+                                - "none"
+                            authorization-grant-types:
+                                - "authorization_code"
+                            redirect-uris:
+                                - "http:/localhost:8080/callback/code"
+                            scopes:
+                                - "detail"
+                        require-authorization-consent: false
+                        require-proof-key: true
