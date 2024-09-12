@@ -3,7 +3,9 @@ server:
 
 logging:
     level:
-        web: trace
+        org.springframework.security.oauth2.jwt: trace
+        org.springframework.security.oauth2.server: trace
+        org.springframework.web.server: trace
 
 spring:
     application:
@@ -28,7 +30,7 @@ spring:
                             authorization-grant-types:
                                 - "authorization_code"
                             redirect-uris:
-                                - "http://localhost:8080/login/oauth2/code/blog-client"
+                                - http://localhost:8080/login/oauth2/code/blog-client
                             scopes:
                                 - "profile"
                         require-authorization-consent: false
@@ -41,8 +43,8 @@ spring:
                             authorization-grant-types:
                                 - "authorization_code"
                             redirect-uris:
-                                - "http:/localhost:8080/callback/code"
+                                - http://localhost:8800/callback
                             scopes:
-                                - "detail"
+                                - "profile"
                         require-authorization-consent: false
                         require-proof-key: true
