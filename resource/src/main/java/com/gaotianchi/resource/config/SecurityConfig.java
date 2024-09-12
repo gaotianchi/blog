@@ -24,6 +24,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
+                                .requestMatchers("/picture/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users/new").permitAll()
                                 .requestMatchers("/users/**").hasRole("SUBSCRIBER")
                                 .requestMatchers("/blogger/**").hasRole("BLOGGER")

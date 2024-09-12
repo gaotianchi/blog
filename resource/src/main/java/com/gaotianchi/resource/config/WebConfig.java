@@ -17,7 +17,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(imageConfig.getUrlPattern()).addResourceLocations("file:" + imageConfig.getStorage().getRootPath());
+        registry.addResourceHandler(imageConfig.getUrlPattern())
+                .addResourceLocations("file:" + imageConfig.getStorage().getRootPath() + "/")
+                .setCachePeriod(3600)
+                .resourceChain(true);
     }
 
     public void checkRootPath() {

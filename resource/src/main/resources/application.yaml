@@ -1,7 +1,9 @@
 server:
   port: 8090
 
-
+logging:
+  level:
+    org.springframework.web: trace
 
 spring:
   servlet:
@@ -32,4 +34,4 @@ image:
     root-path: D:\Documents\blog\resource\uploads\images
   compression:
     enable: true
-  url-pattern: "/images/**"
+  url-pattern: "/picture/**"

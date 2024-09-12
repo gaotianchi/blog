@@ -35,3 +35,4 @@ build/
 *.jpg
 *.jpeg
 trash
+/uploads/
