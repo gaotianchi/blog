@@ -15,11 +15,8 @@ public class ImageEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private String fileDirName;
-    private String fileExtension;
-    private String originalUrl;
-    private String thumbnailUrl;
     private String alt;
+    private String urls;
 
     @ManyToOne
     private UserEntity user;

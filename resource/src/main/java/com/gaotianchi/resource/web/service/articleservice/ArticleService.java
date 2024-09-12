@@ -13,6 +13,7 @@ import com.gaotianchi.resource.web.response.TagResponse;
 import com.gaotianchi.resource.web.service.EntityBelongService;
 import com.gaotianchi.resource.web.service.EntityFounderService;
 import com.gaotianchi.resource.web.service.commentservice.CommentService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -211,6 +212,7 @@ public class ArticleService implements ArticleServiceInterface {
         }
     }
 
+    @SneakyThrows
     @Override
     public List<ImageResponse> listArticleImages(Long articleId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);

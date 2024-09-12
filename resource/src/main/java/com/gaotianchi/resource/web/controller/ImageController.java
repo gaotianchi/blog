@@ -3,6 +3,7 @@ package com.gaotianchi.resource.web.controller;
 import com.gaotianchi.resource.web.response.APIResponse;
 import com.gaotianchi.resource.web.response.ImageResponse;
 import com.gaotianchi.resource.web.service.imageservice.ImageService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -23,8 +24,8 @@ public class ImageController {
     }
 
     @PostMapping("/images/new")
-    public APIResponse<ImageResponse> newImage(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal Jwt jwt) throws IOException {
-        ImageResponse imageResponse = imageService.newImage(file, jwt.getSubject());
+    public APIResponse<ImageResponse> newImage(HttpServletRequest req, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal Jwt jwt) throws IOException {
+        ImageResponse imageResponse = imageService.newImage(req, file, jwt.getSubject());
         return APIResponse.success(imageResponse);
     }
 

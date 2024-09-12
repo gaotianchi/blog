@@ -1,12 +1,13 @@
 server:
   port: 8090
+
+
+
 spring:
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 20MB
-  application:
-    name: resource
   security:
     oauth2:
       resourceserver:
@@ -20,15 +21,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-logging:
-  level:
-    org:
-      springframework:
-        security: trace
-        web: trace
-        oauth2: trace
 
-storage:
-  root-location: "src/main/resources/static"
-  article-image-uri: "uploads/articleImage"
-  root-url: "http://localhost:8080"
+image:
+  supported-extensions:
+    - jpg
+    - jpeg
+    - png
+    - gif
+  storage:
+    root-path: D:\Documents\blog\resource\uploads\images
+  compression:
+    enable: true
+  url-pattern: "/images/**"
