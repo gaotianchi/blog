@@ -35,11 +35,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         for (BehaviorType behaviorType : BehaviorType.values()) {
             createBehaviorIfNotFound(behaviorType);
         }
+        createBloggerIfNotFound();
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setPenName("高天驰");
-        userEntity.setUsername("gaotianchi");
-        userRepo.save(userEntity);
     }
 
     private void createLevelIfNotFound(LevelType levelType) {
@@ -57,6 +54,16 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             behaviorEntity = new BehaviorEntity(behaviorType);
             behaviorEntity.setStoreIncrement(behaviorType.getDefaultScoreIncrement());
             behaviorRepo.save(behaviorEntity);
+        }
+    }
+
+    private void createBloggerIfNotFound() {
+        UserEntity userEntity = userRepo.findByUsername("gaotianchi");
+        if (userEntity == null) {
+            userEntity = new UserEntity();
+            userEntity.setPenName("高天驰");
+            userEntity.setUsername("gaotianchi");
+            userRepo.save(userEntity);
         }
     }
 }
