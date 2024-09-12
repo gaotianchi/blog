@@ -31,9 +31,7 @@ public class Oauth2ServerConfig {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(c -> {
-            c.configurationSource(corsConfigurationSource());
-        });
+        http.cors(c -> c.configurationSource(corsConfigurationSource()));
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .oidc(Customizer.withDefaults());    // Enable OpenID Connect 1.0
