@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta name="_csrf" content="[[${_csrf.token}]]"/>
+<meta name="_csrf_header" content="[[${_csrf.headerName}]]"/>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <title>Thymeleaf</title>
+</head>
+<body>
+<p th:text="${subject}" id="hello"></p>
+<button type="button" onclick="doSomething()">button</button>
+<script>
+    var token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    var header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    const pp = document.getElementById("hello");
+    function doSomething() {
+        fetch(`http://localhost:8080/get-token`, {
+            method: 'GET',
+            headers: {
+                [header]: token
+            }
+        }).then(async response => {
+
+            if (response.ok) {
+                console.log("ok")
+                console.log(response)
+                pp.textContent = await response.text()
+            }
+            console.log("not ok")
+            console.log(response)
+        });
+    }
+
+</script>
+</body>
+</html>
