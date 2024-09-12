@@ -1,4 +1,4 @@
-package com.gaotianchi.resource.web.controller;
+package com.gaotianchi.resource.web.controller.hook;
 
 import com.gaotianchi.resource.web.error.EntityAlreadyExistException;
 import com.gaotianchi.resource.web.error.EntityNotFoundException;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.io.IOException;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class AfterRequestHookExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public <T> APIResponse<T> handleEntityNotFoundException(EntityNotFoundException e) {

@@ -1,4 +1,4 @@
-package com.gaotianchi.resource.web.controller;
+package com.gaotianchi.resource.web.controller.hook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaotianchi.resource.persistence.enums.ResponseErrorCode;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class BeforeRequestHookAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
