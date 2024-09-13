@@ -39,6 +39,11 @@ public class Utils {
     }
 
     public static String getImageUrl(HttpServletRequest req, String filename) {
-        return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + "/images" + filename.replace("\\", "/");
+        return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + "/picture" + filename.replace("\\", "/");
+    }
+
+    public static Path getImageDir(String root, String name) {
+        Path rootPath = Paths.get(root);
+        return rootPath.resolve(name);
     }
 }

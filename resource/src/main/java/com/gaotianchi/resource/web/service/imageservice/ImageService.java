@@ -9,6 +9,7 @@ import com.gaotianchi.resource.persistence.enums.CompressionLevel;
 import com.gaotianchi.resource.persistence.repo.ImageRepo;
 import com.gaotianchi.resource.web.error.EntityNotFoundException;
 import com.gaotianchi.resource.web.response.ImageResponse;
+import com.gaotianchi.resource.web.service.EntityBelongService;
 import com.gaotianchi.resource.web.service.EntityFounderService;
 import com.gaotianchi.resource.web.service.imagestorageservice.ImageStorageService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -31,14 +34,16 @@ public class ImageService implements ImageServiceInterface {
     private final ImageStorageService imageStorageService;
     private final ImageConfig imageConfig;
     private final ObjectMapper objectMapper;
+    private final EntityBelongService entityBelongService;
 
     @Autowired
-    public ImageService(ImageStorageService imageStorageService, ImageRepo imageRepo, EntityFounderService entityFounderService, ImageConfig imageConfig, ObjectMapper objectMapper) {
+    public ImageService(ImageStorageService imageStorageService, ImageRepo imageRepo, EntityFounderService entityFounderService, ImageConfig imageConfig, ObjectMapper objectMapper, EntityBelongService entityBelongService) {
         this.imageRepo = imageRepo;
         this.entityFounderService = entityFounderService;
         this.imageStorageService = imageStorageService;
         this.imageConfig = imageConfig;
         this.objectMapper = objectMapper;
+        this.entityBelongService = entityBelongService;
     }
 
     @Override
@@ -46,13 +51,17 @@ public class ImageService implements ImageServiceInterface {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         Map<CompressionLevel, Path> imageStorageResponse = imageStorageService.save(req, file);
         Map<String, String> urlMap = new HashMap<>();
+        String name = "";
         for (CompressionLevel k : imageStorageResponse.keySet()) {
             String filename = imageStorageResponse.get(k).toString().replace(imageConfig.getStorage().getRootPath(), "");
             String url = Utils.getImageUrl(req, filename);
+            String[] parts = url.split("/");
+            name = parts[parts.length - 2];
             urlMap.put(k.name(), url);
         }
         ImageEntity imageEntity = new ImageEntity();
         imageEntity.setUser(userEntity);
+        imageEntity.setName(name);
         imageEntity.setUrls(objectMapper.writeValueAsString(urlMap));
         imageEntity = imageRepo.save(imageEntity);
         return new ImageResponse(imageEntity);
@@ -68,6 +77,17 @@ public class ImageService implements ImageServiceInterface {
 
     @Override
     public void deleteImage(String username, Long imageId) throws EntityNotFoundException, IOException {
-
+        ImageEntity imageEntity = entityBelongService.imageBelongToUser(username, imageId);
+        Path imageDir = Utils.getImageDir(imageConfig.getStorage().getRootPath(), imageEntity.getName());
+        if (Files.exists(imageDir) && Files.isDirectory(imageDir)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(imageDir)) {
+                for (Path file : stream) {
+                    Files.delete(file);
+                }
+            }
+            Files.delete(imageDir);
+        } else {
+            throw new EntityNotFoundException("The image directory does not exist or is not a directory.");
+        }
     }
 }

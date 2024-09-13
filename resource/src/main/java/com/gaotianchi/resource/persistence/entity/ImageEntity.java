@@ -16,6 +16,7 @@ public class ImageEntity {
     @GeneratedValue
     private Long id;
     private String alt;
+    private String name;
     @Column(length = 1000)
     private String urls;
 
