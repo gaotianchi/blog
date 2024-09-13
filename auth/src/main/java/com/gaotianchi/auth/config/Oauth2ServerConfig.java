@@ -59,6 +59,7 @@ public class Oauth2ServerConfig {
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
                 .issuer("http://localhost:8070")
+                .oidcUserInfoEndpoint("users/info")
                 .build();
     }
 
