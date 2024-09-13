@@ -8,8 +8,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 
 @Configuration
 @EnableWebSecurity
@@ -20,12 +18,14 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/.well-known/**").permitAll()
+                        .requestMatchers("/js/**").permitAll()
+                        .requestMatchers("/css/**").permitAll()
                         .requestMatchers("/users/new").anonymous()
                         .requestMatchers("/users/**").hasRole("SUBSCRIBER")
                         .requestMatchers("/blogger/**").hasRole("BLOGGER")
                         .anyRequest().authenticated()
                 )
-                .formLogin(withDefaults())
+                .formLogin(f -> f.loginPage("/login").permitAll())
         ;
         return http.build();
     }
