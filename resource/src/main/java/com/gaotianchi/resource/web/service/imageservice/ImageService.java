@@ -86,6 +86,7 @@ public class ImageService implements ImageServiceInterface {
                 }
             }
             Files.delete(imageDir);
+            imageRepo.delete(imageEntity);
         } else {
             throw new EntityNotFoundException("The image directory does not exist or is not a directory.");
         }
