@@ -1,5 +1,6 @@
 package com.gaotianchi.resource.web.response;
 
+import com.gaotianchi.resource.persistence.entity.ImageEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +24,12 @@ public class UserResponse {
     public UserResponse(UserEntity userEntity, boolean avatar) {
         setupData(userEntity);
         if (avatar) {
-            this.avatar = new ImageResponse(userEntity.getAvatar());
+            ImageEntity imageEntity = userEntity.getAvatar();
+            if (imageEntity == null) {
+                this.avatar = null;
+            } else {
+                this.avatar = new ImageResponse(userEntity.getAvatar());
+            }
         }
     }
 

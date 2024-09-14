@@ -19,4 +19,6 @@ public interface UserServiceInterface {
 
     List<SeriesResponse> listSeries(String username);
 
+    UserResponse getUserInfo(String username);
+
 }

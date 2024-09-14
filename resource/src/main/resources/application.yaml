@@ -3,7 +3,9 @@ server:
 
 logging:
   level:
-    org.springframework.web: trace
+    org.springframework.security.web: trace
+    org.springframework.security.oauth2: trace
+    web: trace
 
 spring:
   servlet:

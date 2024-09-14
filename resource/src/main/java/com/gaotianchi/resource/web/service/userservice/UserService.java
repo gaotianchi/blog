@@ -76,4 +76,10 @@ public class UserService implements UserServiceInterface {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         return userEntity.getSeriesEntities().stream().map(seriesEntity -> new SeriesResponse(seriesEntity, true)).collect(Collectors.toList());
     }
+
+    @Override
+    public UserResponse getUserInfo(String username) {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
+        return new UserResponse(userEntity, true);
+    }
 }

@@ -58,4 +58,10 @@ public class UserController {
         List<SeriesResponse> seriesResponses = userService.listSeries(jwt.getSubject());
         return APIResponse.success(seriesResponses);
     }
+
+    @GetMapping("/users/get-info")
+    public APIResponse<UserResponse> getUserInfo(@AuthenticationPrincipal Jwt jwt) {
+        UserResponse userResponse = userService.getUserInfo(jwt.getSubject());
+        return APIResponse.success(userResponse);
+    }
 }
