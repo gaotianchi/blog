@@ -6,14 +6,30 @@
 		:breadcrumbItems="[{ name: '空白页', routeName: 'BLANK' }]"
 	/>
 
-	<div class="row">
-		<div class="col-md-12">
-			<div class="tile">
-				<div class="tile-body">Create a beautiful dashboard</div>
-			</div>
+	<div class="row tile">
+		<div class="col-md-8 align-content-center">
+			<div>Create a beautiful dashboard</div>
+		</div>
+		<div class="col-md-4 align-content-center">
+			<button
+				type="button"
+				@click="showMessage('SUCCESS', AlertType.SUCCESS)"
+				class="btn btn-success m-1"
+			>
+				SUCCESS
+			</button>
+			<button
+				type="button"
+				@click="showMessage('ERROR', AlertType.ERROR)"
+				class="btn btn-danger m-1"
+			>
+				ERROR
+			</button>
 		</div>
 	</div>
 </template>
 <script lang="ts" setup>
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
+	import showMessage from '@/service/alert.service';
+	import { AlertType } from '@/enum';
 </script>
