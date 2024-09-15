@@ -11,7 +11,7 @@ import java.util.TimeZone;
 @Getter
 public class UserResponse {
     private Long id;
-    private String email;
+    private String username;
     private String penName;
     private TimeZone timeZone;
     private Integer score = 0;
@@ -35,7 +35,7 @@ public class UserResponse {
 
     public void setupData(UserEntity userEntity) {
         this.id = userEntity.getId();
-        this.email = userEntity.getUsername();
+        this.username = userEntity.getUsername();
         this.penName = userEntity.getPenName();
         this.timeZone = userEntity.getTimeZone();
         this.score = userEntity.getScore();
