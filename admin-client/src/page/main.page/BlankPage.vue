@@ -27,9 +27,13 @@
 			</button>
 		</div>
 	</div>
+	<div class="row tile">
+		<ModalComponent />
+	</div>
 </template>
 <script lang="ts" setup>
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
+	import ModalComponent from '@/component/ModalComponent.vue';
 </script>
