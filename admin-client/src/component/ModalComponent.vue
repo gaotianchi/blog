@@ -2,7 +2,7 @@
 	<!-- Modal Trigger Button -->
 	<button
 		type="button"
-		class="btn btn-primary w-auto"
+		class="btn btn-primary w-auto m-1"
 		data-bs-toggle="modal"
 		:data-bs-target="`#${modalId}`"
 	>
@@ -74,8 +74,7 @@
 		},
 		modalId: {
 			type: String,
-			// required: true,
-			default: 'modalId-' + Math.random(),
+			required: true,
 		},
 		show: {
 			type: Boolean,

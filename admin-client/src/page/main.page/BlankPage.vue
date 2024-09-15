@@ -28,7 +28,8 @@
 		</div>
 	</div>
 	<div class="row tile">
-		<ModalComponent />
+		<ModalComponent modalId="basicModal" />
+		<AvatarEditorComponent />
 	</div>
 </template>
 <script lang="ts" setup>
@@ -36,4 +37,5 @@
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
+	import AvatarEditorComponent from '@/component/AvatarEditorComponent.vue';
 </script>
