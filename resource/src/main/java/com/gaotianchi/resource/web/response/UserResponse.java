@@ -13,7 +13,7 @@ public class UserResponse {
     private Long id;
     private String username;
     private String penName;
-    private TimeZone timeZone;
+    private TimeZone timezone;
     private Integer score = 0;
     private ImageResponse avatar;
 
@@ -37,7 +37,7 @@ public class UserResponse {
         this.id = userEntity.getId();
         this.username = userEntity.getUsername();
         this.penName = userEntity.getPenName();
-        this.timeZone = userEntity.getTimeZone();
+        this.timezone = userEntity.getTimeZone();
         this.score = userEntity.getScore();
     }
 }

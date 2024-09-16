@@ -20,6 +20,8 @@ public class UserEntity {
     private String penName;
     private TimeZone timeZone;
     private Integer score = 0;
+    @Column(length = 1000)
+    private String profile;
 
     @ManyToOne
     private ImageEntity avatar;
