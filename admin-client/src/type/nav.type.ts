@@ -5,6 +5,12 @@ export type SidebarItem = {
 	children?: SidebarItem[];
 };
 
+export type NavBarItem = {
+	title: string;
+	bsItemName: string;
+	routeName: string;
+};
+
 export type BreadcrumbItem = {
 	name: string;
 	routeName: string;
