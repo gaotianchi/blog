@@ -7,7 +7,7 @@ import com.gaotianchi.auth.web.response.APIResponse;
 import com.gaotianchi.auth.web.response.UserResponse;
 import com.gaotianchi.auth.web.service.userservice.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,26 +25,26 @@ public class UserController {
     }
 
     @GetMapping("/users/info")
-    public APIResponse<UserResponse> getInfo(@AuthenticationPrincipal UserDetails userDetails) {
-        UserResponse userResponse = userService.getInfo(userDetails.getUsername());
+    public APIResponse<UserResponse> getInfo(@AuthenticationPrincipal Jwt jwt) {
+        UserResponse userResponse = userService.getInfo(jwt.getSubject());
         return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/update-username")
-    public APIResponse<UserResponse> updateUsername(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdateUsernameRequest updateUsernameRequest) {
-        UserResponse userResponse = userService.updateUsername(userDetails.getUsername(), updateUsernameRequest.getUsername());
+    public APIResponse<UserResponse> updateUsername(@AuthenticationPrincipal Jwt jwt, @RequestBody UpdateUsernameRequest updateUsernameRequest) {
+        UserResponse userResponse = userService.updateUsername(jwt.getSubject(), updateUsernameRequest.getUsername());
         return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/update-password")
-    public APIResponse<UserResponse> updatePassword(@AuthenticationPrincipal UserDetails userDetails, @RequestBody UpdatePasswordRequest updatePasswordRequest) {
-        UserResponse userResponse = userService.updatePassword(userDetails.getUsername(), updatePasswordRequest.getPassword());
+    public APIResponse<UserResponse> updatePassword(@AuthenticationPrincipal Jwt jwt, @RequestBody UpdatePasswordRequest updatePasswordRequest) {
+        UserResponse userResponse = userService.updatePassword(jwt.getSubject(), updatePasswordRequest.getPassword());
         return APIResponse.success(userResponse);
     }
 
     @PatchMapping("/users/deregister")
-    public APIResponse<UserResponse> deregister(@AuthenticationPrincipal UserDetails userDetails) {
-        UserResponse userResponse = userService.deregister(userDetails.getUsername());
+    public APIResponse<UserResponse> deregister(@AuthenticationPrincipal Jwt jwt) {
+        UserResponse userResponse = userService.deregister(jwt.getSubject());
         return APIResponse.success(userResponse);
     }
 
