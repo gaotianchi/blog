@@ -16,7 +16,7 @@
 		min-width: 300px;
 		position: fixed;
 		bottom: 20px;
-		z-index: 1000;
+		z-index: 99999;
 		left: 20px;
 
 		/* 初始状态：完全隐藏在屏幕左侧 */
