@@ -73,13 +73,13 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     private void createBlogger(List<RoleEntity> roleEntities) {
-        UserEntity blogger = userRepo.findByUsername("gaotianchi");
+        UserEntity blogger = userRepo.findByUsername("6159984@gmail.com");
         if (blogger == null) {
             blogger = new UserEntity();
-            blogger.setUsername("gaotianchi");
+            blogger.setUsername("6159984@gmail.com");
             blogger.setAccountStatus(AccountStatus.ACTIVATED);
             blogger.setRegistrationDateTime(OffsetDateTime.now());
-            blogger.setPassword(passwordEncoder.encode("gaotianchi"));
+            blogger.setPassword(passwordEncoder.encode("pass"));
             blogger.setRoles(roleEntities);
             userRepo.save(blogger);
         }
