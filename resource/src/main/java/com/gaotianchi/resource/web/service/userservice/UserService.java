@@ -43,13 +43,15 @@ public class UserService implements UserServiceInterface {
     @Override
     public UserResponse updateInfo(String username, String penName, String profile, Long avatarId, String timezone) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
-        ImageEntity imageEntity = entityFounderService.getImageOrNotFound(avatarId);
         userEntity.setPenName(penName);
-        userEntity.setAvatar(imageEntity);
+        if (avatarId != null) {
+            ImageEntity imageEntity = entityFounderService.getImageOrNotFound(avatarId);
+            userEntity.setAvatar(imageEntity);
+        }
         userEntity.setProfile(profile);
         userEntity.setTimeZone(TimeZone.getTimeZone(timezone));
         userEntity = userRepo.save(userEntity);
-        return new UserResponse(userEntity);
+        return new UserResponse(userEntity, true);
     }
 
     @Override
