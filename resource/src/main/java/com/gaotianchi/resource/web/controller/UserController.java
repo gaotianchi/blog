@@ -43,7 +43,7 @@ public class UserController {
 
     @PatchMapping("/users/update-info")
     public APIResponse<UserResponse> updateInfo(@AuthenticationPrincipal Jwt jwt, @RequestBody UpdateUserInfoRequest updateUserInfoRequest) {
-        UserResponse userResponse = userService.updateInfo(jwt.getSubject(), updateUserInfoRequest.getPenName());
+        UserResponse userResponse = userService.updateInfo(jwt.getSubject(), updateUserInfoRequest.getPenName(), updateUserInfoRequest.getProfile(), updateUserInfoRequest.getAvatarId(), updateUserInfoRequest.getTimezone());
         return APIResponse.success(userResponse);
     }
 

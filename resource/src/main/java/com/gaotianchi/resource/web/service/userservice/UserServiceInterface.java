@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserServiceInterface {
     UserResponse newUser(String penName, String username);
 
-    UserResponse updateInfo(String username, String penName);
+    UserResponse updateInfo(String username, String penName, String profile, Long avatarId, String timezone);
 
     UserResponse updateAvatar(String username, Long imageId);
 

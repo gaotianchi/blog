@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,9 +41,13 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public UserResponse updateInfo(String username, String penName) throws EntityNotFoundException {
+    public UserResponse updateInfo(String username, String penName, String profile, Long avatarId, String timezone) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
+        ImageEntity imageEntity = entityFounderService.getImageOrNotFound(avatarId);
         userEntity.setPenName(penName);
+        userEntity.setAvatar(imageEntity);
+        userEntity.setProfile(profile);
+        userEntity.setTimeZone(TimeZone.getTimeZone(timezone));
         userEntity = userRepo.save(userEntity);
         return new UserResponse(userEntity);
     }

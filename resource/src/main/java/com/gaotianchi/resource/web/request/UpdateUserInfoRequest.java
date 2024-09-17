@@ -7,4 +7,7 @@ import lombok.Setter;
 @Setter
 public class UpdateUserInfoRequest {
     private String penName;
+    private String timezone;
+    private Long avatarId;
+    private String profile;
 }

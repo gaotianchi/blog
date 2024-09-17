@@ -16,6 +16,7 @@ public class UserResponse {
     private TimeZone timezone;
     private Integer score = 0;
     private ImageResponse avatar;
+    private String profile;
 
     public UserResponse(UserEntity userEntity) {
         setupData(userEntity);
@@ -39,5 +40,6 @@ public class UserResponse {
         this.penName = userEntity.getPenName();
         this.timezone = userEntity.getTimeZone();
         this.score = userEntity.getScore();
+        this.profile = userEntity.getProfile();
     }
 }
