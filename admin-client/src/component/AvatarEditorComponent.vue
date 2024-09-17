@@ -7,6 +7,7 @@
 						:width="200"
 						:height="200"
 						:border="2"
+						:image="initUrl"
 						ref="avatarEditorRef"
 						@image-ready="(scale: number) => {scaleVal = scale}"
 						v-model:scale="scaleVal"
@@ -37,7 +38,7 @@
 	const props = defineProps({
 		initUrl: {
 			type: String,
-			default: '../assets/default/avatar.svg',
+			default: '/default/avatar.svg',
 		},
 	});
 	const emits = defineEmits(['saveImage']);
@@ -68,6 +69,7 @@
 			// 创建 multipart/form-data
 			const formData = new FormData();
 			formData.append('file', blob, 'avatar.png'); // 添加文件
+			
 		}
 	};
 

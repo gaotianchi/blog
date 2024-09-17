@@ -2,7 +2,8 @@
 	<!-- Modal Trigger Button -->
 	<button
 		type="button"
-		class="btn btn-primary w-auto m-1"
+		class="btn w-auto m-1"
+		:class="buttonStyle"
 		data-bs-toggle="modal"
 		:data-bs-target="`#${modalId}`"
 	>
@@ -63,6 +64,10 @@
 		buttonText: {
 			type: String,
 			default: '弹出模态框',
+		},
+		buttonStyle: {
+			type: String,
+			default: 'btn-primary',
 		},
 		closeButtonText: {
 			type: String,

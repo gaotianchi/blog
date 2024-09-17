@@ -6,5 +6,8 @@ export const userRouter: RouteRecordRaw[] = [
 		name: 'BLOGGER_SETTING',
 		path: '/blogger-setting',
 		component: BloggerSettingPage,
+		meta: {
+			requiresAuth: true,
+		},
 	},
 ];

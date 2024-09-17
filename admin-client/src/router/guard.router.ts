@@ -8,7 +8,7 @@ export const authGuard = (
 ) => {
 	authService.isAuthenticated().then(result => {
 		if (!result && to.meta.requiresAuth) {
-			next('/signin');
+			next('/sign-in');
 		} else {
 			next();
 		}
