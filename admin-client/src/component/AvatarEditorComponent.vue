@@ -1,13 +1,24 @@
 <template>
-	<ModalComponent modal-id="avatar-modal" title="编辑头像" button-text="编辑头像">
+	<ModalComponent
+		@save-change="handleSave"
+		modal-id="avatar-modal"
+		title="编辑头像"
+		button-text="编辑头像"
+	>
+		<template #button>
+			<button type="button" class="btn btn-link p-1">
+				<i class="bi bi-pencil-square"></i>
+			</button>
+		</template>
 		<template #body>
 			<div class="row">
 				<div class="col-sm-8">
 					<avatar-editor
+						:key="initImageUrl"
 						:width="200"
 						:height="200"
 						:border="2"
-						:image="initUrl"
+						:image="initImageUrl"
 						ref="avatarEditorRef"
 						@image-ready="(scale: number) => {scaleVal = scale}"
 						v-model:scale="scaleVal"
@@ -32,16 +43,23 @@
 <script lang="ts" setup>
 	import ModalComponent from './ModalComponent.vue';
 	import { AvatarEditor } from 'avatar-editor';
-	import { onMounted, onUnmounted, ref } from 'vue';
+	import { computed, onMounted, onUnmounted, ref } from 'vue';
+	import { makeRequest } from '@/service/request.service';
+	import showMessage from '@/service/alert.service';
+	import { AlertType } from '@/enum';
+	import type { APIResponse, ImageResponse } from '@/type/response.type';
 
 	// 定义可传入的 props
-	const props = defineProps({
-		initUrl: {
-			type: String,
-			default: '/default/avatar.svg',
-		},
+	const props = defineProps<{
+		initUrl?: string;
+	}>();
+
+	const initImageUrl = computed(() => {
+		return props.initUrl;
 	});
-	const emits = defineEmits(['saveImage']);
+	const emits = defineEmits<{
+		save: [imageResponse: ImageResponse];
+	}>();
 
 	const scaleVal = ref<number>(1);
 	const scaleStep = 0.02;
@@ -61,7 +79,7 @@
 		}
 	};
 
-	const handleSave = () => {
+	const handleSave = async () => {
 		if (avatarEditorRef.value) {
 			const canvasData = avatarEditorRef.value.getImageScaled();
 			const img = canvasData.toDataURL('image/png');
@@ -69,7 +87,16 @@
 			// 创建 multipart/form-data
 			const formData = new FormData();
 			formData.append('file', blob, 'avatar.png'); // 添加文件
-			
+			const response: APIResponse<ImageResponse> = await makeRequest('/images/new', {
+				method: 'POST',
+				body: formData,
+			});
+			if (response.code === 0) {
+				showMessage('图片上传成功。', AlertType.SUCCESS);
+				emits('save', response.data);
+			} else {
+				showMessage('图片上传失败，请稍后重试！', AlertType.ERROR);
+			}
 		}
 	};
 
