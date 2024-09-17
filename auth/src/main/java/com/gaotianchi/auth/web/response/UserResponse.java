@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
 
 @Setter
 @Getter
-public class UserResponse implements ResponseInterface<UserEntity> {
+public class UserResponse {
     private Long id;
     private String username;
     private OffsetDateTime lockedUntil;
@@ -19,7 +19,6 @@ public class UserResponse implements ResponseInterface<UserEntity> {
         initOriginalData(userEntity);
     }
 
-    @Override
     public void initOriginalData(UserEntity entity) {
         this.id = entity.getId();
         this.username = entity.getUsername();

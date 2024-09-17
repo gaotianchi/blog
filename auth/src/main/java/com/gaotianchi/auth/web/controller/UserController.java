@@ -24,7 +24,7 @@ public class UserController {
         return APIResponse.success(userResponse);
     }
 
-    @GetMapping("/users/info")
+    @GetMapping("/users/get-info")
     public APIResponse<UserResponse> getInfo(@AuthenticationPrincipal Jwt jwt) {
         UserResponse userResponse = userService.getInfo(jwt.getSubject());
         return APIResponse.success(userResponse);
