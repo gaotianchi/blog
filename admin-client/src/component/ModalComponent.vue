@@ -7,7 +7,7 @@
 		data-bs-toggle="modal"
 		:data-bs-target="`#${modalId}`"
 	>
-		{{ buttonText }}
+		<slot name="button">{{ buttonText }}</slot>
 	</button>
 
 	<!-- Modal -->
