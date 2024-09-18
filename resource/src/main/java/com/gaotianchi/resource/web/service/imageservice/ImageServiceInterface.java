@@ -10,7 +10,7 @@ import java.util.List;
 public interface ImageServiceInterface {
     ImageResponse newImage(HttpServletRequest req, MultipartFile file, String username) throws IOException;
 
-    List<ImageResponse> listImages(String username);
+    List<ImageResponse> listUserImages(String username, Integer page, String field);
 
     void deleteImage(String username, Long imageId) throws IOException;
 }

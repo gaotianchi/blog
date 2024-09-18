@@ -30,8 +30,8 @@ public class ImageController {
     }
 
     @GetMapping("/images/all")
-    public APIResponse<List<ImageResponse>> listImages(@AuthenticationPrincipal Jwt jwt) {
-        List<ImageResponse> imageResponses = imageService.listImages(jwt.getSubject());
+    public APIResponse<List<ImageResponse>> listUserImages(@AuthenticationPrincipal Jwt jwt, @RequestParam String field, @RequestParam Integer page) {
+        List<ImageResponse> imageResponses = imageService.listUserImages(jwt.getSubject(), page, field);
         return APIResponse.success(imageResponses);
     }
 

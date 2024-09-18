@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,9 +69,21 @@ public class ImageService implements ImageServiceInterface {
     }
 
     @Override
-    public List<ImageResponse> listImages(String username) throws EntityNotFoundException {
+    public List<ImageResponse> listUserImages(String username, Integer page, String field) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
-        return userEntity.getImageEntities().stream()
+        List<ImageEntity> imageEntities = new ArrayList<>();
+        switch (field) {
+            case "avatar":
+                imageEntities = imageRepo.findByForAvatarIsTrueAndUser(userEntity);
+                break;
+            case "series":
+                imageEntities = imageRepo.findByForSeriesIsTrueAndUser(userEntity);
+                break;
+            default:
+                imageEntities = imageRepo.findByForArticleIsTrueAndUser(userEntity);
+                break;
+        }
+        return imageEntities.stream()
                 .map(ImageResponse::new)
                 .collect(Collectors.toList());
     }
