@@ -6,7 +6,7 @@
 		:breadcrumbItems="[{ name: '空白页', routeName: 'BLANK' }]"
 	/>
 
-	<div class="row tile">
+	<!-- <div class="row tile">
 		<div class="col-md-8 align-content-center">
 			<div>Create a beautiful dashboard</div>
 		</div>
@@ -26,16 +26,18 @@
 				ERROR
 			</button>
 		</div>
-	</div>
-	<div class="row tile">
+	</div> -->
+	<!-- <div class="row tile">
 		<ModalComponent modalId="basicModal" />
 		<AvatarEditorComponent />
-	</div>
+	</div> -->
+	<AccountSettingComponent />
 </template>
 <script lang="ts" setup>
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
-	import showMessage from '@/service/alert.service';
-	import { AlertType } from '@/enum';
-	import ModalComponent from '@/component/ModalComponent.vue';
-	import AvatarEditorComponent from '@/component/AvatarEditorComponent.vue';
+	// import showMessage from '@/service/alert.service';
+	// import { AlertType } from '@/enum';
+	// import ModalComponent from '@/component/ModalComponent.vue';
+	// import AvatarEditorComponent from '@/component/AvatarEditorComponent.vue';
+	import AccountSettingComponent from '@/component/setting.component/AccountSettingComponent.vue';
 </script>

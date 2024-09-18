@@ -212,7 +212,7 @@
 				loading.value = false;
 				currentAvatar.value = userResponse.value.avatar;
 				currentPenName.value = userResponse.value.penName;
-				currentProfile.value = userResponse.value.profile;
+				currentProfile.value = userResponse.value.profile || '';
 				currentTimezone.value = userResponse.value.timezone;
 				console.log(userResponse.value);
 			} else {

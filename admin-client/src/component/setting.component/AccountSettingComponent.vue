@@ -19,11 +19,47 @@
 		<div class="tile-title">账户信息</div>
 		<div class="tile-body row">
 			<ul class="list-group list-group-flush">
-				<li class="list-group-item">An item</li>
-				<li class="list-group-item">A second item</li>
-				<li class="list-group-item">A third item</li>
-				<li class="list-group-item">A fourth item</li>
-				<li class="list-group-item">And a fifth one</li>
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-sm-2 col-form-label align-content-center">
+							<span>邮箱</span>
+						</div>
+						<div class="col-sm-9 align-content-center">
+							<span>{{ currentAccountData?.username }}</span>
+						</div>
+						<div class="col-sm-1 text-end">
+							<button type="button" class="btn btn-link p-1">
+								<i class="bi bi-pencil-square"></i>
+							</button>
+						</div>
+					</div>
+				</li>
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-sm-2 col-form-label align-content-center">
+							<span>密码</span>
+						</div>
+						<div class="col-sm-9 align-content-center">
+							<span>***********</span>
+						</div>
+						<div class="col-sm-1 text-end">
+							<button type="button" class="btn btn-link p-1">
+								<i class="bi bi-pencil-square"></i>
+							</button>
+						</div>
+					</div>
+				</li>
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-sm-2 col-form-label align-content-center">
+							<span>注册日期</span>
+						</div>
+						<div class="col-sm-9 align-content-center">
+							<span>{{ currentAccountData?.registrationDateTime }}</span>
+						</div>
+						<div class="col-sm-1 text-end"></div>
+					</div>
+				</li>
 			</ul>
 		</div>
 	</div>
@@ -34,11 +70,14 @@
 	import { onMounted, ref } from 'vue';
 
 	const loading = ref(true);
-	// onMounted(async () => {
-	// 	const response: APIResponse<UserAccountResponse> = await makeRequest(
-	// 		'/users/get-info',
-	// 		'auth'
-	// 	);
-	// 	console.log(response);
-	// });
+	const currentAccountData = ref<UserAccountResponse | null>(null);
+	onMounted(async () => {
+		const response: APIResponse<UserAccountResponse> = await makeRequest(
+			'/users/get-info',
+			'auth'
+		);
+		console.log(response);
+		currentAccountData.value = response.data;
+		loading.value = false;
+	});
 </script>

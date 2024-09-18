@@ -19,14 +19,16 @@ export type ImageResponse = {
 export type UserResponse = {
 	id: number;
 	username: string;
-	profile: string;
+	profile: string | null;
 	timezone: string;
 	penName: string;
-	avatar: ImageResponse;
+	avatar: ImageResponse | null;
 };
 
 export type UserAccountResponse = {
 	id: number;
 	username: string;
 	registrationDateTime: Date;
+	lockedUntil: Date | null;
+	accountStatus: string;
 };

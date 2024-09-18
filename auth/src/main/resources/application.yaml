@@ -1,5 +1,8 @@
 server:
     port: 8070
+    servlet:
+        session:
+            persistent: false
 
 logging:
     level:
