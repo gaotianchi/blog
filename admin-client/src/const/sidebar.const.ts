@@ -15,6 +15,17 @@ export const sidebarDataItems: SidebarItem[] = [
 				bsIconName: 'bi-file-text',
 			},
 			{
+				title: '图片',
+				bsIconName: 'bi-file-earmark-image',
+				routeName: 'PICTURE',
+			},
+		],
+	},
+	{
+		title: '组织',
+		bsIconName: 'bi-diagram-2-fill',
+		children: [
+			{
 				title: '标签',
 				bsIconName: 'bi-tag',
 			},
