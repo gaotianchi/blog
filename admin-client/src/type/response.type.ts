@@ -24,3 +24,9 @@ export type UserResponse = {
 	penName: string;
 	avatar: ImageResponse;
 };
+
+export type UserAccountResponse = {
+	id: number;
+	username: string;
+	registrationDateTime: Date;
+};

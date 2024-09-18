@@ -1,10 +1,12 @@
 import { User } from 'oidc-client-ts';
 import authService from '@/service/auth.service';
 import type { APIResponse } from '@/type/response.type';
-import { RESOURCE_BASE_URL } from '@/config/global.config';
+import { AUTH_BASE_URL, RESOURCE_BASE_URL } from '@/config/global.config';
+import { useRouter } from 'vue-router';
 
 export async function makeRequest<T>(
 	uri: string,
+	baseUrl: 'auth' | 'resource',
 	options: RequestInit = {}
 ): Promise<APIResponse<T>> {
 	try {
@@ -29,8 +31,21 @@ export async function makeRequest<T>(
 			...options,
 			headers: headers, // 使用扩展后的 headers
 		};
+		let rootUrl = '';
+		const base = baseUrl ? baseUrl : 'resource';
+		switch (base) {
+			case 'auth':
+				rootUrl = AUTH_BASE_URL;
+				break;
+			default:
+				rootUrl = RESOURCE_BASE_URL;
+				break;
+		}
+		const response = await fetch(rootUrl + uri, requestOptions);
 
-		const response = await fetch(RESOURCE_BASE_URL + uri, requestOptions);
+		if (response.status === 403 || response.status === 401) {
+			window.location.href = '/sign-in';
+		}
 
 		if (!response.ok) {
 			throw new Error(`HTTP error! Status: ${response.status}`);

@@ -23,7 +23,7 @@
 					:src="
 						currentAvatar?.urls.ORIGINAL
 							? currentAvatar?.urls.ORIGINAL
-							: '/public/default/avatar.svg'
+							: '/default/avatar.svg'
 					"
 					class="img-thumbnail"
 					alt="avatar"
@@ -202,7 +202,10 @@
 	// 初始化组件数据
 	const userResponse = ref<UserResponse | null>(null);
 	onMounted(async () => {
-		const response: APIResponse<UserResponse> = await makeRequest('/users/get-info');
+		const response: APIResponse<UserResponse> = await makeRequest(
+			'/users/get-info',
+			'resource'
+		);
 		if (response.code === 0) {
 			userResponse.value = response.data;
 			if (userResponse.value) {
@@ -227,15 +230,19 @@
 		penNameReadonly.value = true;
 		timezoneDisabled.value = true;
 		profileDisabled.value = true;
-		const response: APIResponse<UserResponse> = await makeRequest('/users/update-info', {
-			method: 'PATCH',
-			body: JSON.stringify({
-				penName: currentPenName.value,
-				avatarId: currentAvatar.value?.id,
-				timezone: currentTimezone.value,
-				profile: currentProfile.value,
-			}),
-		});
+		const response: APIResponse<UserResponse> = await makeRequest(
+			'/users/update-info',
+			'resource',
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					penName: currentPenName.value,
+					avatarId: currentAvatar.value?.id,
+					timezone: currentTimezone.value,
+					profile: currentProfile.value,
+				}),
+			}
+		);
 		if (response.code === 0) {
 			showMessage('个人简介更新成功。', AlertType.SUCCESS);
 			userResponse.value = response.data;

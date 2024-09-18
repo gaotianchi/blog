@@ -87,10 +87,14 @@
 			// 创建 multipart/form-data
 			const formData = new FormData();
 			formData.append('file', blob, 'avatar.png'); // 添加文件
-			const response: APIResponse<ImageResponse> = await makeRequest('/images/new', {
-				method: 'POST',
-				body: formData,
-			});
+			const response: APIResponse<ImageResponse> = await makeRequest(
+				'/images/new',
+				'resource',
+				{
+					method: 'POST',
+					body: formData,
+				}
+			);
 			if (response.code === 0) {
 				showMessage('图片上传成功。', AlertType.SUCCESS);
 				emits('save', response.data);
