@@ -48,10 +48,12 @@ public class Oauth2ServerConfig {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(c -> c.configurationSource(corsConfigurationSource()));
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-                .oidc(Customizer.withDefaults());    // Enable OpenID Connect 1.0
+        http
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
+                .getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+                .oidc(Customizer.withDefaults());
+
         http
                 .exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(
@@ -81,7 +83,6 @@ public class Oauth2ServerConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-        // 定义客户端
         RegisteredClient blogClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("blog-client")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
@@ -110,15 +111,15 @@ public class Oauth2ServerConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:8800");  // 替换为前端地址
+        configuration.addAllowedOrigin("http://localhost:8800");
+        configuration.addAllowedOrigin("http://localhost:8090");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);  // 如果有认证信息需要传递（如 Authorization 头）
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 
 
     @Bean
