@@ -19,6 +19,9 @@ public class ImageEntity {
     private String name;
     @Column(length = 1000)
     private String urls;
+    private boolean forAvatar = false;
+    private boolean forArticle = false;
+    private boolean forSeries = false;
 
     @ManyToOne
     private UserEntity user;

@@ -122,7 +122,8 @@ public class ArticleService implements ArticleServiceInterface {
     public ArticleResponse setCover(String email, Long articleId, Long coverId) throws EntityNotFoundException {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
         ImageEntity imageEntity = entityBelongService.imageBelongToUser(email, coverId);
-        articleEntity.setCover(imageEntity);
+        imageEntity.setForArticle(true);
+        articleEntity.setCover(imageRepo.save(imageEntity));
         articleEntity = articleRepo.save(articleEntity);
         return new ArticleResponse(articleEntity, false, true);
     }

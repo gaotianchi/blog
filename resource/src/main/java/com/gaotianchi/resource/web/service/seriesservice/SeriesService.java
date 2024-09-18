@@ -5,6 +5,7 @@ import com.gaotianchi.resource.persistence.entity.ImageEntity;
 import com.gaotianchi.resource.persistence.entity.SeriesEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import com.gaotianchi.resource.persistence.repo.ArticleRepo;
+import com.gaotianchi.resource.persistence.repo.ImageRepo;
 import com.gaotianchi.resource.persistence.repo.SeriesRepo;
 import com.gaotianchi.resource.web.error.EntityNotFoundException;
 import com.gaotianchi.resource.web.response.ArticleResponse;
@@ -23,23 +24,26 @@ public class SeriesService implements SeriesServiceInterface {
     private final SeriesRepo seriesRepo;
     private final ArticleRepo articleRepo;
     private final EntityFounderService entityFounderService;
+    private final ImageRepo imageRepo;
 
     @Autowired
-    public SeriesService(SeriesRepo seriesRepo, ArticleRepo articleRepo, EntityFounderService entityFounderService) {
+    public SeriesService(SeriesRepo seriesRepo, ArticleRepo articleRepo, EntityFounderService entityFounderService, ImageRepo imageRepo) {
         this.seriesRepo = seriesRepo;
         this.articleRepo = articleRepo;
         this.entityFounderService = entityFounderService;
+        this.imageRepo = imageRepo;
     }
 
     @Override
     public SeriesResponse newSeries(String email, String name, Long coverId) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
         ImageEntity imageEntity = entityFounderService.getImageOrNotFound(coverId);
+        imageEntity.setForSeries(true);
         SeriesEntity seriesEntity = new SeriesEntity();
         seriesEntity.setUser(userEntity);
         seriesEntity.setCreationDatetime(OffsetDateTime.now());
         seriesEntity.setName(name);
-        seriesEntity.setCover(imageEntity);
+        seriesEntity.setCover(imageRepo.save(imageEntity));
         seriesEntity = seriesRepo.save(seriesEntity);
         return new SeriesResponse(seriesEntity, true);
     }

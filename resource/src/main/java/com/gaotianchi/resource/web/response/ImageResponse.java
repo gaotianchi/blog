@@ -16,6 +16,9 @@ public class ImageResponse {
     private Long id;
     private String alt;
     private Map<String, String> urls;
+    private boolean forAvatar;
+    private boolean forArticle;
+    private boolean forSeries;
 
     public ImageResponse(ImageEntity imageEntity) {
         setupData(imageEntity);
@@ -25,6 +28,9 @@ public class ImageResponse {
         this.id = imageEntity.getId();
         this.alt = imageEntity.getAlt();
         this.urls = parseUrls(imageEntity.getUrls());
+        this.forArticle = imageEntity.isForArticle();
+        this.forAvatar = imageEntity.isForAvatar();
+        this.forSeries = imageEntity.isForSeries();
     }
 
     private Map<String, String> parseUrls(String urlsJson) {

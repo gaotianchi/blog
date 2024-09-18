@@ -2,6 +2,7 @@ package com.gaotianchi.resource.web.service.userservice;
 
 import com.gaotianchi.resource.persistence.entity.ImageEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
+import com.gaotianchi.resource.persistence.repo.ImageRepo;
 import com.gaotianchi.resource.persistence.repo.UserRepo;
 import com.gaotianchi.resource.web.error.EntityAlreadyExistException;
 import com.gaotianchi.resource.web.error.EntityNotFoundException;
@@ -21,12 +22,14 @@ import java.util.stream.Collectors;
 public class UserService implements UserServiceInterface {
     private final UserRepo userRepo;
     private final EntityFounderService entityFounderService;
+    private final ImageRepo imageRepo;
 
 
     @Autowired
-    public UserService(UserRepo userRepo, EntityFounderService entityFounderService) {
+    public UserService(UserRepo userRepo, EntityFounderService entityFounderService, ImageRepo imageRepo) {
         this.userRepo = userRepo;
         this.entityFounderService = entityFounderService;
+        this.imageRepo = imageRepo;
     }
 
     @Override
@@ -46,7 +49,8 @@ public class UserService implements UserServiceInterface {
         userEntity.setPenName(penName);
         if (avatarId != null) {
             ImageEntity imageEntity = entityFounderService.getImageOrNotFound(avatarId);
-            userEntity.setAvatar(imageEntity);
+            imageEntity.setForAvatar(true);
+            userEntity.setAvatar(imageRepo.save(imageEntity));
         }
         userEntity.setProfile(profile);
         userEntity.setTimeZone(TimeZone.getTimeZone(timezone));
