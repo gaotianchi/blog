@@ -3,9 +3,12 @@ server:
 
 logging:
     level:
-        org.springframework.security.oauth2.jwt: trace
-        org.springframework.security.oauth2.server: trace
-        org.springframework.web.server: trace
+        org.springframework.security: DEBUG
+        org.springframework.web: DEBUG
+        org.springframework.security.oauth2: TRACE
+        org.springframework.security.oauth2.server.authorization: TRACE
+        org.springframework.security.web.authentication: TRACE
+        org.springframework.web.filter.CorsFilter: TRACE
 
 spring:
     application:
