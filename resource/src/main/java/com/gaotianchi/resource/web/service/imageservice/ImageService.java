@@ -14,6 +14,8 @@ import com.gaotianchi.resource.web.service.EntityFounderService;
 import com.gaotianchi.resource.web.service.imagestorageservice.ImageStorageService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,10 +75,11 @@ public class ImageService implements ImageServiceInterface {
     @Override
     public List<ImageResponse> listUserImages(String username, Integer page, String field) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
+        Pageable pageable = PageRequest.of(page, 10);
         List<ImageEntity> imageEntities = switch (field) {
-            case "avatar" -> imageRepo.findByForAvatarIsTrueAndUserOrderByCreationDatetimeDesc(userEntity);
-            case "series" -> imageRepo.findByForSeriesIsTrueAndUserOrderByCreationDatetimeDesc(userEntity);
-            default -> imageRepo.findByForArticleIsTrueAndUserOrderByCreationDatetimeDesc(userEntity);
+            case "avatar" -> imageRepo.findByForAvatarIsTrueAndUserOrderByCreationDatetimeDesc(userEntity, pageable);
+            case "series" -> imageRepo.findByForSeriesIsTrueAndUserOrderByCreationDatetimeDesc(userEntity, pageable);
+            default -> imageRepo.findByForArticleIsTrueAndUserOrderByCreationDatetimeDesc(userEntity, pageable);
         };
         return imageEntities.stream()
                 .map(ImageResponse::new)
