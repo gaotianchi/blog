@@ -40,9 +40,7 @@
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item">
 								<div class="row">
-									<label for="image-alt" class="col-sm-2 col-form-label">
-										状态
-									</label>
+									<div class="col-sm-2 col-form-label">状态</div>
 									<div class="col-sm-6 align-content-center">
 										<span
 											v-if="isUsing"
@@ -70,36 +68,18 @@
 							</li>
 							<li class="list-group-item">
 								<div class="row">
-									<label for="image-alt" class="col-sm-2 col-form-label">
-										创建时间
-									</label>
+									<div class="col-sm-2 col-form-label">创建时间</div>
 									<div class="col-sm-9">
-										<input
-											type="text"
-											readonly
-											class="form-control-plaintext"
-											id="image-alt"
-											name="image-alt"
-											:value="toggledAvatar?.creationDatetime"
-										/>
+										{{ toggledAvatar?.creationDatetime }}
 									</div>
 									<div class="col-sm-1 text-end"></div>
 								</div>
 							</li>
 							<li class="list-group-item">
 								<div class="row">
-									<label for="image-alt" class="col-sm-2 col-form-label">
-										修改时间
-									</label>
+									<div class="col-sm-2 col-form-label">修改时间</div>
 									<div class="col-sm-9">
-										<input
-											type="text"
-											readonly
-											class="form-control-plaintext"
-											id="image-alt"
-											name="image-alt"
-											:value="toggledAvatar?.updateDatetime"
-										/>
+										{{ toggledAvatar?.updateDatetime }}
 									</div>
 									<div class="col-sm-1 text-end"></div>
 								</div>
