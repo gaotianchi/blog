@@ -1,6 +1,28 @@
 <template>
-	<div class="row">
-		<div class="col-9">
+	<div class="container">
+		<div class="row">
+			<div class="tile">
+				<div class="tile-title">头像</div>
+				<div class="tile-body grid">
+					<img
+						class="m-2 rounded img-thumbnail"
+						v-for="u in avatars"
+						:src="u"
+						alt=""
+						width="100"
+					/>
+				</div>
+				<div class="tile-footer"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="tile">
+				<div class="tile-title">系列封面</div>
+				<div class="tile-body"></div>
+				<div class="tile-footer"></div>
+			</div>
+		</div>
+		<div class="row">
 			<div class="tile">
 				<div class="tile-title">文章图片</div>
 				<div class="tile-body">
@@ -17,30 +39,6 @@
 					</div>
 				</div>
 				<div class="tile-footer"></div>
-			</div>
-		</div>
-		<div class="col">
-			<div class="container z-3 position-sticky" style="top: 60px">
-				<div class="row">
-					<div class="tile">
-						<div class="tile-title">头像</div>
-						<div class="tile-body">
-							<div class="row row-cols-5">
-								<div class="col mb-3" v-for="u in avatars">
-									<img :src="u" alt="" width="50" />
-								</div>
-							</div>
-						</div>
-						<div class="tile-footer"></div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="tile">
-						<div class="tile-title">系列封面</div>
-						<div class="tile-body"></div>
-						<div class="tile-footer"></div>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -71,6 +69,15 @@
 		'https://via.placeholder.com/300x400',
 	];
 	const avatars = [
+		'https://via.placeholder.com/200x200',
+		'https://via.placeholder.com/200x200',
+		'https://via.placeholder.com/200x200',
+		'https://via.placeholder.com/200x200',
+		'https://via.placeholder.com/200x200',
+		'https://via.placeholder.com/200x200',
+		'https://via.placeholder.com/200x200',
+		'https://via.placeholder.com/200x200',
+		'https://via.placeholder.com/200x200',
 		'https://via.placeholder.com/200x200',
 		'https://via.placeholder.com/200x200',
 		'https://via.placeholder.com/200x200',
