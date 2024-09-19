@@ -7,6 +7,7 @@ import com.gaotianchi.resource.persistence.entity.ImageEntity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Map;
 
@@ -19,6 +20,8 @@ public class ImageResponse {
     private boolean forAvatar;
     private boolean forArticle;
     private boolean forSeries;
+    private OffsetDateTime creationDatetime;
+    private OffsetDateTime updateDatetime;
 
     public ImageResponse(ImageEntity imageEntity) {
         setupData(imageEntity);
@@ -31,6 +34,8 @@ public class ImageResponse {
         this.forArticle = imageEntity.isForArticle();
         this.forAvatar = imageEntity.isForAvatar();
         this.forSeries = imageEntity.isForSeries();
+        this.creationDatetime = imageEntity.getCreationDatetime();
+        this.updateDatetime = imageEntity.getUpdateDatetime();
     }
 
     private Map<String, String> parseUrls(String urlsJson) {

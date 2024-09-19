@@ -9,9 +9,9 @@ import java.util.List;
 
 @Repository
 public interface ImageRepo extends JpaRepository<ImageEntity, Long> {
-    List<ImageEntity> findByForArticleIsTrueAndUser(UserEntity userEntity);
+    List<ImageEntity> findByForArticleIsTrueAndUserOrderByCreationDatetimeDesc(UserEntity userEntity);
 
-    List<ImageEntity> findByForAvatarIsTrueAndUser(UserEntity userEntity);
+    List<ImageEntity> findByForAvatarIsTrueAndUserOrderByCreationDatetimeDesc(UserEntity userEntity);
 
-    List<ImageEntity> findByForSeriesIsTrueAndUser(UserEntity userEntity);
+    List<ImageEntity> findByForSeriesIsTrueAndUserOrderByCreationDatetimeDesc(UserEntity userEntity);
 }

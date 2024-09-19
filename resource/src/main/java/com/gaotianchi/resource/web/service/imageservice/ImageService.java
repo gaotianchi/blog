@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +63,8 @@ public class ImageService implements ImageServiceInterface {
         ImageEntity imageEntity = new ImageEntity();
         imageEntity.setUser(userEntity);
         imageEntity.setName(name);
+        imageEntity.setCreationDatetime(OffsetDateTime.now());
+        imageEntity.setUpdateDatetime(OffsetDateTime.now());
         imageEntity.setUrls(objectMapper.writeValueAsString(urlMap));
         imageEntity = imageRepo.save(imageEntity);
         return new ImageResponse(imageEntity);
@@ -71,18 +73,11 @@ public class ImageService implements ImageServiceInterface {
     @Override
     public List<ImageResponse> listUserImages(String username, Integer page, String field) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
-        List<ImageEntity> imageEntities = new ArrayList<>();
-        switch (field) {
-            case "avatar":
-                imageEntities = imageRepo.findByForAvatarIsTrueAndUser(userEntity);
-                break;
-            case "series":
-                imageEntities = imageRepo.findByForSeriesIsTrueAndUser(userEntity);
-                break;
-            default:
-                imageEntities = imageRepo.findByForArticleIsTrueAndUser(userEntity);
-                break;
-        }
+        List<ImageEntity> imageEntities = switch (field) {
+            case "avatar" -> imageRepo.findByForAvatarIsTrueAndUserOrderByCreationDatetimeDesc(userEntity);
+            case "series" -> imageRepo.findByForSeriesIsTrueAndUserOrderByCreationDatetimeDesc(userEntity);
+            default -> imageRepo.findByForArticleIsTrueAndUserOrderByCreationDatetimeDesc(userEntity);
+        };
         return imageEntities.stream()
                 .map(ImageResponse::new)
                 .collect(Collectors.toList());

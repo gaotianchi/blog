@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -22,6 +23,8 @@ public class ImageEntity {
     private boolean forAvatar = false;
     private boolean forArticle = false;
     private boolean forSeries = false;
+    private OffsetDateTime creationDatetime;
+    private OffsetDateTime updateDatetime;
 
     @ManyToOne
     private UserEntity user;
