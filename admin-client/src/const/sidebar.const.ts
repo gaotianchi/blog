@@ -13,6 +13,7 @@ export const sidebarDataItems: SidebarItem[] = [
 			{
 				title: '文章',
 				bsIconName: 'bi-file-text',
+				routeName: 'ARTICLES',
 			},
 			{
 				title: '图片',
