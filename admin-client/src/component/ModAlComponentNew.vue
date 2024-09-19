@@ -1,15 +1,4 @@
 <template>
-	<!-- Modal Trigger Button -->
-	<button
-		type="button"
-		class="btn w-auto m-1"
-		:class="buttonStyle"
-		data-bs-toggle="modal"
-		:data-bs-target="`#${modalId}`"
-	>
-		<slot name="button">{{ buttonText }}</slot>
-	</button>
-
 	<!-- Modal -->
 	<div
 		class="modal fade"
@@ -30,14 +19,14 @@
 						class="btn-close"
 						data-bs-dismiss="modal"
 						aria-label="Close"
+						@click="hide"
 					></button>
 				</div>
 				<div class="modal-body">
-					<!-- 模态框内容插槽 -->
 					<slot name="body">默认内容</slot>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+					<button type="button" class="btn btn-secondary" @click="hide">
 						{{ closeButtonText }}
 					</button>
 					<button type="button" class="btn btn-primary" @click="onSave">
@@ -60,14 +49,6 @@
 		title: {
 			type: String,
 			default: '模态框',
-		},
-		buttonText: {
-			type: String,
-			default: '弹出模态框',
-		},
-		buttonStyle: {
-			type: String,
-			default: 'btn-primary',
 		},
 		closeButtonText: {
 			type: String,
@@ -95,19 +76,21 @@
 	const modalInstance = ref<bootstrap.Modal | null>(null);
 	const showModal = ref(false);
 
-	// 监听 `show` prop 的变化以显示/隐藏 Modal
-	watch(
-		() => props.show,
-		newValue => {
-			if (modalInstance.value) {
-				if (newValue) {
-					modalInstance.value.show();
-				} else {
-					modalInstance.value.hide();
-				}
-			}
+	// 外部控制显示
+	const show = () => {
+		showModal.value = true;
+		if (modalInstance.value) {
+			modalInstance.value.show();
 		}
-	);
+	};
+
+	// 外部控制隐藏
+	const hide = () => {
+		showModal.value = false;
+		if (modalInstance.value) {
+			modalInstance.value.hide();
+		}
+	};
 
 	// 模态框保存按钮的点击事件
 	const onSave = () => {
@@ -120,5 +103,11 @@
 		if (modalElement) {
 			modalInstance.value = new bootstrap.Modal(modalElement);
 		}
+	});
+
+	// 对外暴露 show 和 hide 方法
+	defineExpose({
+		show,
+		hide,
 	});
 </script>

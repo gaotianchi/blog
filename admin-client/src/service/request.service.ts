@@ -5,8 +5,7 @@ import { AUTH_BASE_URL, RESOURCE_BASE_URL } from '@/config/global.config';
 import { useRouter } from 'vue-router';
 
 export async function makeRequest<T>(
-	uri: string,
-	baseUrl: 'auth' | 'resource',
+	url: string,
 	options: RequestInit = {}
 ): Promise<APIResponse<T>> {
 	try {
@@ -23,17 +22,7 @@ export async function makeRequest<T>(
 			...options,
 			headers: headers,
 		};
-		let rootUrl = '';
-		const base = baseUrl ? baseUrl : 'resource';
-		switch (base) {
-			case 'auth':
-				rootUrl = AUTH_BASE_URL;
-				break;
-			default:
-				rootUrl = RESOURCE_BASE_URL;
-				break;
-		}
-		const response = await fetch(rootUrl + uri, requestOptions);
+		const response = await fetch(url, requestOptions);
 		if (response.status === 403 || response.status === 401) {
 			window.location.href = '/sign-in';
 		}

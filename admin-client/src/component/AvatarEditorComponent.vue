@@ -48,6 +48,7 @@
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 	import type { APIResponse, ImageResponse } from '@/type/response.type';
+	import { RESOURCE_BASE_URL } from '@/config/global.config';
 
 	// 定义可传入的 props
 	const props = defineProps<{
@@ -88,8 +89,7 @@
 			const formData = new FormData();
 			formData.append('file', blob, 'avatar.png'); // 添加文件
 			const response: APIResponse<ImageResponse> = await makeRequest(
-				'/images/new',
-				'resource',
+				RESOURCE_BASE_URL + '/images/new',
 				{
 					method: 'POST',
 					body: formData,

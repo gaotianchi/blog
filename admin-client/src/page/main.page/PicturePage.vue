@@ -1,19 +1,8 @@
 <template>
 	<div class="container">
 		<div class="row">
-			<div class="tile">
-				<div class="tile-title">头像</div>
-				<div class="tile-body grid">
-					<img
-						class="m-2 rounded img-thumbnail"
-						v-for="u in avatars"
-						:src="u"
-						alt=""
-						width="100"
-					/>
-				</div>
-				<div class="tile-footer"></div>
-			</div>
+			<!-- 头像 -->
+			<AvatarTileComponent :user="currentUser" />
 		</div>
 		<div class="row">
 			<div class="tile">
@@ -31,7 +20,7 @@
 							v-masonry-tile
 							class="m-1"
 							:class="`'image-'${index}`"
-							v-for="(u, index) in urls"
+							v-for="(u, index) in []"
 							:key="index"
 						>
 							<img :src="u" alt="image1" loading="lazy" width="300" />
@@ -44,48 +33,17 @@
 	</div>
 </template>
 <script setup lang="ts">
-	const urls = [
-		'https://via.placeholder.com/300x250',
-		'https://via.placeholder.com/200x50',
-		'https://via.placeholder.com/300x150',
-		'https://via.placeholder.com/300x400',
-		'https://via.placeholder.com/200x50',
-		'https://via.placeholder.com/300x150',
-		'https://via.placeholder.com/300x400',
-		'https://via.placeholder.com/300x250',
-		'https://via.placeholder.com/200x50',
-		'https://via.placeholder.com/300x150',
-		'https://via.placeholder.com/300x400',
-		'https://via.placeholder.com/300x250',
-		'https://via.placeholder.com/200x50',
-		'https://via.placeholder.com/300x150',
-		'https://via.placeholder.com/300x400',
-		'https://via.placeholder.com/200x50',
-		'https://via.placeholder.com/300x150',
-		'https://via.placeholder.com/300x400',
-		'https://via.placeholder.com/300x250',
-		'https://via.placeholder.com/200x50',
-		'https://via.placeholder.com/300x150',
-		'https://via.placeholder.com/300x400',
-	];
-	const avatars = [
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-		'https://via.placeholder.com/200x200',
-	];
+	import AvatarTileComponent from '@/component/picture.component/AvatarTileComponent.vue';
+	import { RESOURCE_BASE_URL } from '@/config/global.config';
+	import { makeRequest } from '@/service/request.service';
+	import type { APIResponse, UserResponse } from '@/type/response.type';
+	import { onMounted, ref } from 'vue';
+
+	const currentUser = ref<UserResponse | null>(null);
+	onMounted(async () => {
+		const userInfoResponse: APIResponse<UserResponse> = await makeRequest(
+			RESOURCE_BASE_URL + '/users/get-info'
+		);
+		currentUser.value = userInfoResponse.data;
+	});
 </script>

@@ -14,6 +14,11 @@ export type ImageResponse = {
 	id: number;
 	alt: string;
 	urls: Urls;
+	forAvatar: boolean;
+	forArticle: boolean;
+	forSeries: boolean;
+	creationDatetime: Date;
+	updateDatetime: Date;
 };
 
 export type UserResponse = {

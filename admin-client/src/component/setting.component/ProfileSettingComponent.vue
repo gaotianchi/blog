@@ -182,6 +182,7 @@
 	import EditorButtonComponent from './EditorButtonComponent.vue';
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
+	import { RESOURCE_BASE_URL } from '@/config/global.config';
 
 	// 状态变量
 	const loading = ref(true);
@@ -203,8 +204,7 @@
 	const userResponse = ref<UserResponse | null>(null);
 	onMounted(async () => {
 		const response: APIResponse<UserResponse> = await makeRequest(
-			'/users/get-info',
-			'resource'
+			RESOURCE_BASE_URL + '/users/get-info'
 		);
 		if (response.code === 0) {
 			userResponse.value = response.data;
@@ -231,8 +231,7 @@
 		timezoneDisabled.value = true;
 		profileDisabled.value = true;
 		const response: APIResponse<UserResponse> = await makeRequest(
-			'/users/update-info',
-			'resource',
+			RESOURCE_BASE_URL + '/users/update-info',
 			{
 				method: 'PATCH',
 				body: JSON.stringify({

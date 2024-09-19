@@ -65,6 +65,7 @@
 	</div>
 </template>
 <script setup lang="ts">
+	import { AUTH_BASE_URL } from '@/config/global.config';
 	import { makeRequest } from '@/service/request.service';
 	import type { APIResponse, UserAccountResponse } from '@/type/response.type';
 	import { onMounted, ref } from 'vue';
@@ -73,8 +74,7 @@
 	const currentAccountData = ref<UserAccountResponse | null>(null);
 	onMounted(async () => {
 		const response: APIResponse<UserAccountResponse> = await makeRequest(
-			'/users/get-info',
-			'auth'
+			AUTH_BASE_URL + '/users/get-info'
 		);
 		console.log(response);
 		currentAccountData.value = response.data;
