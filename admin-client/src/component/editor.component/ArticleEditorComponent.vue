@@ -49,7 +49,6 @@
 	};
 
 	onMounted(() => {
-		console.log('...................................');
 		editor.value = new Editor({
 			extensions: [
 				QuoteExtension,
@@ -62,7 +61,6 @@
 				}),
 			],
 			content: `
-	      <p>这是一个示例段落内容。</p>
 	    `,
 			editorProps: {
 				attributes: {
@@ -82,4 +80,9 @@
 		}
 	});
 </script>
-<style></style>
+<style>
+	.tiptap:focus,
+	input:focus {
+		outline: none;
+	}
+</style>

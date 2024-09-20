@@ -1,6 +1,6 @@
-import { mergeAttributes, Node, type NodeViewProps } from '@tiptap/core';
+import { Node, type NodeViewProps } from '@tiptap/core';
 import QuoteWrapper from '../wrapper/QuoteWrapper.vue';
-import { VueNodeViewRenderer, type Attributes } from '@tiptap/vue-3';
+import { VueNodeViewRenderer } from '@tiptap/vue-3';
 import type { Component } from 'vue';
 
 declare module '@tiptap/core' {
@@ -19,10 +19,13 @@ export const QuoteExtension = Node.create({
 		return {
 			quote: {
 				default:
-					"I'm selfish, impatient and a little insecure. I make mistakes, I am out of control and at times hard to handle. But if you can't handle me at my worst, then you sure as hell don't deserve me at my best.",
+					'与怪物战斗的人，应当小心自己不要成为怪物。当你长久凝视深渊时，深渊也在凝视你。',
 			},
 			source: {
-				default: 'Marilyn Monroe',
+				default: '弗里德里希·威廉·尼采',
+			},
+			align: {
+				default: '',
 			},
 		};
 	},
@@ -36,7 +39,7 @@ export const QuoteExtension = Node.create({
 	renderHTML({ HTMLAttributes }) {
 		return [
 			'figure',
-			{ class: 'text-center' },
+			{ class: HTMLAttributes.align },
 			['blockquote', { class: 'blockquote' }, ['p', {}, HTMLAttributes.quote]],
 			['figcaption', { class: 'blockquote-footer' }, HTMLAttributes.source],
 		];
