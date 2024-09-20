@@ -73,6 +73,12 @@
 	const modalInstance = ref<bootstrap.Modal | null>(null);
 
 	const show = () => {
+		if (!modalInstance.value) {
+			const modalElement = document.getElementById(props.modalId);
+			if (modalElement) {
+				modalInstance.value = new bootstrap.Modal(modalElement);
+			}
+		}
 		if (modalInstance.value) {
 			modalInstance.value.show();
 		}
