@@ -2,7 +2,6 @@
 	<!-- Modal -->
 	<div
 		class="modal fade"
-		:class="[{ show: showModal }]"
 		:id="modalId"
 		:tabindex="-1"
 		:aria-labelledby="`${modalId}Label`"
@@ -44,7 +43,6 @@
 
 	const emits = defineEmits(['saveChange']);
 
-	// 定义可传入的 props
 	const props = defineProps({
 		title: {
 			type: String,
@@ -72,32 +70,24 @@
 		},
 	});
 
-	// 保存 Modal 的实例
 	const modalInstance = ref<bootstrap.Modal | null>(null);
-	const showModal = ref(false);
 
-	// 外部控制显示
 	const show = () => {
-		showModal.value = true;
 		if (modalInstance.value) {
 			modalInstance.value.show();
 		}
 	};
 
-	// 外部控制隐藏
 	const hide = () => {
-		showModal.value = false;
 		if (modalInstance.value) {
 			modalInstance.value.hide();
 		}
 	};
 
-	// 模态框保存按钮的点击事件
 	const onSave = () => {
 		emits('saveChange');
 	};
 
-	// 挂载时初始化 Bootstrap Modal 实例
 	onMounted(() => {
 		const modalElement = document.getElementById(props.modalId);
 		if (modalElement) {
@@ -105,7 +95,6 @@
 		}
 	});
 
-	// 对外暴露 show 和 hide 方法
 	defineExpose({
 		show,
 		hide,

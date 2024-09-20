@@ -141,7 +141,7 @@
 
 	import EditorButtonComponent from '../setting.component/EditorButtonComponent.vue';
 
-	import ModalComponentNew from '@/component/ModAlComponentNew.vue';
+	import ModalComponentNew from '@/component/ModalComponentNew.vue';
 
 	const props = defineProps<{
 		user: UserResponse | null;
