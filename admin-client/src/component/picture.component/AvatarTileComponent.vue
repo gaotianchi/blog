@@ -21,7 +21,8 @@
 			</a>
 		</div>
 		<div class="tile-footer"></div>
-		<ModAlComponentNew
+
+		<ModalComponentNew
 			modalId="avatar-detail-modal"
 			ref="avatarModal"
 			modal-width="modal-lg"
@@ -129,7 +130,7 @@
 					</div>
 				</div>
 			</template>
-		</ModAlComponentNew>
+		</ModalComponentNew>
 	</div>
 </template>
 <script setup lang="ts">
@@ -137,8 +138,10 @@
 	import { makeRequest } from '@/service/request.service';
 	import type { APIResponse, ImageResponse, UserResponse } from '@/type/response.type';
 	import { computed, onMounted, ref } from 'vue';
-	import ModAlComponentNew from '../ModalComponentNew.vue';
+
 	import EditorButtonComponent from '../setting.component/EditorButtonComponent.vue';
+
+	import ModalComponentNew from '@/component/ModAlComponentNew.vue';
 
 	const props = defineProps<{
 		user: UserResponse | null;

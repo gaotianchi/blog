@@ -11,6 +11,11 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "@tiptap/extension-image": "^2.7.2",
+    "@tiptap/extension-link": "^2.7.2",
+    "@tiptap/pm": "^2.7.1",
+    "@tiptap/starter-kit": "^2.7.1",
+    "@tiptap/vue-3": "^2.7.1",
     "avatar-editor": "^1.1.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",

@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, defineProps, watch, onMounted } from 'vue';
+	import { ref, watch, onMounted } from 'vue';
 	import * as bootstrap from 'bootstrap';
 
 	const emits = defineEmits(['saveChange']);
