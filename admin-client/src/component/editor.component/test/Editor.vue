@@ -19,12 +19,6 @@
 						>
 							H1
 						</button>
-						<button
-							@click="editor.commands.setQuoteBlock()"
-							class="btn btn-outline-dark"
-						>
-							Quote
-						</button>
 					</div>
 				</FloatingMenu>
 				<EditorContent :editor="editor" />
@@ -33,15 +27,14 @@
 		<div class="col p-3"><div v-html="htmlContent"></div></div>
 	</div>
 </template>
+
 <script setup lang="ts">
-	import { ref, onMounted, onBeforeUnmount } from 'vue';
 	import StarterKit from '@tiptap/starter-kit';
 	import { Editor, EditorContent, FloatingMenu } from '@tiptap/vue-3';
-	import { QuoteExtension } from './extension/QuoteExtension';
-
+	import { ref, onMounted, onBeforeUnmount } from 'vue';
+	import VueComponent from './Extension';
 	const editor = ref<Editor>();
 	const htmlContent = ref('');
-
 	const updateHtmlContent = () => {
 		if (editor.value) {
 			htmlContent.value = editor.value.getHTML();
@@ -49,10 +42,9 @@
 	};
 
 	onMounted(() => {
-		console.log('...................................');
 		editor.value = new Editor({
 			extensions: [
-				QuoteExtension,
+				VueComponent,
 				StarterKit.configure({
 					blockquote: {
 						HTMLAttributes: {
@@ -62,7 +54,13 @@
 				}),
 			],
 			content: `
-	      <p>这是一个示例段落内容。</p>
+	              <p>
+          This is still the text editor you’re used to, but enriched with node views.
+        </p>
+        <vue-component count="0"></vue-component>
+        <p>
+          Did you see that? That’s a Vue component. We are really living in the future.
+        </p>
 	    `,
 			editorProps: {
 				attributes: {
@@ -70,16 +68,12 @@
 				},
 			},
 		});
-		console.log(editor.value);
-
 		editor.value.on('update', updateHtmlContent);
 		htmlContent.value = editor.value.getHTML();
 	});
-
 	onBeforeUnmount(() => {
 		if (editor.value) {
 			editor.value.destroy();
 		}
 	});
 </script>
-<style></style>
