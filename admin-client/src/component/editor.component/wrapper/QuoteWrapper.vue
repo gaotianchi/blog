@@ -1,6 +1,6 @@
 <template>
 	<NodeViewWrapper>
-		<figure class="mb-3" @click="openModal" :class="align">
+		<figure class="mb-3 mt-3" @click="openModal" :class="align">
 			<blockquote class="blockquote">
 				<p>
 					{{ node.attrs.quote }}
@@ -11,7 +11,7 @@
 			</figcaption>
 		</figure>
 		<ModalComponentNew
-			modal-id="sfjkdjk"
+			:modal-id="modalId"
 			ref="blockquoteRef"
 			title="编辑引言"
 			@save-change="handleSaveChage"
@@ -21,21 +21,21 @@
 					<textarea
 						class="form-control"
 						placeholder="说了什么？"
-						id="quote-content"
+						:id="modalId + 'quote-content'"
 						style="height: 100px"
 						v-model="quote"
 					></textarea>
-					<label for="quote-content">说了什么？</label>
+					<label :for="modalId + 'quote-content'">说了什么？</label>
 				</div>
 				<div class="form-floating mb-3">
 					<input
 						type="text"
 						class="form-control"
-						id="quote-source"
+						:id="modalId + 'quote-source'"
 						placeholder="引言来自于哪里？"
 						v-model="source"
 					/>
-					<label for="quote-source">引言来自于哪里？</label>
+					<label :for="modalId + 'quote-source'">引言来自于哪里？</label>
 				</div>
 				<div class="mb-3 text-center">
 					<div
@@ -46,39 +46,36 @@
 						<input
 							type="radio"
 							class="btn-check"
-							name="btnradio"
-							id="btnradio1"
+							:id="modalId + 'btnradio1'"
 							autocomplete="off"
 							v-model="align"
 							value="text-start"
 						/>
-						<label class="btn btn-outline-secondary" for="btnradio1">
+						<label class="btn btn-outline-secondary" :for="modalId + 'btnradio1'">
 							<i class="bi bi-text-left"></i>
 						</label>
 
 						<input
 							type="radio"
 							class="btn-check"
-							name="btnradio"
-							id="btnradio2"
+							:id="modalId + 'btnradio2'"
 							autocomplete="off"
 							v-model="align"
 							value="text-center"
 						/>
-						<label class="btn btn-outline-secondary" for="btnradio2">
+						<label class="btn btn-outline-secondary" :for="modalId + 'btnradio2'">
 							<i class="bi bi-text-center"></i>
 						</label>
 
 						<input
 							type="radio"
 							class="btn-check"
-							name="btnradio"
-							id="btnradio3"
+							:id="modalId + 'btnradio3'"
 							autocomplete="off"
 							v-model="align"
 							value="text-end"
 						/>
-						<label class="btn btn-outline-secondary" for="btnradio3">
+						<label class="btn btn-outline-secondary" :for="modalId + 'btnradio3'">
 							<i class="bi bi-text-right"></i>
 						</label>
 					</div>
@@ -97,7 +94,7 @@
 	const quote = ref(props.node.attrs.quote);
 	const source = ref(props.node.attrs.source);
 	const align = ref<'text-start' | 'text-center' | 'text-end'>('text-start');
-
+	const modalId = 'modal-' + Math.random();
 	watch([quote, source, align], () => {
 		updateAtrri();
 	});
@@ -119,5 +116,7 @@
 <style>
 	figure {
 		cursor: pointer;
+		margin-top: 1rem;
+		margin-bottom: 1rem;
 	}
 </style>

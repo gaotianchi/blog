@@ -39,7 +39,7 @@ export const QuoteExtension = Node.create({
 	renderHTML({ HTMLAttributes }) {
 		return [
 			'figure',
-			{ class: HTMLAttributes.align },
+			{ class: `${HTMLAttributes.align} mb-3 mt-3` },
 			['blockquote', { class: 'blockquote' }, ['p', {}, HTMLAttributes.quote]],
 			['figcaption', { class: 'blockquote-footer' }, HTMLAttributes.source],
 		];
