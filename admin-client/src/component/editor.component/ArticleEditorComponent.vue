@@ -23,10 +23,24 @@
 							@click="editor.commands.setQuoteBlock()"
 							class="btn btn-outline-dark"
 						>
-							Quote
+							<i class="bi bi-quote"></i>
 						</button>
 					</div>
 				</FloatingMenu>
+				<BubbleMenu :editor="editor" class="bubble-menu" :tippy-options="{ duration: 100 }">
+					<div
+						class="btn-group btn-group-sm"
+						role="group"
+						aria-label="Small button group"
+					>
+						<button
+							@click="editor.commands.setCustomLink()"
+							class="btn btn-outline-dark"
+						>
+							<i class="bi bi-link"></i>
+						</button>
+					</div>
+				</BubbleMenu>
 				<EditorContent :editor="editor" />
 			</div>
 		</div>
@@ -36,8 +50,10 @@
 <script setup lang="ts">
 	import { ref, onMounted, onBeforeUnmount } from 'vue';
 	import StarterKit from '@tiptap/starter-kit';
-	import { Editor, EditorContent, FloatingMenu } from '@tiptap/vue-3';
+	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
 	import { QuoteExtension } from './extension/QuoteExtension';
+	import { LinkExtension } from './extension/LinkExtension';
+	import Link from '@tiptap/extension-link';
 
 	const editor = ref<Editor>();
 	const htmlContent = ref('');
@@ -51,6 +67,8 @@
 	onMounted(() => {
 		editor.value = new Editor({
 			extensions: [
+				Link,
+				LinkExtension,
 				QuoteExtension,
 				StarterKit.configure({
 					blockquote: {
@@ -61,15 +79,13 @@
 				}),
 			],
 			content: `
-	    `,
+		    `,
 			editorProps: {
 				attributes: {
 					class: 'editor-content border-0 p-3 vh-100 focus:outline-none',
 				},
 			},
 		});
-		console.log(editor.value);
-
 		editor.value.on('update', updateHtmlContent);
 		htmlContent.value = editor.value.getHTML();
 	});

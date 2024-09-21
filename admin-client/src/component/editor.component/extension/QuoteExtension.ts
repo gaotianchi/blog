@@ -1,5 +1,5 @@
 import { Node, type NodeViewProps } from '@tiptap/core';
-import QuoteWrapper from '../wrapper/QuoteWrapper.vue';
+import QuoteWrapper from '../wrapper/QuoteNodeView.vue';
 import { VueNodeViewRenderer } from '@tiptap/vue-3';
 import type { Component } from 'vue';
 
@@ -12,7 +12,7 @@ declare module '@tiptap/core' {
 }
 
 export const QuoteExtension = Node.create({
-	name: 'quoteBlock',
+	name: 'QuoteBlock',
 	group: 'block',
 	content: 'block*',
 	addAttributes() {
@@ -44,7 +44,7 @@ export const QuoteExtension = Node.create({
 				() =>
 				({ commands }) => {
 					return commands.insertContent({
-						type: 'quoteBlock',
+						type: 'QuoteBlock',
 					});
 				},
 		};

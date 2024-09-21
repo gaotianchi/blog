@@ -20,6 +20,27 @@
 							H1
 						</button>
 					</div>
+					<div
+						class="btn-group btn-group-sm"
+						role="group"
+						aria-label="Small button group"
+					>
+						<BubbleMenu :editor="editor" :tippy-options="{ duration: 100 }">
+							<button
+								@click="setLink"
+								:class="{ 'is-active': editor.isActive('link') }"
+								class="btn btn-outline-dark"
+							>
+								set link
+							</button>
+							<button
+								@click="editor.chain().focus().unsetLink().run()"
+								:disabled="!editor.isActive('link')"
+							>
+								Unset link
+							</button>
+						</BubbleMenu>
+					</div>
 				</FloatingMenu>
 				<EditorContent :editor="editor" />
 			</div>
@@ -30,9 +51,9 @@
 
 <script setup lang="ts">
 	import StarterKit from '@tiptap/starter-kit';
-	import { Editor, EditorContent, FloatingMenu } from '@tiptap/vue-3';
+	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
 	import { ref, onMounted, onBeforeUnmount } from 'vue';
-	import VueComponent from './Extension';
+	import Link from '@tiptap/extension-link';
 	const editor = ref<Editor>();
 	const htmlContent = ref('');
 	const updateHtmlContent = () => {
@@ -41,10 +62,32 @@
 		}
 	};
 
+	const setLink = () => {
+		if (editor.value) {
+			const previousUrl = editor.value.getAttributes('link').href;
+			console.log(editor.value);
+			const url = window.prompt('URL', previousUrl);
+
+			// cancelled
+			if (url === null) {
+				return;
+			}
+
+			// empty
+			if (url === '') {
+				editor.value.chain().focus().extendMarkRange('link').unsetLink().run();
+
+				return;
+			}
+
+			// update link
+			editor.value.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+		}
+	};
+
 	onMounted(() => {
 		editor.value = new Editor({
 			extensions: [
-				VueComponent,
 				StarterKit.configure({
 					blockquote: {
 						HTMLAttributes: {
@@ -52,12 +95,15 @@
 						},
 					},
 				}),
+				Link.configure({
+					openOnClick: false,
+					defaultProtocol: 'https',
+				}),
 			],
 			content: `
 	              <p>
           This is still the text editor you’re used to, but enriched with node views.
         </p>
-        <vue-component count="0"></vue-component>
         <p>
           Did you see that? That’s a Vue component. We are really living in the future.
         </p>
