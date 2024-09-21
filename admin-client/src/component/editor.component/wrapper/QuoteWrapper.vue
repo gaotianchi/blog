@@ -1,6 +1,6 @@
 <template>
 	<NodeViewWrapper>
-		<figure class="mb-3 mt-3" @click="openModal" :class="align">
+		<figure class="editor mb-3 mt-3" @click="openModal" :class="align">
 			<blockquote class="blockquote">
 				<p>
 					{{ node.attrs.quote }}
@@ -114,7 +114,7 @@
 	};
 </script>
 <style>
-	figure {
+	figure.editor {
 		cursor: pointer;
 		margin-top: 1rem;
 		margin-bottom: 1rem;

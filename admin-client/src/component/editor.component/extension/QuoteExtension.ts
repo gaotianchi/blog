@@ -29,13 +29,6 @@ export const QuoteExtension = Node.create({
 			},
 		};
 	},
-	parseHTML() {
-		return [
-			{
-				tag: 'quote-block',
-			},
-		];
-	},
 	renderHTML({ HTMLAttributes }) {
 		return [
 			'figure',
