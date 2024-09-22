@@ -1,5 +1,5 @@
 import { Node, type NodeViewProps } from '@tiptap/core';
-import QuoteWrapper from '../wrapper/QuoteNodeView.vue';
+import QuoteWrapper from '../nodeview/QuoteNodeView.vue';
 import { VueNodeViewRenderer } from '@tiptap/vue-3';
 import type { Component } from 'vue';
 

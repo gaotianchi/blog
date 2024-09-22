@@ -25,6 +25,9 @@
 						>
 							<i class="bi bi-quote"></i>
 						</button>
+						<button @click="editor.commands.setImage()" class="btn btn-outline-dark">
+							<i class="bi bi-image"></i>
+						</button>
 					</div>
 				</FloatingMenu>
 				<BubbleMenu :editor="editor" class="bubble-menu" :tippy-options="{ duration: 100 }">
@@ -53,7 +56,7 @@
 	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
 	import { QuoteExtension } from './extension/QuoteExtension';
 	import { LinkExtension } from './extension/LinkExtension';
-	import Link from '@tiptap/extension-link';
+	import { ImageExtension } from './extension/ImageExtension';
 
 	const editor = ref<Editor>();
 	const htmlContent = ref('');
@@ -67,7 +70,7 @@
 	onMounted(() => {
 		editor.value = new Editor({
 			extensions: [
-				Link,
+				ImageExtension,
 				LinkExtension,
 				QuoteExtension,
 				StarterKit.configure({
