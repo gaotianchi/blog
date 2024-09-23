@@ -24,6 +24,9 @@ const contentRouter: RouteRecordRaw[] = [
 		name: 'ARTICLES',
 		path: '/articles',
 		component: ArticlesPage,
+		meta: {
+			requiresAuth: true,
+		},
 	},
 ];
 

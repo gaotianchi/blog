@@ -2,7 +2,7 @@
 	<div class="app-title">
 		<div>
 			<h1>
-				<i class="bi" :class="bsIconName"></i>
+				<i class="bi" :class="bsIconName || 'bi-file-earmark'"></i>
 				{{ title }}
 			</h1>
 			<p>{{ subTitle }}</p>
@@ -20,8 +20,8 @@
 
 	defineProps<{
 		title: string;
-		subTitle: string;
-		bsIconName: string;
+		subTitle?: string;
+		bsIconName?: string;
 		breadcrumbItems: BreadcrumbItem[];
 	}>();
 </script>

@@ -37,3 +37,24 @@ export type UserAccountResponse = {
 	lockedUntil: Date | null;
 	accountStatus: string;
 };
+
+export type SeriesResponse = {
+	id: number;
+	name: string;
+	creationDatetime: Date;
+	cover: ImageResponse;
+};
+
+export type ArticleResponse = {
+	id: number;
+	title: string;
+	body: string;
+	summary: string;
+	author: UserResponse;
+	cover: ImageResponse;
+	creationDatetime: Date;
+	updateDatetime: Date;
+	articleStatus: 'PUBLISHED' | 'DRAFT' | 'TRASH';
+	slug: string;
+	series: SeriesResponse;
+};
