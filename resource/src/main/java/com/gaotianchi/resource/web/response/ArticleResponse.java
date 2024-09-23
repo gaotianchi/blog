@@ -1,6 +1,7 @@
 package com.gaotianchi.resource.web.response;
 
 import com.gaotianchi.resource.persistence.entity.ArticleEntity;
+import com.gaotianchi.resource.persistence.entity.ImageEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,7 @@ public class ArticleResponse {
     private String slug;
     private SeriesResponse series;
     private ImageResponse cover;
+    private UserResponse author;
 
     public ArticleResponse(ArticleEntity articleEntity) {
         setupData(articleEntity);
@@ -38,7 +40,14 @@ public class ArticleResponse {
             this.series = new SeriesResponse(articleEntity.getSeriesEntity(), true);
         }
         if (withCover) {
-            this.cover = new ImageResponse(articleEntity.getCover());
+            ImageEntity cover = articleEntity.getCover();
+            if (cover == null) {
+                cover = (ImageEntity) articleEntity.getArticleImages().toArray()[0];
+            }
+            if (cover != null) {
+                this.cover = new ImageResponse(cover);
+            }
+
         }
     }
 
@@ -52,5 +61,6 @@ public class ArticleResponse {
         this.lastUpdatedDatetime = articleEntity.getLastUpdatedDatetime();
         this.articleStatus = articleEntity.getArticleStatus().name();
         this.slug = articleEntity.getSlug();
+        this.author = new UserResponse(articleEntity.getAuthor());
     }
 }
