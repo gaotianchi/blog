@@ -13,4 +13,8 @@ public interface ImageServiceInterface {
     List<ImageResponse> listUserImages(String username, Integer page, String field);
 
     void deleteImage(String username, Long imageId) throws IOException;
+
+    void linkToArticle(String username, Long articleId, Long imageId);
+
+    void unLinkToArticle(String username, Long articleId, Long imageId);
 }

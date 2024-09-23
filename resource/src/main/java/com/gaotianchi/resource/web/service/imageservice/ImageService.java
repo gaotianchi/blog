@@ -3,9 +3,11 @@ package com.gaotianchi.resource.web.service.imageservice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaotianchi.resource.Utils;
 import com.gaotianchi.resource.config.ImageConfig;
+import com.gaotianchi.resource.persistence.entity.ArticleEntity;
 import com.gaotianchi.resource.persistence.entity.ImageEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import com.gaotianchi.resource.persistence.enums.CompressionLevel;
+import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.ImageRepo;
 import com.gaotianchi.resource.web.error.EntityNotFoundException;
 import com.gaotianchi.resource.web.response.ImageResponse;
@@ -38,15 +40,17 @@ public class ImageService implements ImageServiceInterface {
     private final ImageConfig imageConfig;
     private final ObjectMapper objectMapper;
     private final EntityBelongService entityBelongService;
+    private final ArticleRepo articleRepo;
 
     @Autowired
-    public ImageService(ImageStorageService imageStorageService, ImageRepo imageRepo, EntityFounderService entityFounderService, ImageConfig imageConfig, ObjectMapper objectMapper, EntityBelongService entityBelongService) {
+    public ImageService(ImageStorageService imageStorageService, ImageRepo imageRepo, EntityFounderService entityFounderService, ImageConfig imageConfig, ObjectMapper objectMapper, EntityBelongService entityBelongService, ArticleRepo articleRepo) {
         this.imageRepo = imageRepo;
         this.entityFounderService = entityFounderService;
         this.imageStorageService = imageStorageService;
         this.imageConfig = imageConfig;
         this.objectMapper = objectMapper;
         this.entityBelongService = entityBelongService;
+        this.articleRepo = articleRepo;
     }
 
     @Override
@@ -106,6 +110,33 @@ public class ImageService implements ImageServiceInterface {
             imageRepo.delete(imageEntity);
         } else {
             throw new EntityNotFoundException("The image directory does not exist or is not a directory.");
+        }
+    }
+
+    @Override
+    public void linkToArticle(String username, Long articleId, Long imageId) {
+        ImageEntity imageEntity = entityBelongService.imageBelongToUser(username, imageId);
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, articleId);
+        if (!articleEntity.getArticleImages().contains(imageEntity)) {
+            articleEntity.getArticleImages().add(imageEntity);
+            imageEntity.getArticles().add(articleEntity);
+
+            articleRepo.save(articleEntity);
+            imageRepo.save(imageEntity);
+        }
+    }
+
+    @Override
+    public void unLinkToArticle(String username, Long articleId, Long imageId) {
+        ImageEntity imageEntity = entityBelongService.imageBelongToUser(username, imageId);
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, articleId);
+
+        if (articleEntity.getArticleImages().contains(imageEntity)) {
+            articleEntity.getArticleImages().remove(imageEntity);
+            imageEntity.getArticles().remove(articleEntity);
+
+            articleRepo.save(articleEntity);
+            imageRepo.save(imageEntity);
         }
     }
 }

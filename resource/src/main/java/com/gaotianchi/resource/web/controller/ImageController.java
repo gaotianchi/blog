@@ -35,6 +35,18 @@ public class ImageController {
         return APIResponse.success(imageResponses);
     }
 
+    @PatchMapping("/images/link-to-article/{imageId}/{articleId}")
+    public APIResponse<Void> linkToArticle(@AuthenticationPrincipal Jwt jwt, @PathVariable Long imageId, @PathVariable Long articleId) {
+        imageService.linkToArticle(jwt.getSubject(), articleId, imageId);
+        return APIResponse.success();
+    }
+
+    @PatchMapping("/images/link-to-article/{imageId}/{articleId}")
+    public APIResponse<Void> unLinkToArticle(@AuthenticationPrincipal Jwt jwt, @PathVariable Long imageId, @PathVariable Long articleId) {
+        imageService.unLinkToArticle(jwt.getSubject(), articleId, imageId);
+        return APIResponse.success();
+    }
+
     @DeleteMapping("/images/delete/{imageId}")
     public APIResponse<Void> deleteImage(@AuthenticationPrincipal Jwt jwt, @PathVariable Long imageId) throws IOException {
         imageService.deleteImage(jwt.getSubject(), imageId);
