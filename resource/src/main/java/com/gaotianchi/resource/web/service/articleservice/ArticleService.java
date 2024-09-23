@@ -15,6 +15,8 @@ import com.gaotianchi.resource.web.service.EntityFounderService;
 import com.gaotianchi.resource.web.service.commentservice.CommentService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -82,9 +84,10 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public List<ArticleResponse> listArticles(String email) throws EntityNotFoundException {
-        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
-        Collection<ArticleEntity> articleEntities = userEntity.getArticleEntities();
+    public List<ArticleResponse> listArticles(String username, Integer page) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
+        Pageable pageable = PageRequest.of(page, 10);
+        List<ArticleEntity> articleEntities = articleRepo.findByAuthorOrderByCreationDatetimeDesc(userEntity, pageable);
         return articleEntities.stream()
                 .map(ArticleResponse::new)
                 .collect(Collectors.toList());

@@ -44,8 +44,8 @@ public class ArticleController {
     }
 
     @GetMapping("/articles/list")
-    public APIResponse<List<ArticleResponse>> listArticles(@AuthenticationPrincipal Jwt jwt) {
-        List<ArticleResponse> articleResponses = articleService.listArticles(jwt.getSubject());
+    public APIResponse<List<ArticleResponse>> listArticles(@AuthenticationPrincipal Jwt jwt, @RequestParam Integer page) {
+        List<ArticleResponse> articleResponses = articleService.listArticles(jwt.getSubject(), page);
         return APIResponse.success(articleResponses);
     }
 

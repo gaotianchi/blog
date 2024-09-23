@@ -16,7 +16,7 @@ public interface ArticleServiceInterface {
 
     ArticleResponse setToTrash(String email, Long articleId);
 
-    List<ArticleResponse> listArticles(String email);
+    List<ArticleResponse> listArticles(String username, Integer page);
 
     ArticleResponse updateContent(String email, Long articleId, String title, String body, String summary, String slug);
 
