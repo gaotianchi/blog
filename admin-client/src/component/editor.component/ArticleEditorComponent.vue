@@ -1,53 +1,32 @@
 <template>
 	<div class="row">
-		<div class="col">
-			<div v-if="editor">
-				<FloatingMenu
-					class="floating-menu"
-					:tippy-options="{ duration: 100 }"
-					:editor="editor"
-				>
-					<div
-						class="btn-group btn-group-sm"
-						role="group"
-						aria-label="Small button group"
+		<div v-if="editor">
+			<FloatingMenu class="floating-menu" :tippy-options="{ duration: 100 }" :editor="editor">
+				<div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+					<button
+						@click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+						:class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
+						class="btn btn-outline-dark"
 					>
-						<button
-							@click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-							:class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
-							class="btn btn-outline-dark"
-						>
-							H1
-						</button>
-						<button
-							@click="editor.commands.setQuoteBlock()"
-							class="btn btn-outline-dark"
-						>
-							<i class="bi bi-quote"></i>
-						</button>
-						<button @click="editor.commands.setImage()" class="btn btn-outline-dark">
-							<i class="bi bi-image"></i>
-						</button>
-					</div>
-				</FloatingMenu>
-				<BubbleMenu :editor="editor" class="bubble-menu" :tippy-options="{ duration: 100 }">
-					<div
-						class="btn-group btn-group-sm"
-						role="group"
-						aria-label="Small button group"
-					>
-						<button
-							@click="editor.commands.setCustomLink()"
-							class="btn btn-outline-dark"
-						>
-							<i class="bi bi-link"></i>
-						</button>
-					</div>
-				</BubbleMenu>
-				<EditorContent :editor="editor" />
-			</div>
+						H1
+					</button>
+					<button @click="editor.commands.setQuoteBlock()" class="btn btn-outline-dark">
+						<i class="bi bi-quote"></i>
+					</button>
+					<button @click="editor.commands.setImage()" class="btn btn-outline-dark">
+						<i class="bi bi-image"></i>
+					</button>
+				</div>
+			</FloatingMenu>
+			<BubbleMenu :editor="editor" class="bubble-menu" :tippy-options="{ duration: 100 }">
+				<div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+					<button @click="editor.commands.setCustomLink()" class="btn btn-outline-dark">
+						<i class="bi bi-link"></i>
+					</button>
+				</div>
+			</BubbleMenu>
+			<EditorContent :editor="editor" />
 		</div>
-		<div class="col p-3"><div v-html="htmlContent"></div></div>
 	</div>
 </template>
 <script setup lang="ts">

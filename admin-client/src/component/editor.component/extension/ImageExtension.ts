@@ -14,11 +14,15 @@ declare module '@tiptap/core' {
 
 export const ImageExtension = Image.extend<ImageOptions>({
 	name: 'ImageExtension',
+
 	addAttributes() {
 		return {
 			...this.parent?.(),
 			align: {
-				default: 'center',
+				default: 'float-none',
+			},
+			imageId: {
+				default: null,
 			},
 		};
 	},

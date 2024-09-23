@@ -10,6 +10,9 @@
     "trash/**"
   ],
   "compilerOptions": {
+    "types": [
+      "@types/uuid"
+    ],
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "baseUrl": ".",

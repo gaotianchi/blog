@@ -4,8 +4,11 @@ import type { RouteRecordRaw } from 'vue-router';
 const testRouter: RouteRecordRaw[] = [
 	{
 		name: 'BLANK',
-		path: '/blank',
+		path: '/blank/:id',
 		component: BlankPage,
+		meta: {
+			requiresAuth: true,
+		},
 	},
 ];
 

@@ -41,7 +41,7 @@ public class ImageController {
         return APIResponse.success();
     }
 
-    @PatchMapping("/images/link-to-article/{imageId}/{articleId}")
+    @PatchMapping("/images/unlink-to-article/{imageId}/{articleId}")
     public APIResponse<Void> unLinkToArticle(@AuthenticationPrincipal Jwt jwt, @PathVariable Long imageId, @PathVariable Long articleId) {
         imageService.unLinkToArticle(jwt.getSubject(), articleId, imageId);
         return APIResponse.success();
