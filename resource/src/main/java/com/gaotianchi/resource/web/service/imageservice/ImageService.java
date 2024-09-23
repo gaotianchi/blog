@@ -50,7 +50,7 @@ public class ImageService implements ImageServiceInterface {
     }
 
     @Override
-    public ImageResponse newImage(HttpServletRequest req, MultipartFile file, String username) throws EntityNotFoundException, IOException {
+    public ImageResponse newImage(HttpServletRequest req, MultipartFile file, String title, String alt, String username) throws EntityNotFoundException, IOException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         Map<CompressionLevel, Path> imageStorageResponse = imageStorageService.save(req, file);
         Map<String, String> urlMap = new HashMap<>();
@@ -67,6 +67,12 @@ public class ImageService implements ImageServiceInterface {
         imageEntity.setName(name);
         imageEntity.setCreationDatetime(OffsetDateTime.now());
         imageEntity.setUpdateDatetime(OffsetDateTime.now());
+        if (title != null && !title.isEmpty()) {
+            imageEntity.setTitle(title);
+        }
+        if (alt != null && !alt.isEmpty()) {
+            imageEntity.setAlt(alt);
+        }
         imageEntity.setUrls(objectMapper.writeValueAsString(urlMap));
         imageEntity = imageRepo.save(imageEntity);
         return new ImageResponse(imageEntity);

@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ImageServiceInterface {
-    ImageResponse newImage(HttpServletRequest req, MultipartFile file, String username) throws IOException;
+    ImageResponse newImage(HttpServletRequest req, MultipartFile file, String title, String alt, String username) throws IOException;
 
     List<ImageResponse> listUserImages(String username, Integer page, String field);
 

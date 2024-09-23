@@ -22,6 +22,7 @@ public class ImageResponse {
     private boolean forSeries;
     private OffsetDateTime creationDatetime;
     private OffsetDateTime updateDatetime;
+    private String title;
 
     public ImageResponse(ImageEntity imageEntity) {
         setupData(imageEntity);
@@ -36,6 +37,7 @@ public class ImageResponse {
         this.forSeries = imageEntity.isForSeries();
         this.creationDatetime = imageEntity.getCreationDatetime();
         this.updateDatetime = imageEntity.getUpdateDatetime();
+        this.title = imageEntity.getTitle();
     }
 
     private Map<String, String> parseUrls(String urlsJson) {

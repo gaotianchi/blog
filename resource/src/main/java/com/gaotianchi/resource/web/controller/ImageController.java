@@ -24,8 +24,8 @@ public class ImageController {
     }
 
     @PostMapping("/images/new")
-    public APIResponse<ImageResponse> newImage(HttpServletRequest req, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal Jwt jwt) throws IOException {
-        ImageResponse imageResponse = imageService.newImage(req, file, jwt.getSubject());
+    public APIResponse<ImageResponse> newImage(HttpServletRequest req, @RequestParam("file") MultipartFile file, @RequestParam(value = "title", required = false) String title, @RequestParam(value = "alt", required = false) String alt, @AuthenticationPrincipal Jwt jwt) throws IOException {
+        ImageResponse imageResponse = imageService.newImage(req, file, title, alt, jwt.getSubject());
         return APIResponse.success(imageResponse);
     }
 

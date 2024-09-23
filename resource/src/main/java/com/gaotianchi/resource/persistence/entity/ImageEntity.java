@@ -25,6 +25,7 @@ public class ImageEntity {
     private boolean forSeries = false;
     private OffsetDateTime creationDatetime;
     private OffsetDateTime updateDatetime;
+    private String title;
 
     @ManyToOne
     private UserEntity user;
