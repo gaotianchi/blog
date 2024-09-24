@@ -1,3 +1,5 @@
+import type { ArticleStatus } from '@/enum';
+
 export type APIResponse<T> = {
 	code: number;
 	message: string;
@@ -54,7 +56,13 @@ export type ArticleResponse = {
 	cover: ImageResponse;
 	creationDatetime: Date;
 	updateDatetime: Date;
-	articleStatus: 'PUBLISHED' | 'DRAFT' | 'TRASH';
+	articleStatus: ArticleStatus;
 	slug: string;
 	series: SeriesResponse;
+};
+
+export type ArticleListResponse = {
+	articleResponses: ArticleResponse[];
+	totalPage: number;
+	currentPage: number;
 };
