@@ -6,15 +6,13 @@ import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.ImageRepo;
 import com.gaotianchi.resource.persistence.repo.TagRepo;
 import com.gaotianchi.resource.web.error.EntityNotFoundException;
-import com.gaotianchi.resource.web.response.ArticleResponse;
-import com.gaotianchi.resource.web.response.CommentResponse;
-import com.gaotianchi.resource.web.response.ImageResponse;
-import com.gaotianchi.resource.web.response.TagResponse;
+import com.gaotianchi.resource.web.response.*;
 import com.gaotianchi.resource.web.service.EntityBelongService;
 import com.gaotianchi.resource.web.service.EntityFounderService;
 import com.gaotianchi.resource.web.service.commentservice.CommentService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -45,8 +43,8 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public ArticleResponse newArticle(String email) throws EntityNotFoundException {
-        UserEntity userEntity = entityFounderService.getUserOrNotFound(email);
+    public ArticleResponse newArticle(String username) throws EntityNotFoundException {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         ArticleEntity articleEntity = new ArticleEntity();
         articleEntity.setAuthor(userEntity);
         articleEntity = articleRepo.save(articleEntity);
@@ -84,13 +82,14 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public List<ArticleResponse> listArticles(String username, Integer page) throws EntityNotFoundException {
+    public ArticlePageResponse listArticles(String username, Integer page) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         Pageable pageable = PageRequest.of(page, 10);
-        List<ArticleEntity> articleEntities = articleRepo.findByAuthorOrderByCreationDatetimeDesc(userEntity, pageable);
-        return articleEntities.stream()
+        Page<ArticleEntity> articleEntityPage = articleRepo.findByAuthorOrderByCreationDatetimeDesc(userEntity, pageable);
+        List<ArticleResponse> articleResponses = articleEntityPage.getContent().stream()
                 .map(ArticleResponse::new)
                 .collect(Collectors.toList());
+        return new ArticlePageResponse(articleResponses, articleEntityPage.getTotalPages(), page);
     }
 
     @Override

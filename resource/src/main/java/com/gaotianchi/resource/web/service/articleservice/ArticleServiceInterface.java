@@ -1,9 +1,6 @@
 package com.gaotianchi.resource.web.service.articleservice;
 
-import com.gaotianchi.resource.web.response.ArticleResponse;
-import com.gaotianchi.resource.web.response.CommentResponse;
-import com.gaotianchi.resource.web.response.ImageResponse;
-import com.gaotianchi.resource.web.response.TagResponse;
+import com.gaotianchi.resource.web.response.*;
 
 import java.util.List;
 
@@ -16,7 +13,7 @@ public interface ArticleServiceInterface {
 
     ArticleResponse setToTrash(String email, Long articleId);
 
-    List<ArticleResponse> listArticles(String username, Integer page);
+    ArticlePageResponse listArticles(String username, Integer page);
 
     ArticleResponse updateContent(String email, Long articleId, String title, String body, String summary, String slug);
 
