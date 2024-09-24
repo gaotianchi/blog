@@ -47,7 +47,6 @@ public class ArticleResponse {
             if (cover != null) {
                 this.cover = new ImageResponse(cover);
             }
-
         }
     }
 

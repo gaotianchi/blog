@@ -39,4 +39,6 @@ public interface ArticleServiceInterface {
 
     List<ImageResponse> listArticleImages(Long articleId);
 
+    ArticleResponse getArticleMainContent(String username, Long articleId);
+
 }

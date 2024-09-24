@@ -221,4 +221,10 @@ public class ArticleService implements ArticleServiceInterface {
         ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
         return articleEntity.getArticleImages().stream().map(ImageResponse::new).collect(Collectors.toList());
     }
+
+    @Override
+    public ArticleResponse getArticleMainContent(String username, Long articleId) {
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, articleId);
+        return new ArticleResponse(articleEntity);
+    }
 }

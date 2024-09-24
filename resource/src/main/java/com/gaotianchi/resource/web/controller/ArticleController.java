@@ -120,4 +120,10 @@ public class ArticleController {
         List<ImageResponse> imageResponses = articleService.listArticleImages(articleId);
         return APIResponse.success(imageResponses);
     }
+
+    @GetMapping("/articles/content/{articleId}")
+    public APIResponse<ArticleResponse> getArticleContent(@AuthenticationPrincipal Jwt jwt, @PathVariable Long articleId) {
+        ArticleResponse articleResponse = articleService.getArticleMainContent(jwt.getSubject(), articleId);
+        return APIResponse.success(articleResponse);
+    }
 }
