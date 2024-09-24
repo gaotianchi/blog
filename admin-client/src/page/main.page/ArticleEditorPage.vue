@@ -18,53 +18,151 @@
 		]"
 	></MainPageHeaderComponent>
 
-	<div class="row">
-		<div v-if="editor" class="container" style="height: fit-content">
-			<FloatingMenu class="floating-menu" :tippy-options="{ duration: 100 }" :editor="editor">
-				<div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
-					<button
-						@click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-						:class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
-						class="btn btn-outline-dark"
+	<div class="row col-lg-11 m-auto">
+		<div class="col-md-8 overflow-y-auto" style="max-height: calc(100vh - 150px)">
+			<textarea
+				type="text"
+				class="form-control-plaintext h1"
+				id="floatingInput"
+				placeholder="标题"
+				aria-label="文章标题"
+				:rows="titleRow"
+				ref="titleRef"
+				v-model="title"
+			></textarea>
+
+			<div v-if="bodyEditor">
+				<FloatingMenu
+					class="floating-menu"
+					:tippy-options="{ duration: 100 }"
+					:editor="bodyEditor"
+				>
+					<div
+						class="btn-group btn-group-sm"
+						role="group"
+						aria-label="Small button group"
 					>
-						H1
-					</button>
-					<button @click="editor.commands.setQuoteBlock()" class="btn btn-outline-dark">
-						<i class="bi bi-quote"></i>
-					</button>
-					<button @click="editor.commands.setImage()" class="btn btn-outline-dark">
-						<i class="bi bi-image"></i>
-					</button>
+						<button
+							@click="bodyEditor.chain().focus().toggleHeading({ level: 1 }).run()"
+							:class="{ 'is-active': bodyEditor.isActive('heading', { level: 1 }) }"
+							class="btn btn-outline-dark"
+						>
+							H1
+						</button>
+						<button
+							@click="bodyEditor.commands.setQuoteBlock()"
+							class="btn btn-outline-dark"
+						>
+							<i class="bi bi-quote"></i>
+						</button>
+						<button
+							@click="bodyEditor.commands.setImage()"
+							class="btn btn-outline-dark"
+						>
+							<i class="bi bi-image"></i>
+						</button>
+					</div>
+				</FloatingMenu>
+				<BubbleMenu
+					:editor="bodyEditor"
+					class="bubble-menu"
+					:tippy-options="{ duration: 100 }"
+				>
+					<div
+						class="btn-group btn-group-sm"
+						role="group"
+						aria-label="Small button group"
+					>
+						<button
+							@click="bodyEditor.commands.setCustomLink()"
+							class="btn btn-outline-dark"
+						>
+							<i class="bi bi-link"></i>
+						</button>
+					</div>
+				</BubbleMenu>
+				<EditorContent :editor="bodyEditor" />
+			</div>
+		</div>
+		<div class="col-12 col-md-4">
+			<div class="sticky-top">
+				<div class="tile">
+					<div class="tile-body row justify-content-end">
+						<button
+							type="button"
+							class="btn btn-primary d-flex align-items-center"
+							style="width: fit-content"
+						>
+							<i class="bi bi-send"></i>
+							发布
+						</button>
+					</div>
 				</div>
-			</FloatingMenu>
-			<BubbleMenu :editor="editor" class="bubble-menu" :tippy-options="{ duration: 100 }">
-				<div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
-					<button @click="editor.commands.setCustomLink()" class="btn btn-outline-dark">
-						<i class="bi bi-link"></i>
-					</button>
+				<div class="tile">
+					<div class="tile-title">固定链接</div>
+					<div class="tile-body"></div>
 				</div>
-			</BubbleMenu>
-			<EditorContent :editor="editor" />
+				<div class="tile">
+					<div class="tile-title">摘要</div>
+					<div class="title-body"></div>
+				</div>
+				<div class="tile">
+					<div class="tile-title">封面</div>
+					<div class="title-body"></div>
+				</div>
+				<div class="tile">
+					<div class="tile-title">标签</div>
+					<div class="title-body"></div>
+				</div>
+				<div class="tile">
+					<div class="tile-title">系列</div>
+					<div class="title-body"></div>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div class="row">bottom</div>
 </template>
 <script setup lang="ts">
-	import { ref, onMounted, onBeforeUnmount } from 'vue';
+	import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 	import StarterKit from '@tiptap/starter-kit';
 	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
 	import { QuoteExtension } from '@/component/editor.component/extension/QuoteExtension';
 	import { LinkExtension } from '@/component/editor.component/extension/LinkExtension';
 	import { ImageExtension } from '@/component/editor.component/extension/ImageExtension';
+	import Placeholder from '@tiptap/extension-placeholder';
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
+	import { makeRequest } from '@/service/request.service';
+	import { RESOURCE_BASE_URL } from '@/config/global.config';
 	const props = defineProps<{
 		articleId: string;
 	}>();
-	const editor = ref<Editor>();
+	const bodyEditor = ref<Editor>();
+
+	const title = ref('');
 	const htmlContent = ref('');
 
+	const titleRef = ref<HTMLTextAreaElement>();
+	const titleRow = ref(1);
+
+	watch(title, () => {
+		if (titleRef.value) {
+			if (titleRef.value.scrollHeight > titleRef.value.clientHeight) {
+				titleRow.value += 1;
+			}
+		}
+	});
+
 	onMounted(() => {
-		editor.value = new Editor({
+		initBodyEditor();
+	});
+
+	const getCurrentArticle = async () => {
+		const articleResponse = await makeRequest(RESOURCE_BASE_URL + '/');
+	};
+
+	const initBodyEditor = () => {
+		bodyEditor.value = new Editor({
 			extensions: [
 				ImageExtension,
 				LinkExtension,
@@ -76,26 +174,33 @@
 						},
 					},
 				}),
+				Placeholder.configure({
+					placeholder: '正文 ...',
+				}),
 			],
 			content: `
 		    `,
 			editorProps: {
 				attributes: {
-					class: 'editor-content border-0 p-3 focus:outline-none',
+					class: 'border-0',
 				},
 			},
 		});
-		// editor.value.on('update', updateHtmlContent);
-		htmlContent.value = editor.value.getHTML();
-	});
+
+		bodyEditor.value.on('update', updateHtmlContent);
+		htmlContent.value = bodyEditor.value.getHTML();
+	};
+
+	const updateHtmlContent = () => {
+		if (bodyEditor.value) {
+			htmlContent.value = bodyEditor.value?.getHTML();
+		}
+	};
 
 	onBeforeUnmount(() => {
-		if (editor.value) {
-			editor.value.destroy();
+		if (bodyEditor.value) {
+			bodyEditor.value.destroy();
 		}
-	});
-	onMounted(() => {
-		console.log(props.articleId);
 	});
 </script>
 
@@ -106,5 +211,16 @@
 	.tiptap:focus,
 	input:focus {
 		outline: none;
+	}
+
+	p.is-editor-empty:first-child::before {
+		color: lightgray;
+		content: attr(data-placeholder);
+		float: left;
+		height: 0;
+		pointer-events: none;
+	}
+	.tiptap p {
+		font-size: 1rem;
 	}
 </style>
