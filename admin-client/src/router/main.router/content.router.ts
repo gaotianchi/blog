@@ -14,7 +14,8 @@ const contentRouter: RouteRecordRaw[] = [
 	},
 	{
 		name: 'ARTICLE_EDITOR',
-		path: '/article/editor/:id',
+		path: '/article/editor/:articleId',
+		props: true,
 		component: ArticleEditorPage,
 		meta: {
 			requiresAuth: true,

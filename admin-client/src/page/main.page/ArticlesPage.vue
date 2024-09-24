@@ -63,7 +63,7 @@
 						</div>
 					</div>
 
-					<div class="row mb-3">
+					<div class="row">
 						<ul class="list-group list-group-flush">
 							<li class="list-group-item">
 								<div class="row">
@@ -141,17 +141,19 @@
 	import { makeRequest } from '@/service/request.service';
 	import { onMounted, ref, watch } from 'vue';
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
-	import Segmentation from '@/component/icon/segmentation.vue';
+	import Segmentation from '@/component/icon/Segmentation.vue';
 	import type {
 		APIResponse,
 		ArticleListResponse as ArticlePageResponse,
 		ArticleResponse,
 	} from '@/type/response.type';
 	import { ArticleStatus } from '@/enum';
+	import { useRouter } from 'vue-router';
 
 	const currentPage = ref(0);
 	const currentArticles = ref<ArticleResponse[]>([]);
 	const currentTotalPage = ref(0);
+	const router = useRouter();
 
 	onMounted(async () => {
 		getPageArticles(currentPage.value);
@@ -205,5 +207,11 @@
 			}
 		);
 		console.log(response);
+		router.push({
+			name: 'ARTICLE_EDITOR',
+			params: {
+				articleId: response.data.id,
+			},
+		});
 	};
 </script>

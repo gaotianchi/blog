@@ -31,7 +31,7 @@
 			</div>
 			<SidebarMenuComponent />
 		</aside>
-		<main class="app-content">
+		<main class="app-content overflow-y-auto">
 			<RouterView />
 		</main>
 	</div>

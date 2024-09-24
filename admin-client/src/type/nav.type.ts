@@ -1,3 +1,5 @@
+import type { RouteParamsGeneric } from 'vue-router';
+
 export type SidebarItem = {
 	title: string;
 	bsIconName?: string;
@@ -14,4 +16,5 @@ export type NavBarItem = {
 export type BreadcrumbItem = {
 	name: string;
 	routeName: string;
+	params?: RouteParamsGeneric;
 };
