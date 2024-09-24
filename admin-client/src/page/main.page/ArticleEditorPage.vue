@@ -103,4 +103,8 @@
 	.tiptap {
 		min-height: calc(100vh - 250px);
 	}
+	.tiptap:focus,
+	input:focus {
+		outline: none;
+	}
 </style>
