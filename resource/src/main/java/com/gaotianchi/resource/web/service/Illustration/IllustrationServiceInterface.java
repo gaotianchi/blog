@@ -6,18 +6,19 @@ import com.gaotianchi.resource.web.response.IllustrationInfo;
 import com.gaotianchi.resource.web.response.PageIllustrationInfo;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IllustrationServiceInterface {
-    IllustrationInfo newIllustration(String username, MultipartFile file, String title, String alt);
+    IllustrationInfo newIllustration(String username, MultipartFile file, String title, String alt) throws IOException;
 
-    void deleteIllustration(String username, Long id);
+    void deleteIllustration(String username, Long id) throws IOException;
 
-    void updateContent(String username, String title, String alt);
+    void updateContent(String username, Long id, String newTitle, String newAlt);
 
     IllustrationInfo getInfo(String username, Long id);
 
-    PageIllustrationInfo getPageInfo(String username, Integer page);
+    PageIllustrationInfo getPageInfo(String username, Integer page, boolean orderByCreationDatetime, boolean desc);
 
     List<ArticleInfo> getArticleList(String username, Long id);
 }
