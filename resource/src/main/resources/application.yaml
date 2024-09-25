@@ -26,14 +26,9 @@ spring:
     hibernate:
       ddl-auto: update
 
-image:
-  supported-extensions:
-    - jpg
-    - jpeg
-    - png
-    - gif
-  storage:
-    root-path: D:\Documents\blog\resource\uploads\images
-  compression:
-    enable: true
-  url-pattern: "/picture/**"
+storage:
+  illustration:
+    location: "D:/documents/blog/resource/uploads/illustration"
+    allowed-extensions: ".png", ".jpg", ".jpeg"
+    original-prefix: "original_"
+    thumbnail-prefix: "thumbnail_"
