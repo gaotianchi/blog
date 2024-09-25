@@ -65,7 +65,7 @@ public class EntityFounderService implements EntityFounderServiceInterface {
 
     @Override
     public AvatarEntity getAvatarOrNotFound(Long id) throws EntityNotFoundException {
-        return findByIdOrNotFound(avatarRepo, id, "Avatar");
+        return findByIdOrNotFound(avatarRepo, id, "Avatar ");
     }
 
     @Override
@@ -80,4 +80,5 @@ public class EntityFounderService implements EntityFounderServiceInterface {
     private <T> T findByIdOrNotFound(JpaRepository<T, Long> repo, Long id, String entityName) throws EntityNotFoundException {
         return findOrThrow(repo.findById(id), entityName, id);
     }
+
 }
