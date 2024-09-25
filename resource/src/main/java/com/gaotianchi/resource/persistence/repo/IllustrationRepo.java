@@ -8,5 +8,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IllustrationRepo extends JpaRepository<IllustrationEntity, Long> {
+
+    // 根据时间排序获取指定用户的插图
     Page<IllustrationEntity> findByUserOrderByCreationDatetimeDesc(UserEntity userEntity);
+
+    Page<IllustrationEntity> findByUserOrderByCreationDatetimeAsc(UserEntity userEntity);
+
+    Page<IllustrationEntity> findByUserOrderByUpdateDatetimeDesc(UserEntity userEntity);
+
+    Page<IllustrationEntity> findByUserOrderByUpdateDatetimeAsc(UserEntity userEntity);
+
 }

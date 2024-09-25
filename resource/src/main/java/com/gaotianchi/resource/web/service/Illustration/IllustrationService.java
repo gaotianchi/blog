@@ -16,6 +16,7 @@ import com.gaotianchi.resource.web.response.PageIllustrationInfo;
 import com.gaotianchi.resource.web.service.belong.EntityBelongService;
 import com.gaotianchi.resource.web.service.founder.EntityFounderService;
 import com.gaotianchi.resource.web.service.storage.ImageStorageService;
+import com.gaotianchi.resource.web.service.storage.illustration.IllustrationStorageService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -43,9 +44,10 @@ public class IllustrationService implements IllustrationServiceInterface {
     private final ObjectMapper objectMapper;
     private final EntityBelongService entityBelongService;
     private final ArticleRepo articleRepo;
+    private final IllustrationStorageService illustrationStorageService;
 
     @Autowired
-    public IllustrationService(ImageStorageService imageStorageService, IllustrationRepo illustrationRepo, EntityFounderService entityFounderService, ImageConfig imageConfig, ObjectMapper objectMapper, EntityBelongService entityBelongService, ArticleRepo articleRepo) {
+    public IllustrationService(ImageStorageService imageStorageService, IllustrationRepo illustrationRepo, EntityFounderService entityFounderService, ImageConfig imageConfig, ObjectMapper objectMapper, EntityBelongService entityBelongService, ArticleRepo articleRepo, IllustrationStorageService illustrationStorageService) {
         this.illustrationRepo = illustrationRepo;
         this.entityFounderService = entityFounderService;
         this.imageStorageService = imageStorageService;
@@ -53,6 +55,46 @@ public class IllustrationService implements IllustrationServiceInterface {
         this.objectMapper = objectMapper;
         this.entityBelongService = entityBelongService;
         this.articleRepo = articleRepo;
+        this.illustrationStorageService = illustrationStorageService;
+    }
+
+    @Override
+    public IllustrationInfo newIllustration(String username, MultipartFile file, String title, String alt) {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
+        String filename = illustrationStorageService.save(file);
+        IllustrationEntity illustrationEntity = new IllustrationEntity();
+        illustrationEntity.setFilename(filename);
+        illustrationEntity.setUser(userEntity);
+        illustrationEntity.setTitle(title);
+        if (alt != null && !alt.isEmpty()) {
+            illustrationEntity.setAlt(alt);
+        }
+        return new IllustrationInfo(illustrationEntity);
+    }
+
+    @Override
+    public void deleteIllustration(String username, Long id) {
+
+    }
+
+    @Override
+    public void updateContent(String username, String title, String alt) {
+
+    }
+
+    @Override
+    public IllustrationInfo getInfo(String username, Long id) {
+        return null;
+    }
+
+    @Override
+    public PageIllustrationInfo getPageInfo(String username, Integer page) {
+        return null;
+    }
+
+    @Override
+    public List<ArticleInfo> getArticleList(String username, Long id) {
+        return List.of();
     }
 
     public ImageResponse newImage(HttpServletRequest req, MultipartFile file, String title, String alt, String username) throws EntityNotFoundException, IOException {
@@ -115,33 +157,4 @@ public class IllustrationService implements IllustrationServiceInterface {
     }
 
 
-    @Override
-    public IllustrationInfo newIllustration(String username, MultipartFile file, String title, String alt) {
-        return null;
-    }
-
-    @Override
-    public void deleteIllustration(String username, Long id) {
-
-    }
-
-    @Override
-    public void updateContent(String username, String title, String alt) {
-
-    }
-
-    @Override
-    public IllustrationInfo getInfo(String username, Long id) {
-        return null;
-    }
-
-    @Override
-    public PageIllustrationInfo getPageInfo(String username, Integer page) {
-        return null;
-    }
-
-    @Override
-    public List<ArticleInfo> getArticleList(String username, Long id) {
-        return List.of();
-    }
 }
