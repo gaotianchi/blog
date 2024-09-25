@@ -1,6 +1,5 @@
 package com.gaotianchi.resource.web.service.storage.cover;
 
-import com.gaotianchi.resource.Utils;
 import com.gaotianchi.resource.config.StorageConfig;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Service;
@@ -23,8 +22,7 @@ public class SeriesCoverStorageService implements SeriesCoverStorageServiceInter
     }
 
     @Override
-    public String save(MultipartFile file) throws IOException {
-        String filename = Utils.generateUniqueFileName() + Utils.getFileExtension(file.getOriginalFilename());
+    public void save(String filename, MultipartFile file) throws IOException {
         Path originalFilePath = getPath(filename, false);
         file.transferTo(originalFilePath);
         BufferedImage originalImage = ImageIO.read(originalFilePath.toFile());
@@ -42,7 +40,6 @@ public class SeriesCoverStorageService implements SeriesCoverStorageServiceInter
                     .outputQuality(0.5F)
                     .toFile(thumbnailFilePath.toFile());
         }
-        return filename;
     }
 
     @Override
@@ -51,6 +48,12 @@ public class SeriesCoverStorageService implements SeriesCoverStorageServiceInter
         Files.deleteIfExists(getPath(filename, false));
         Files.deleteIfExists(getPath(filename, true));
         Files.deleteIfExists(getPath(filename, true).getParent());
+    }
+
+    @Override
+    public Path getPath(String filename) {
+        Path fileDir = Paths.get(storageConfig.getSeriesCover().getLocation()).resolve(filename).normalize();
+        return fileDir.resolve(storageConfig.getSeriesCover().getOriginalPrefix() + filename);
     }
 
     @Override

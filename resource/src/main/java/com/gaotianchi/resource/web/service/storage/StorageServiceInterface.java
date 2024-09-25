@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public interface StorageServiceInterface {
-    String save(MultipartFile file) throws IOException;
+    void save(String filename, MultipartFile file) throws IOException;
 
     void delete(String filename) throws IOException;
 
-    Path getPath(String filename, boolean thumbnail);
+    Path getPath(String filename);
 }

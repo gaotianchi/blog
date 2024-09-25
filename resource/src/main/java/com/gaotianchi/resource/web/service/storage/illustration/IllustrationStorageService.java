@@ -1,6 +1,5 @@
 package com.gaotianchi.resource.web.service.storage.illustration;
 
-import com.gaotianchi.resource.Utils;
 import com.gaotianchi.resource.config.StorageConfig;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Service;
@@ -22,8 +21,7 @@ public class IllustrationStorageService implements IllustrationStorageServiceInt
     }
 
     @Override
-    public String save(MultipartFile file) throws IOException {
-        String filename = Utils.generateUniqueFileName() + Utils.getFileExtension(file.getOriginalFilename());
+    public void save(String filename, MultipartFile file) throws IOException {
         // 存储原始文件
         Path originalFilePath = getPath(filename, false);
         file.transferTo(originalFilePath);
@@ -44,7 +42,6 @@ public class IllustrationStorageService implements IllustrationStorageServiceInt
                     .outputQuality(0.5F)
                     .toFile(thumbnailFilePath.toFile());
         }
-        return filename;
     }
 
     @Override
@@ -53,6 +50,12 @@ public class IllustrationStorageService implements IllustrationStorageServiceInt
         Files.deleteIfExists(getPath(filename, false));
         Files.deleteIfExists(getPath(filename, true));
         Files.deleteIfExists(getPath(filename, true).getParent());
+    }
+
+    @Override
+    public Path getPath(String filename) {
+        Path fileDir = Paths.get(storageConfig.getIllustration().getLocation()).resolve(filename).normalize();
+        return fileDir.resolve(storageConfig.getIllustration().getOriginalPrefix() + filename);
     }
 
     @Override
