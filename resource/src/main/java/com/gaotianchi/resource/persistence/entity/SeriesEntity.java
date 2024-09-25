@@ -15,15 +15,16 @@ public class SeriesEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
+    private String title;
+    private String profile;
     private OffsetDateTime creationDatetime;
 
-    @ManyToOne
-    private ImageEntity cover;
+    @OneToOne
+    private SeriesCoverEntity cover;
 
     @ManyToOne
     private UserEntity user;
 
-    @OneToMany(mappedBy = "seriesEntity")
-    private Collection<ArticleEntity> articleEntities = new ArrayList<>();
+    @OneToMany(mappedBy = "series")
+    private Collection<ArticleEntity> articleList = new ArrayList<>();
 }

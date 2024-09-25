@@ -27,7 +27,7 @@ public class SeriesResponse {
 
     private void setupData(SeriesEntity seriesEntity) {
         this.id = seriesEntity.getId();
-        this.name = seriesEntity.getName();
+        this.name = seriesEntity.getTitle();
         this.creationDatetime = seriesEntity.getCreationDatetime();
     }
 }

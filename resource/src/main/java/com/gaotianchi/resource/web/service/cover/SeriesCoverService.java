@@ -1,4 +1,4 @@
-package com.gaotianchi.resource.web.service.series.cover;
+package com.gaotianchi.resource.web.service.cover;
 
 import com.gaotianchi.resource.web.response.PageSeriesCoverInfo;
 import com.gaotianchi.resource.web.response.SeriesCoverInfo;
