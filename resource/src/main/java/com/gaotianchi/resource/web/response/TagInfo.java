@@ -20,7 +20,7 @@ public class TagInfo {
         id = tagEntity.getId();
         name = tagEntity.getName();
         creationDatetime = tagEntity.getCreationDatetime();
-        articleCount = tagEntity.getArticleList().size();
+        articleCount = tagEntity.getArticleCount();
 
         articleListLocation = "";
     }

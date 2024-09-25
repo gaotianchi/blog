@@ -1,76 +1,74 @@
 package com.gaotianchi.resource.web.service.tag;
 
+import com.gaotianchi.resource.persistence.entity.ArticleEntity;
+import com.gaotianchi.resource.persistence.entity.TagEntity;
 import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.TagRepo;
+import com.gaotianchi.resource.web.error.EntityAlreadyExistException;
+import com.gaotianchi.resource.web.response.PageTagInfo;
 import com.gaotianchi.resource.web.response.TagInfo;
-import com.gaotianchi.resource.web.service.belong.EntityBelongService;
 import com.gaotianchi.resource.web.service.founder.EntityFounderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 public class TagService implements TagServiceInterface {
     private final ArticleRepo articleRepo;
     private final TagRepo tagRepo;
     private final EntityFounderService entityFounderService;
-    private final EntityBelongService entityBelongService;
 
     @Autowired
-    public TagService(ArticleRepo articleRepo, TagRepo tagRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService) {
+    public TagService(ArticleRepo articleRepo, TagRepo tagRepo, EntityFounderService entityFounderService) {
         this.articleRepo = articleRepo;
         this.tagRepo = tagRepo;
         this.entityFounderService = entityFounderService;
-        this.entityBelongService = entityBelongService;
     }
 
     @Override
     public TagInfo newTag(String name) {
-        return null;
+        TagEntity tagEntity = tagRepo.findByName(name);
+        if (tagEntity != null) throw new EntityAlreadyExistException("Tag " + name);
+        tagEntity = new TagEntity();
+        tagEntity.setCreationDatetime(OffsetDateTime.now());
+        tagEntity.setName(name);
+        return new TagInfo(tagRepo.save(tagEntity));
     }
 
     @Override
     public void deleteTag(Long id) {
-
+        TagEntity tagEntity = entityFounderService.getTagOrNotFound(id);
+        Collection<ArticleEntity> articles = tagEntity.getArticleList();
+        for (ArticleEntity article : articles) {
+            article.getTagList().remove(tagEntity);
+        }
+        articleRepo.saveAll(articles);
+        tagEntity.getArticleList().clear();
+        tagRepo.delete(tagEntity);
     }
 
-//    public TagResponse newTag(String name) throws EntityAlreadyExistException {
-//        TagEntity tagEntity = tagRepo.findByName(name);
-//        if (tagEntity != null) throw new EntityAlreadyExistException("Tag " + name);
-//        tagEntity = new TagEntity();
-//        tagEntity.setCreationDatetime(OffsetDateTime.now());
-//        tagEntity.setName(name);
-//        tagEntity = tagRepo.save(tagEntity);
-//        return new TagResponse(tagEntity);
-//    }
+    @Override
+    public TagInfo getInfo(Long id) {
+        TagEntity tagEntity = entityFounderService.getTagOrNotFound(id);
+        return new TagInfo(tagEntity);
+    }
 
-//    public List<TagResponse> listTags() {
-//        Collection<TagEntity> tagEntities = tagRepo.findAll();
-//        return tagEntities.stream().map(TagResponse::new).collect(Collectors.toList());
-//    }
+    @Override
+    public PageTagInfo getPageInfo(Integer page) {
+        Pageable pageable = PageRequest.of(page, 100);
+        Page<TagEntity> tagEntityPage = tagRepo.findByOrderByArticleCountDesc(pageable);
+        List<TagInfo> tagInfoList = tagEntityPage.getContent().stream().map(TagInfo::new).toList();
+        return new PageTagInfo(tagInfoList, tagEntityPage.getTotalPages(), page);
+    }
 
-//    @Override
-//    public void deleteTag(Long id) throws EntityNotFoundException {
-//        TagEntity tagEntity = entityFounderService.getTagOrNotFound(id);
-//        Collection<ArticleEntity> articleEntities = tagEntity.getArticleList();
-//        if (!articleEntities.isEmpty()) {
-//            for (ArticleEntity articleEntity : articleEntities) {
-//                articleEntity.getTagList().removeIf(t -> Objects.equals(t.getId(), id));
-//            }
-//            articleRepo.saveAll(articleEntities);
-//        }
-//        tagRepo.delete(tagEntity);
-//    }
-//    public List<ArticleResponse> listArticles(Long id) throws EntityNotFoundException {
-//        TagEntity tagEntity = entityFounderService.getTagOrNotFound(id);
-//        return tagEntity.getArticleList().stream().map(ArticleResponse::new).collect(Collectors.toList());
-//    }
-//
-//    public TagResponse setArticle(String email, Long tagId, Long articleId) throws EntityNotFoundException {
-//        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(email, articleId);
-//        TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
-//        if (!tagEntity.getArticleList().contains(articleEntity)) tagEntity.getArticleList().add(articleEntity);
-//        tagEntity = tagRepo.save(tagEntity);
-//        return new TagResponse(tagEntity);
-//    }
-
+    @Override
+    public List<String> getAllNames() {
+        return tagRepo.findAllTagNames();
+    }
 }

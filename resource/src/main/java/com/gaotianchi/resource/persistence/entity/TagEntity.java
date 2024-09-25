@@ -20,6 +20,7 @@ public class TagEntity {
     private Long id;
     private String name;
     private OffsetDateTime creationDatetime;
+    private Integer articleCount;
 
     @ManyToMany
     private Collection<ArticleEntity> articleList = new ArrayList<>();
