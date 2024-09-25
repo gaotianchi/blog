@@ -1,15 +1,6 @@
 package com.gaotianchi.resource.web.service.storage.illustration;
 
-import org.springframework.web.multipart.MultipartFile;
+import com.gaotianchi.resource.web.service.storage.StorageServiceInterface;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
-public interface IllustrationStorageServiceInterface {
-    // 返回文件最终名称
-    String save(MultipartFile file) throws IOException;
-
-    void delete(String filename) throws IOException;
-
-    Path getPath(String filename, boolean thumbnail);
+public interface IllustrationStorageServiceInterface extends StorageServiceInterface {
 }
