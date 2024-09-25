@@ -32,3 +32,8 @@ storage:
     allowed-extensions: ".png", ".jpg", ".jpeg"
     original-prefix: "original_"
     thumbnail-prefix: "thumbnail_"
+  series-cover:
+    location: "D:/documents/blog/resource/uploads/cover"
+    allowed-extensions: ".png", ".jpg", ".jpeg"
+    original-prefix: "original_"
+    thumbnail-prefix: "thumbnail_"

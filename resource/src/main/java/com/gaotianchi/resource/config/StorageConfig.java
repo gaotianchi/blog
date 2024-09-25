@@ -13,10 +13,20 @@ import java.util.List;
 @ConfigurationProperties("storage")
 public class StorageConfig {
     private Illustration illustration = new Illustration();
+    private SeriesCover seriesCover = new SeriesCover();
 
     @Setter
     @Getter
     public static class Illustration {
+        private String location;
+        private List<String> allowedExtensions;
+        private String originalPrefix;
+        private String thumbnailPrefix;
+    }
+
+    @Setter
+    @Getter
+    public static class SeriesCover {
         private String location;
         private List<String> allowedExtensions;
         private String originalPrefix;
