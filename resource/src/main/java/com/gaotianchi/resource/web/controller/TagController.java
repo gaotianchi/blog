@@ -4,7 +4,7 @@ import com.gaotianchi.resource.web.request.NewTagRequest;
 import com.gaotianchi.resource.web.response.APIResponse;
 import com.gaotianchi.resource.web.response.ArticleResponse;
 import com.gaotianchi.resource.web.response.TagResponse;
-import com.gaotianchi.resource.web.service.tagservice.TagService;
+import com.gaotianchi.resource.web.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

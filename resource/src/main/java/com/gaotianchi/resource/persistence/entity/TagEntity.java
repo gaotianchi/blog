@@ -22,5 +22,5 @@ public class TagEntity {
     private OffsetDateTime creationDatetime;
 
     @ManyToMany
-    private Collection<ArticleEntity> articles = new ArrayList<>();
+    private Collection<ArticleEntity> articleList = new ArrayList<>();
 }

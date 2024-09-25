@@ -22,6 +22,6 @@ public class TagResponse {
         this.id = tagEntity.getId();
         this.creationDatetime = tagEntity.getCreationDatetime();
         this.name = tagEntity.getName();
-        this.numberOfArticles = tagEntity.getArticles().size();
+        this.numberOfArticles = tagEntity.getArticleList().size();
     }
 }
