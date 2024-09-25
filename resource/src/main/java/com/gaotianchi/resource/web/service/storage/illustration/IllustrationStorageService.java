@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -47,8 +48,11 @@ public class IllustrationStorageService implements IllustrationStorageServiceInt
     }
 
     @Override
-    public void delete(String filename) {
-
+    public void delete(String filename) throws IOException {
+        // 删除原始文件、缩略图以及文件夹
+        Files.deleteIfExists(getPath(filename, false));
+        Files.deleteIfExists(getPath(filename, true));
+        Files.deleteIfExists(getPath(filename, true).getParent());
     }
 
     @Override

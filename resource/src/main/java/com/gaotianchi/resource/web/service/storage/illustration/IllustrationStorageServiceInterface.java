@@ -9,7 +9,7 @@ public interface IllustrationStorageServiceInterface {
     // 返回文件最终名称
     String save(MultipartFile file) throws IOException;
 
-    void delete(String filename);
+    void delete(String filename) throws IOException;
 
     Path getPath(String filename, boolean thumbnail);
 }
