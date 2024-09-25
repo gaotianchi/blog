@@ -1,19 +1,21 @@
-package com.gaotianchi.resource.web.service.imageservice;
+package com.gaotianchi.resource.web.service.Illustration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaotianchi.resource.Utils;
 import com.gaotianchi.resource.config.ImageConfig;
-import com.gaotianchi.resource.persistence.entity.ArticleEntity;
-import com.gaotianchi.resource.persistence.entity.ImageEntity;
+import com.gaotianchi.resource.persistence.entity.IllustrationEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import com.gaotianchi.resource.persistence.enums.CompressionLevel;
 import com.gaotianchi.resource.persistence.repo.ArticleRepo;
-import com.gaotianchi.resource.persistence.repo.ImageRepo;
+import com.gaotianchi.resource.persistence.repo.IllustrationRepo;
 import com.gaotianchi.resource.web.error.EntityNotFoundException;
+import com.gaotianchi.resource.web.response.ArticleInfo;
+import com.gaotianchi.resource.web.response.IllustrationInfo;
 import com.gaotianchi.resource.web.response.ImageResponse;
-import com.gaotianchi.resource.web.service.EntityBelongService;
-import com.gaotianchi.resource.web.service.EntityFounderService;
-import com.gaotianchi.resource.web.service.imagestorageservice.ImageStorageService;
+import com.gaotianchi.resource.web.response.PageIllustrationInfo;
+import com.gaotianchi.resource.web.service.belong.EntityBelongService;
+import com.gaotianchi.resource.web.service.founder.EntityFounderService;
+import com.gaotianchi.resource.web.service.storage.ImageStorageService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -32,9 +34,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class ImageService implements ImageServiceInterface {
+public class IllustrationService implements IllustrationServiceInterface {
 
-    private final ImageRepo imageRepo;
+    private final IllustrationRepo illustrationRepo;
     private final EntityFounderService entityFounderService;
     private final ImageStorageService imageStorageService;
     private final ImageConfig imageConfig;
@@ -43,8 +45,8 @@ public class ImageService implements ImageServiceInterface {
     private final ArticleRepo articleRepo;
 
     @Autowired
-    public ImageService(ImageStorageService imageStorageService, ImageRepo imageRepo, EntityFounderService entityFounderService, ImageConfig imageConfig, ObjectMapper objectMapper, EntityBelongService entityBelongService, ArticleRepo articleRepo) {
-        this.imageRepo = imageRepo;
+    public IllustrationService(ImageStorageService imageStorageService, IllustrationRepo illustrationRepo, EntityFounderService entityFounderService, ImageConfig imageConfig, ObjectMapper objectMapper, EntityBelongService entityBelongService, ArticleRepo articleRepo) {
+        this.illustrationRepo = illustrationRepo;
         this.entityFounderService = entityFounderService;
         this.imageStorageService = imageStorageService;
         this.imageConfig = imageConfig;
@@ -53,7 +55,6 @@ public class ImageService implements ImageServiceInterface {
         this.articleRepo = articleRepo;
     }
 
-    @Override
     public ImageResponse newImage(HttpServletRequest req, MultipartFile file, String title, String alt, String username) throws EntityNotFoundException, IOException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         Map<CompressionLevel, Path> imageStorageResponse = imageStorageService.save(req, file);
@@ -66,40 +67,40 @@ public class ImageService implements ImageServiceInterface {
             name = parts[parts.length - 2];
             urlMap.put(k.name(), url);
         }
-        ImageEntity imageEntity = new ImageEntity();
-        imageEntity.setUser(userEntity);
-        imageEntity.setName(name);
-        imageEntity.setCreationDatetime(OffsetDateTime.now());
-        imageEntity.setUpdateDatetime(OffsetDateTime.now());
+        IllustrationEntity illustrationEntity = new IllustrationEntity();
+        illustrationEntity.setUser(userEntity);
+        illustrationEntity.setFilename(name);
+        illustrationEntity.setCreationDatetime(OffsetDateTime.now());
+        illustrationEntity.setUpdateDatetime(OffsetDateTime.now());
         if (title != null && !title.isEmpty()) {
-            imageEntity.setTitle(title);
+            illustrationEntity.setTitle(title);
         }
         if (alt != null && !alt.isEmpty()) {
-            imageEntity.setAlt(alt);
+            illustrationEntity.setAlt(alt);
         }
-        imageEntity.setUrls(objectMapper.writeValueAsString(urlMap));
-        imageEntity = imageRepo.save(imageEntity);
-        return new ImageResponse(imageEntity);
+        illustrationEntity.setUrls(objectMapper.writeValueAsString(urlMap));
+        illustrationEntity = illustrationRepo.save(illustrationEntity);
+        return new ImageResponse(illustrationEntity);
     }
 
-    @Override
     public List<ImageResponse> listUserImages(String username, Integer page, String field) throws EntityNotFoundException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         Pageable pageable = PageRequest.of(page, 10);
-        List<ImageEntity> imageEntities = switch (field) {
-            case "avatar" -> imageRepo.findByForAvatarIsTrueAndUserOrderByCreationDatetimeDesc(userEntity, pageable);
-            case "series" -> imageRepo.findByForSeriesIsTrueAndUserOrderByCreationDatetimeDesc(userEntity, pageable);
-            default -> imageRepo.findByForArticleIsTrueAndUserOrderByCreationDatetimeDesc(userEntity, pageable);
+        List<IllustrationEntity> imageEntities = switch (field) {
+            case "avatar" ->
+                    illustrationRepo.findByForAvatarIsTrueAndUserOrderByCreationDatetimeDesc(userEntity, pageable);
+            case "series" ->
+                    illustrationRepo.findByForSeriesIsTrueAndUserOrderByCreationDatetimeDesc(userEntity, pageable);
+            default -> illustrationRepo.findByForArticleIsTrueAndUserOrderByCreationDatetimeDesc(userEntity, pageable);
         };
         return imageEntities.stream()
                 .map(ImageResponse::new)
                 .collect(Collectors.toList());
     }
 
-    @Override
     public void deleteImage(String username, Long imageId) throws EntityNotFoundException, IOException {
-        ImageEntity imageEntity = entityBelongService.imageBelongToUser(username, imageId);
-        Path imageDir = Utils.getImageDir(imageConfig.getStorage().getRootPath(), imageEntity.getName());
+        IllustrationEntity illustrationEntity = entityBelongService.imageBelongToUser(username, imageId);
+        Path imageDir = Utils.getImageDir(imageConfig.getStorage().getRootPath(), illustrationEntity.getFilename());
         if (Files.exists(imageDir) && Files.isDirectory(imageDir)) {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(imageDir)) {
                 for (Path file : stream) {
@@ -107,36 +108,40 @@ public class ImageService implements ImageServiceInterface {
                 }
             }
             Files.delete(imageDir);
-            imageRepo.delete(imageEntity);
+            illustrationRepo.delete(illustrationEntity);
         } else {
             throw new EntityNotFoundException("The image directory does not exist or is not a directory.");
         }
     }
 
-    @Override
-    public void linkToArticle(String username, Long articleId, Long imageId) {
-        ImageEntity imageEntity = entityBelongService.imageBelongToUser(username, imageId);
-        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, articleId);
-        if (!articleEntity.getArticleImages().contains(imageEntity)) {
-            articleEntity.getArticleImages().add(imageEntity);
-            imageEntity.getArticles().add(articleEntity);
 
-            articleRepo.save(articleEntity);
-            imageRepo.save(imageEntity);
-        }
+    @Override
+    public IllustrationInfo newIllustration(String username, MultipartFile file, String title, String alt) {
+        return null;
     }
 
     @Override
-    public void unLinkToArticle(String username, Long articleId, Long imageId) {
-        ImageEntity imageEntity = entityBelongService.imageBelongToUser(username, imageId);
-        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, articleId);
+    public void deleteIllustration(String username, Long id) {
 
-        if (articleEntity.getArticleImages().contains(imageEntity)) {
-            articleEntity.getArticleImages().remove(imageEntity);
-            imageEntity.getArticles().remove(articleEntity);
+    }
 
-            articleRepo.save(articleEntity);
-            imageRepo.save(imageEntity);
-        }
+    @Override
+    public void updateContent(String username, String title, String alt) {
+
+    }
+
+    @Override
+    public IllustrationInfo getInfo(String username, Long id) {
+        return null;
+    }
+
+    @Override
+    public PageIllustrationInfo getPageInfo(String username, Integer page) {
+        return null;
+    }
+
+    @Override
+    public List<ArticleInfo> getArticleList(String username, Long id) {
+        return List.of();
     }
 }
