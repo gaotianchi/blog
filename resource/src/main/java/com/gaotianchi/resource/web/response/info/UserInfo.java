@@ -10,7 +10,6 @@ import java.util.TimeZone;
 @Getter
 public class UserInfo {
     private Long id;
-    private String username;
     private String penName;
     private String profile;
     private TimeZone timeZone;
@@ -19,7 +18,6 @@ public class UserInfo {
 
     public UserInfo(UserEntity userEntity) {
         id = userEntity.getId();
-        username = userEntity.getUsername();
         penName = userEntity.getPenName();
         profile = userEntity.getProfile();
         timeZone = userEntity.getTimeZone();
