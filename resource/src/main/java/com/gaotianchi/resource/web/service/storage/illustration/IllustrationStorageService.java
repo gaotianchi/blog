@@ -23,23 +23,25 @@ public class IllustrationStorageService implements IllustrationStorageServiceInt
     @Override
     public void save(String filename, MultipartFile file) throws IOException {
         // 存储原始文件
-        Path originalFilePath = getPath(filename, false);
+        Path originalFilePath = getOriginalPath(filename);
         file.transferTo(originalFilePath);
 
         // 压缩原始文件获取缩略图
         BufferedImage originalImage = ImageIO.read(originalFilePath.toFile());
         int originalWidth = originalImage.getWidth();
-        Path thumbnailFilePath = getPath(filename, true);
-        if (originalWidth > 300) {
-            double targetRate = (double) 300 / originalWidth;
+        Path thumbnailFilePath = getThumbnailPath(filename);
+        int maxWidth = storageConfig.getIllustration().getMaxWidth();
+        double quality = storageConfig.getIllustration().getQuality();
+        if (originalWidth > maxWidth) {
+            double targetRate = (double) maxWidth / originalWidth;
             Thumbnails.of(originalFilePath.toFile())
                     .scale(targetRate)
-                    .outputQuality(0.5F)
+                    .outputQuality(quality)
                     .toFile(thumbnailFilePath.toFile());
         } else {
             Thumbnails.of(originalFilePath.toFile())
                     .scale(1.0F)
-                    .outputQuality(0.5F)
+                    .outputQuality(quality)
                     .toFile(thumbnailFilePath.toFile());
         }
     }
@@ -47,23 +49,20 @@ public class IllustrationStorageService implements IllustrationStorageServiceInt
     @Override
     public void delete(String filename) throws IOException {
         // 删除原始文件、缩略图以及文件夹
-        Files.deleteIfExists(getPath(filename, false));
-        Files.deleteIfExists(getPath(filename, true));
-        Files.deleteIfExists(getPath(filename, true).getParent());
+        Files.deleteIfExists(getOriginalPath(filename));
+        Files.deleteIfExists(getThumbnailPath(filename));
+        Files.deleteIfExists(getThumbnailPath(filename).getParent());
     }
 
     @Override
-    public Path getPath(String filename) {
+    public Path getOriginalPath(String filename) {
         Path fileDir = Paths.get(storageConfig.getIllustration().getLocation()).resolve(filename).normalize();
         return fileDir.resolve(storageConfig.getIllustration().getOriginalPrefix() + filename);
     }
 
     @Override
-    public Path getPath(String filename, boolean thumbnail) {
+    public Path getThumbnailPath(String filename) {
         Path fileDir = Paths.get(storageConfig.getIllustration().getLocation()).resolve(filename).normalize();
-        if (thumbnail) {
-            return fileDir.resolve(storageConfig.getIllustration().getThumbnailPrefix() + filename);
-        }
-        return fileDir.resolve(storageConfig.getIllustration().getOriginalPrefix() + filename);
+        return fileDir.resolve(storageConfig.getIllustration().getThumbnailPrefix() + filename);
     }
 }

@@ -10,5 +10,5 @@ public interface StorageServiceInterface {
 
     void delete(String filename) throws IOException;
 
-    Path getPath(String filename);
+    Path getOriginalPath(String filename);
 }

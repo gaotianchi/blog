@@ -23,21 +23,23 @@ public class SeriesCoverStorageService implements SeriesCoverStorageServiceInter
 
     @Override
     public void save(String filename, MultipartFile file) throws IOException {
-        Path originalFilePath = getPath(filename, false);
+        Path originalFilePath = getOriginalPath(filename);
         file.transferTo(originalFilePath);
         BufferedImage originalImage = ImageIO.read(originalFilePath.toFile());
         int originalWidth = originalImage.getWidth();
-        Path thumbnailFilePath = getPath(filename, true);
-        if (originalWidth > 600) {
-            double targetRate = (double) 600 / originalWidth;
+        Path thumbnailFilePath = getThumbnailPath(filename);
+        int maxWidth = storageConfig.getSeriesCover().getMaxWidth();
+        double quality = storageConfig.getSeriesCover().getQuality();
+        if (originalWidth > maxWidth) {
+            double targetRate = (double) maxWidth / originalWidth;
             Thumbnails.of(originalFilePath.toFile())
                     .scale(targetRate)
-                    .outputQuality(0.5F)
+                    .outputQuality(quality)
                     .toFile(thumbnailFilePath.toFile());
         } else {
             Thumbnails.of(originalFilePath.toFile())
                     .scale(1.0F)
-                    .outputQuality(0.5F)
+                    .outputQuality(quality)
                     .toFile(thumbnailFilePath.toFile());
         }
     }
@@ -45,23 +47,20 @@ public class SeriesCoverStorageService implements SeriesCoverStorageServiceInter
     @Override
     public void delete(String filename) throws IOException {
         // 删除原始文件、缩略图以及文件夹
-        Files.deleteIfExists(getPath(filename, false));
-        Files.deleteIfExists(getPath(filename, true));
-        Files.deleteIfExists(getPath(filename, true).getParent());
+        Files.deleteIfExists(getOriginalPath(filename));
+        Files.deleteIfExists(getThumbnailPath(filename));
+        Files.deleteIfExists(getThumbnailPath(filename).getParent());
     }
 
     @Override
-    public Path getPath(String filename) {
+    public Path getOriginalPath(String filename) {
         Path fileDir = Paths.get(storageConfig.getSeriesCover().getLocation()).resolve(filename).normalize();
         return fileDir.resolve(storageConfig.getSeriesCover().getOriginalPrefix() + filename);
     }
 
     @Override
-    public Path getPath(String filename, boolean thumbnail) {
+    public Path getThumbnailPath(String filename) {
         Path fileDir = Paths.get(storageConfig.getSeriesCover().getLocation()).resolve(filename).normalize();
-        if (thumbnail) {
-            return fileDir.resolve(storageConfig.getSeriesCover().getThumbnailPrefix() + filename);
-        }
-        return fileDir.resolve(storageConfig.getSeriesCover().getOriginalPrefix() + filename);
+        return fileDir.resolve(storageConfig.getSeriesCover().getThumbnailPrefix() + filename);
     }
 }

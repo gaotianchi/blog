@@ -14,6 +14,7 @@ import java.util.List;
 public class StorageConfig {
     private Illustration illustration = new Illustration();
     private SeriesCover seriesCover = new SeriesCover();
+    private Avatar avatar = new Avatar();
 
     @Setter
     @Getter
@@ -22,6 +23,8 @@ public class StorageConfig {
         private List<String> allowedExtensions;
         private String originalPrefix;
         private String thumbnailPrefix;
+        private int maxWidth;
+        private double quality;
     }
 
     @Setter
@@ -31,5 +34,14 @@ public class StorageConfig {
         private List<String> allowedExtensions;
         private String originalPrefix;
         private String thumbnailPrefix;
+        private int maxWidth;
+        private double quality;
+    }
+
+    @Setter
+    @Getter
+    public static class Avatar {
+        private String location;
+        private List<String> allowedExtensions;
     }
 }
