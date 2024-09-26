@@ -41,3 +41,6 @@ storage:
     quality: 0.5F
   avatar:
     location: "D:/documents/blog/resource/uploads/avatar"
+
+web:
+  root-url: "http://localhost:8090"
