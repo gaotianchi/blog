@@ -10,8 +10,6 @@ public interface EntityBelongServiceInterface {
 
     AvatarEntity avatarBelongToUser(String username, Long id) throws EntityNotFoundException;
 
-    CommentEntity commentBelongToUser(String username, Long id) throws EntityNotFoundException;
-
     SeriesCoverEntity seriesCoverBelongToUser(String username, Long id) throws EntityNotFoundException;
 
     IllustrationEntity illustrationBelongToUser(String username, Long id) throws EntityNotFoundException;

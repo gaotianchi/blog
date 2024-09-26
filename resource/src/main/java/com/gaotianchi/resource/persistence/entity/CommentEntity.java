@@ -22,7 +22,7 @@ public class CommentEntity {
     private OffsetDateTime lastUpdatedDatetime;
 
     @ManyToOne
-    private UserEntity author;
+    private UserEntity user;
 
     @ManyToOne
     private CommentEntity parentComment;
@@ -32,7 +32,4 @@ public class CommentEntity {
 
     @ManyToOne
     private ArticleEntity article;
-
-    @OneToMany(mappedBy = "target")
-    private Collection<CommentVoteEntity> commentVoteEntities;
 }

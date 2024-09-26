@@ -18,32 +18,28 @@ public class UserEntity {
     private Long id;
     private String username;
     private String penName;
-    private TimeZone timeZone;
-    private Integer score = 0;
     @Column(length = 1000)
     private String profile;
-
-    @ManyToOne
-    private ImageEntity avatar;
-
-    @OneToMany(mappedBy = "author")
-    private Collection<ArticleEntity> articleEntities = new ArrayList<>();
+    private TimeZone timeZone;
 
     @OneToMany(mappedBy = "user")
-    private Collection<SeriesEntity> seriesEntities = new ArrayList<>();
+    private Collection<AvatarEntity> avatarList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "author")
-    private Collection<CommentEntity> commentEntities = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private Collection<ArticleEntity> articleList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "voter")
-    private Collection<ArticleVoteRecordEntity> voteEntities = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private Collection<IllustrationEntity> illustrationList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private Collection<SeriesEntity> seriesList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private Collection<SeriesCoverEntity> seriesCoverList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private Collection<CommentEntity> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "userEntity")
     private Collection<AccessRecordEntity> accessRecordEntities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private Collection<ImageEntity> imageEntities = new ArrayList<>();
-
-    @ManyToOne
-    private LevelEntity level;
 }

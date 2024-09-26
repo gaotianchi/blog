@@ -19,32 +19,25 @@ public class ArticleEntity {
     private String title;
     private String body;
     private String summary;
+    @Enumerated(EnumType.STRING)
+    private ArticleStatus status;
+    private String slug;
     private OffsetDateTime creationDatetime;
     private OffsetDateTime publishDatetime;
-    private OffsetDateTime lastUpdatedDatetime;
-    @Enumerated(EnumType.STRING)
-    private ArticleStatus articleStatus;
-    private String slug;
-
+    private OffsetDateTime updateDatetime;
 
     @ManyToOne
-    private SeriesEntity seriesEntity;
-
-    @ManyToMany(mappedBy = "articles")
-    private Collection<TagEntity> tags = new ArrayList<>();
-
-    @OneToOne
-    private ImageEntity cover;
+    private UserEntity user;
 
     @ManyToOne
-    private UserEntity author;
+    private SeriesEntity series;
 
-    @OneToMany(mappedBy = "target")
-    private Collection<ArticleVoteRecordEntity> articleVoteRecordEntities = new ArrayList<>();
+    @ManyToMany(mappedBy = "articleList")
+    private Collection<TagEntity> tagList = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "articleList")
+    private Collection<IllustrationEntity> illustrationList = new ArrayList<>();
 
     @OneToMany(mappedBy = "article")
-    private Collection<CommentEntity> commentEntities = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "articles")
-    private Collection<ImageEntity> articleImages = new ArrayList<>();
+    private Collection<CommentEntity> commentList = new ArrayList<>();
 }
