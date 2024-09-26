@@ -39,6 +39,11 @@ public class EntityFounderService implements EntityFounderServiceInterface {
     }
 
     @Override
+    public UserEntity getUserOrNorFound(Long id) throws EntityNotFoundException {
+        return findByIdOrNotFound(userRepo, id, "User");
+    }
+
+    @Override
     public ArticleEntity getArticleOrNotFound(Long id) throws EntityNotFoundException {
         return findByIdOrNotFound(articleRepo, id, "Article");
     }

@@ -6,6 +6,8 @@ import com.gaotianchi.resource.web.error.EntityNotFoundException;
 public interface EntityFounderServiceInterface {
     UserEntity getUserOrNotFound(String username) throws EntityNotFoundException;
 
+    UserEntity getUserOrNorFound(Long id) throws EntityNotFoundException;
+
     ArticleEntity getArticleOrNotFound(Long id) throws EntityNotFoundException;
 
     IllustrationEntity getIllustrationOrNotFound(Long id) throws EntityNotFoundException;

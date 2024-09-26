@@ -11,5 +11,5 @@ public interface UserServiceInterface {
 
     void updateInfo(String username, String newPenName, String newProfile, TimeZone newTimeZone);
 
-    UserInfo getInfo(String username);
+    UserInfo getInfo(Long id);
 }
