@@ -1,5 +1,6 @@
 package com.gaotianchi.resource;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,4 +27,9 @@ public class Utils {
         int randomNum = new Random().nextInt(10000);
         return formattedDate + randomNum;
     }
+
+    public String getBaseUrl(HttpServletRequest request) {
+        return String.format("%s://%s:%d", request.getScheme(), request.getServerName(), request.getServerPort());
+    }
+
 }
