@@ -31,7 +31,7 @@ public class IllustrationInfo {
         creationDatetime = illustrationEntity.getCreationDatetime();
         updateDatetime = illustrationEntity.getUpdateDatetime();
 
-        userLocation = "";
+        userLocation = "http://localhost:8090/users/info/" + illustrationEntity.getUser().getId();
         articleListLocation = "";
     }
 }

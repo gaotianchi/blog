@@ -22,6 +22,6 @@ public class AvatarInfo {
         url = avatarEntity.getUrl();
         creationDatetime = avatarEntity.getCreationDatetime();
 
-        userLocation = "";
+        userLocation = "http://localhost:8090/users/info/" + avatarEntity.getUser().getId();
     }
 }

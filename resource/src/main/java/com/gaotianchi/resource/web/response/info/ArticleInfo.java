@@ -19,7 +19,7 @@ public class ArticleInfo {
     private OffsetDateTime lastUpdatedDatetime;
 
     private String bodyLocation;
-    private String authorLocation;
+    private String userLocation;
     private String seriesLocation;
     private String illustrationListLocation;
     private String commentListLocation;
@@ -37,7 +37,7 @@ public class ArticleInfo {
         lastUpdatedDatetime = articleEntity.getUpdateDatetime();
 
         bodyLocation = "";
-        authorLocation = "";
+        userLocation = "http://localhost:8090/users/info/" + articleEntity.getUser().getId();
         seriesLocation = "";
         illustrationListLocation = "";
         commentListLocation = "";

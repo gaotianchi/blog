@@ -26,7 +26,7 @@ public class SeriesInfo {
         creationDatetime = seriesEntity.getCreationDatetime();
         articleCount = seriesEntity.getArticleCount();
 
-        userLocation = "";
+        userLocation = "http://localhost:8090/users/info/" + seriesEntity.getUser().getId();
         coverLocation = "";
         articleListLocation = "";
     }

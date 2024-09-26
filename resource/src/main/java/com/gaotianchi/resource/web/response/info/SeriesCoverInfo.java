@@ -23,7 +23,7 @@ public class SeriesCoverInfo {
         url = seriesCoverEntity.getUrl();
         creationDatetime = seriesCoverEntity.getCreationDatetime();
 
-        userLocation = "";
+        userLocation = "http://localhost:8090/users/info/" + seriesCoverEntity.getUser().getId();
         seriesLocation = "";
     }
 }
