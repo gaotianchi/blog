@@ -25,10 +25,10 @@ public class CommentEntity {
     private UserEntity user;
 
     @ManyToOne
-    private CommentEntity parentComment;
+    private CommentEntity parent;
 
-    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
-    private Collection<CommentEntity> replies;
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private Collection<CommentEntity> replyList;
 
     @ManyToOne
     private ArticleEntity article;

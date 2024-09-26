@@ -18,13 +18,14 @@ public class SeriesEntity {
     private String title;
     private String profile;
     private OffsetDateTime creationDatetime;
+    private int articleCount;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     private SeriesCoverEntity cover;
 
     @ManyToOne
     private UserEntity user;
 
-    @OneToMany(mappedBy = "series")
+    @OneToMany(mappedBy = "series", orphanRemoval = true)
     private Collection<ArticleEntity> articleList = new ArrayList<>();
 }

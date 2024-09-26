@@ -22,24 +22,24 @@ public class UserEntity {
     private String profile;
     private TimeZone timeZone;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
     private Collection<AvatarEntity> avatarList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
     private Collection<ArticleEntity> articleList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
     private Collection<IllustrationEntity> illustrationList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
     private Collection<SeriesEntity> seriesList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
     private Collection<SeriesCoverEntity> seriesCoverList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
     private Collection<CommentEntity> commentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userEntity")
-    private Collection<AccessRecordEntity> accessRecordEntities = new ArrayList<>();
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private Collection<AccessRecordEntity> accessRecordList = new ArrayList<>();
 }

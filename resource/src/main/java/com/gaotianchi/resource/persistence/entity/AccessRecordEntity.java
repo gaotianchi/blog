@@ -21,5 +21,5 @@ public class AccessRecordEntity {
     private String ipAddress;
 
     @ManyToOne
-    private UserEntity userEntity;
+    private UserEntity user;
 }
