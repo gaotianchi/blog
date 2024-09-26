@@ -18,7 +18,6 @@ public class AvatarEntity {
     private Long id;
     private String filename;
     private String url;
-    private boolean active;
     private OffsetDateTime creationDatetime;
 
     @OneToOne

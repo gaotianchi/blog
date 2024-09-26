@@ -12,7 +12,6 @@ public class AvatarInfo {
     private Long id;
     private String filename;
     private String url;
-    private boolean active;
     private OffsetDateTime creationDatetime;
 
     private String userLocation;
@@ -21,7 +20,6 @@ public class AvatarInfo {
         id = avatarEntity.getId();
         filename = avatarEntity.getFilename();
         url = avatarEntity.getUrl();
-        active = avatarEntity.isActive();
         creationDatetime = avatarEntity.getCreationDatetime();
 
         userLocation = "";
