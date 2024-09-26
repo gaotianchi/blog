@@ -17,7 +17,9 @@ public class ArticleEntity {
     @GeneratedValue
     private Long id;
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String body;
+    @Column(columnDefinition = "TEXT")
     private String summary;
     @Enumerated(EnumType.STRING)
     private ArticleStatus status;
