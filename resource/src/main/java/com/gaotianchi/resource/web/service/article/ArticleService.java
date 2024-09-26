@@ -141,6 +141,8 @@ public class ArticleService implements ArticleServiceInterface {
         TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
         articleEntity.getTagList().add(tagEntity);
         tagEntity.getArticleList().add(articleEntity);
+        tagEntity.increaseArticleCount();
+        tagRepo.save(tagEntity);
         articleRepo.save(articleEntity);
         return new TagInfo(tagEntity);
     }
@@ -151,6 +153,8 @@ public class ArticleService implements ArticleServiceInterface {
         TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
         articleEntity.getTagList().remove(tagEntity);
         tagEntity.getArticleList().remove(articleEntity);
+        tagEntity.decreaseArticleCount();
+        tagRepo.save(tagEntity);
         articleRepo.save(articleEntity);
     }
 

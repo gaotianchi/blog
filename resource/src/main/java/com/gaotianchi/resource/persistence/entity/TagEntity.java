@@ -24,4 +24,12 @@ public class TagEntity {
 
     @ManyToMany
     private Collection<ArticleEntity> articleList = new ArrayList<>();
+
+    public void increaseArticleCount() {
+        articleCount += 1;
+    }
+
+    public void decreaseArticleCount() {
+        articleCount -= 1;
+    }
 }
