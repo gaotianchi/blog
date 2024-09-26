@@ -41,28 +41,6 @@ public class EntityBelongService implements EntityBelongServiceInterface {
     }
 
     @Override
-    public AvatarEntity avatarBelongToUser(String username, Long id) throws EntityNotFoundException {
-        return belongsToUser(
-                username,
-                id,
-                entityFounderService::getAvatarOrNotFound,
-                UserEntity::getAvatarList,
-                "Avatar " + id
-        );
-    }
-
-    @Override
-    public CommentEntity commentBelongToUser(String email, Long id) throws EntityNotFoundException {
-        return belongsToUser(
-                email,
-                id,
-                entityFounderService::getCommentOrNotFound,
-                UserEntity::getCommentList,
-                "Comment " + id
-        );
-    }
-
-    @Override
     public SeriesCoverEntity seriesCoverBelongToUser(String username, Long id) throws EntityNotFoundException {
         return belongsToUser(
                 username,
