@@ -1,7 +1,7 @@
 package com.gaotianchi.resource.web.service.tag;
 
-import com.gaotianchi.resource.web.response.PageTagInfo;
-import com.gaotianchi.resource.web.response.TagInfo;
+import com.gaotianchi.resource.web.response.info.TagInfo;
+import com.gaotianchi.resource.web.response.page.PageTagInfo;
 
 import java.util.List;
 

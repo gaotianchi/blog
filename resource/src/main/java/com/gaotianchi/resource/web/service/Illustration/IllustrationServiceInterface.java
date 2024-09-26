@@ -1,9 +1,9 @@
 package com.gaotianchi.resource.web.service.Illustration;
 
 
-import com.gaotianchi.resource.web.response.ArticleInfo;
-import com.gaotianchi.resource.web.response.IllustrationInfo;
-import com.gaotianchi.resource.web.response.PageIllustrationInfo;
+import com.gaotianchi.resource.web.response.info.ArticleInfo;
+import com.gaotianchi.resource.web.response.info.IllustrationInfo;
+import com.gaotianchi.resource.web.response.page.PageIllustrationInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

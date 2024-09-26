@@ -1,7 +1,7 @@
 package com.gaotianchi.resource.web.service.cover;
 
-import com.gaotianchi.resource.web.response.PageSeriesCoverInfo;
-import com.gaotianchi.resource.web.response.SeriesCoverInfo;
+import com.gaotianchi.resource.web.response.info.SeriesCoverInfo;
+import com.gaotianchi.resource.web.response.page.PageSeriesCoverInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.gaotianchi.resource.web.response;
+package com.gaotianchi.resource.web.response.info;
 
 import com.gaotianchi.resource.persistence.entity.AvatarEntity;
 import lombok.Getter;

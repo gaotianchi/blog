@@ -1,4 +1,4 @@
-package com.gaotianchi.resource.web.response;
+package com.gaotianchi.resource.web.response.info;
 
 import com.gaotianchi.resource.persistence.entity.SeriesEntity;
 import lombok.Getter;
@@ -13,6 +13,7 @@ public class SeriesInfo {
     private String title;
     private String profile;
     private OffsetDateTime creationDatetime;
+    private int articleCount;
 
     private String userLocation;
     private String coverLocation;
@@ -23,6 +24,7 @@ public class SeriesInfo {
         title = seriesEntity.getTitle();
         profile = seriesEntity.getProfile();
         creationDatetime = seriesEntity.getCreationDatetime();
+        articleCount = seriesEntity.getArticleCount();
 
         userLocation = "";
         coverLocation = "";

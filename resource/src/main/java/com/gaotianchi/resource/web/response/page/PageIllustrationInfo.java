@@ -1,5 +1,6 @@
-package com.gaotianchi.resource.web.response;
+package com.gaotianchi.resource.web.response.page;
 
+import com.gaotianchi.resource.web.response.info.IllustrationInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

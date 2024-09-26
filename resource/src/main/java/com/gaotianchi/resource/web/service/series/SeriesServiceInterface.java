@@ -1,8 +1,8 @@
 package com.gaotianchi.resource.web.service.series;
 
-import com.gaotianchi.resource.web.response.PageSeriesInfo;
-import com.gaotianchi.resource.web.response.SeriesCoverInfo;
-import com.gaotianchi.resource.web.response.SeriesInfo;
+import com.gaotianchi.resource.web.response.info.SeriesCoverInfo;
+import com.gaotianchi.resource.web.response.info.SeriesInfo;
+import com.gaotianchi.resource.web.response.page.PageSeriesInfo;
 
 import java.io.IOException;
 

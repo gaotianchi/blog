@@ -1,13 +1,14 @@
 package com.gaotianchi.resource.web.service.Illustration;
 
+import com.gaotianchi.resource.Utils;
 import com.gaotianchi.resource.persistence.entity.ArticleEntity;
 import com.gaotianchi.resource.persistence.entity.IllustrationEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.IllustrationRepo;
-import com.gaotianchi.resource.web.response.ArticleInfo;
-import com.gaotianchi.resource.web.response.IllustrationInfo;
-import com.gaotianchi.resource.web.response.PageIllustrationInfo;
+import com.gaotianchi.resource.web.response.info.ArticleInfo;
+import com.gaotianchi.resource.web.response.info.IllustrationInfo;
+import com.gaotianchi.resource.web.response.page.PageIllustrationInfo;
 import com.gaotianchi.resource.web.service.belong.EntityBelongService;
 import com.gaotianchi.resource.web.service.founder.EntityFounderService;
 import com.gaotianchi.resource.web.service.storage.illustration.IllustrationStorageService;
@@ -36,7 +37,6 @@ public class IllustrationService implements IllustrationServiceInterface {
     public IllustrationService(IllustrationRepo illustrationRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService, ArticleRepo articleRepo, IllustrationStorageService illustrationStorageService) {
         this.illustrationRepo = illustrationRepo;
         this.entityFounderService = entityFounderService;
-
         this.entityBelongService = entityBelongService;
         this.articleRepo = articleRepo;
         this.illustrationStorageService = illustrationStorageService;
@@ -45,7 +45,8 @@ public class IllustrationService implements IllustrationServiceInterface {
     @Override
     public IllustrationInfo newIllustration(String username, MultipartFile file, String title, String alt) throws IOException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
-        String filename = illustrationStorageService.save(file);
+        String filename = Utils.generateUniqueFileName() + Utils.getFileExtension(file.getOriginalFilename());
+        illustrationStorageService.save(filename, file);
         IllustrationEntity illustrationEntity = new IllustrationEntity();
         illustrationEntity.setFilename(filename);
         illustrationEntity.setUser(userEntity);
@@ -54,7 +55,7 @@ public class IllustrationService implements IllustrationServiceInterface {
         if (alt != null && !alt.isEmpty()) {
             illustrationEntity.setAlt(alt);
         }
-        return new IllustrationInfo(illustrationEntity);
+        return new IllustrationInfo(illustrationRepo.save(illustrationEntity));
     }
 
     @Override
