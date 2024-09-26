@@ -29,18 +29,15 @@ spring:
 storage:
   illustration:
     location: "D:/documents/blog/resource/uploads/illustration"
-    allowed-extensions: ".png", ".jpg", ".jpeg"
     original-prefix: "original_"
     thumbnail-prefix: "thumbnail_"
     max-width: 300
     quality: 0.5F
   series-cover:
     location: "D:/documents/blog/resource/uploads/cover"
-    allowed-extensions: ".png", ".jpg", ".jpeg"
     original-prefix: "original_"
     thumbnail-prefix: "thumbnail_"
     max-width: 600
     quality: 0.5F
   avatar:
     location: "D:/documents/blog/resource/uploads/avatar"
-    allowed-extensions: ".png", ".jpg", ".jpeg"

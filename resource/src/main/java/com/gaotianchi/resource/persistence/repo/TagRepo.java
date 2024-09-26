@@ -13,7 +13,7 @@ import java.util.List;
 public interface TagRepo extends JpaRepository<TagEntity, Long> {
     TagEntity findByName(String name);
 
-    @Query("SELECT TagEntity.name FROM TagEntity ")
+    @Query("SELECT t.name FROM TagEntity t")
     List<String> findAllTagNames();
 
     // 根据文章数量从大到小排序分页查询标签

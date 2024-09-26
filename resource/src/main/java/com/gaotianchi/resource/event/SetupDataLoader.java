@@ -21,10 +21,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        createBloggerIfNotFound();
-    }
-
-    private void createBloggerIfNotFound() {
         UserEntity userEntity = userRepo.findByUsername("6159984@gmail.com");
         if (userEntity == null) {
             userEntity = new UserEntity();
