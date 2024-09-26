@@ -38,6 +38,6 @@ public class ArticleEntity {
     @ManyToMany(mappedBy = "articleList")
     private Collection<IllustrationEntity> illustrationList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "article")
+    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private Collection<CommentEntity> commentList = new ArrayList<>();
 }
