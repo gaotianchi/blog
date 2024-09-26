@@ -3,7 +3,7 @@ package com.gaotianchi.resource.persistence.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +21,6 @@ public class AvatarEntity {
     private boolean active;
     private OffsetDateTime creationDatetime;
 
-    @ManyToOne
+    @OneToOne
     private UserEntity user;
 }

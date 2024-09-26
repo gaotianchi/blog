@@ -22,8 +22,8 @@ public class UserEntity {
     private String profile;
     private TimeZone timeZone;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private Collection<AvatarEntity> avatarList = new ArrayList<>();
+    @OneToOne(orphanRemoval = true)
+    private AvatarEntity avatar;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private Collection<ArticleEntity> articleList = new ArrayList<>();
