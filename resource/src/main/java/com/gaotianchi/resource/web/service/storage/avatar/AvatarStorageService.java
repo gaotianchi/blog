@@ -1,6 +1,7 @@
 package com.gaotianchi.resource.web.service.storage.avatar;
 
 import com.gaotianchi.resource.config.StorageConfig;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Service
 public class AvatarStorageService implements AvatarStorageServiceInterface {
 
     private final StorageConfig storageConfig;

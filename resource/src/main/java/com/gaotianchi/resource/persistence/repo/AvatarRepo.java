@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AvatarRepo extends JpaRepository<AvatarEntity, Long> {
     Page<AvatarEntity> findByUserOrderByCreationDatetimeDesc(UserEntity userEntity);
+
+    AvatarEntity findFirstByUserAndActiveTrue(UserEntity userEntity);
 }
