@@ -1,5 +1,6 @@
 package com.gaotianchi.resource.web.response.info;
 
+import com.gaotianchi.resource.persistence.entity.SeriesCoverEntity;
 import com.gaotianchi.resource.persistence.entity.SeriesEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,7 @@ public class SeriesInfo {
 
     private String userLocation;
     private String coverLocation;
-    private String articleListLocation;
+    private String pageArticleLocation;
 
     public SeriesInfo(SeriesEntity seriesEntity) {
         id = seriesEntity.getId();
@@ -27,7 +28,9 @@ public class SeriesInfo {
         articleCount = seriesEntity.getArticleCount();
 
         userLocation = "http://localhost:8090/users/info/" + seriesEntity.getUser().getId();
-        coverLocation = "";
-        articleListLocation = "";
+        SeriesCoverEntity seriesCoverEntity = seriesEntity.getCover();
+        if (seriesCoverEntity != null)
+            coverLocation = "http://localhost:8090/series-cover/info/" + seriesCoverEntity.getId();
+        pageArticleLocation = "";
     }
 }

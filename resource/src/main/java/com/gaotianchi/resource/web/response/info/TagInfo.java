@@ -14,7 +14,7 @@ public class TagInfo {
     private OffsetDateTime creationDatetime;
     private Integer articleCount;
 
-    private String articleListLocation;
+    private String pageArticleLocation;
 
     public TagInfo(TagEntity tagEntity) {
         id = tagEntity.getId();
@@ -22,6 +22,6 @@ public class TagInfo {
         creationDatetime = tagEntity.getCreationDatetime();
         articleCount = tagEntity.getArticleCount();
 
-        articleListLocation = "";
+        pageArticleLocation = "";
     }
 }

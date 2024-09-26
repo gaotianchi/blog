@@ -19,7 +19,7 @@ public class IllustrationInfo {
     private OffsetDateTime updateDatetime;
 
     private String userLocation;
-    private String articleListLocation;
+    private String pageArticleLocation;
 
     public IllustrationInfo(IllustrationEntity illustrationEntity) {
         id = illustrationEntity.getId();
@@ -32,6 +32,6 @@ public class IllustrationInfo {
         updateDatetime = illustrationEntity.getUpdateDatetime();
 
         userLocation = "http://localhost:8090/users/info/" + illustrationEntity.getUser().getId();
-        articleListLocation = "";
+        pageArticleLocation = "";
     }
 }

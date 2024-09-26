@@ -1,6 +1,7 @@
 package com.gaotianchi.resource.web.response.info;
 
 import com.gaotianchi.resource.persistence.entity.ArticleEntity;
+import com.gaotianchi.resource.persistence.entity.SeriesEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,7 +39,8 @@ public class ArticleInfo {
 
         bodyLocation = "";
         userLocation = "http://localhost:8090/users/info/" + articleEntity.getUser().getId();
-        seriesLocation = "";
+        SeriesEntity seriesEntity = articleEntity.getSeries();
+        if (seriesEntity != null) seriesLocation = "http://localhost:8090/series/info/" + seriesEntity.getId();
         illustrationListLocation = "";
         commentListLocation = "";
         tagListLocation = "";
