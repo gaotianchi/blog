@@ -16,7 +16,7 @@ public interface IllustrationServiceInterface {
 
     void updateContent(String username, Long id, String newTitle, String newAlt);
 
-    IllustrationInfo getInfo(String username, Long id);
+    IllustrationInfo getInfo(Long id);
 
     PageIllustrationInfo getPageInfo(String username, Integer page, boolean orderByCreationDatetime, boolean desc);
 

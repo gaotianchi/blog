@@ -83,8 +83,8 @@ public class SeriesService implements SeriesServiceInterface {
     }
 
     @Override
-    public SeriesInfo getInfo(String username, Long id) {
-        SeriesEntity seriesEntity = entityBelongService.seriesBelongToUser(username, id);
+    public SeriesInfo getInfo(Long id) {
+        SeriesEntity seriesEntity = entityFounderService.getSeriesOrNotFound(id);
         return new SeriesInfo(seriesEntity);
     }
 

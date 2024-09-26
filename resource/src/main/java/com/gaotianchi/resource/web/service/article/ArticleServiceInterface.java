@@ -13,7 +13,7 @@ public interface ArticleServiceInterface {
 
     void deleteArticle(String username, Long id);
 
-    ArticleInfo getInfo(String username, Long id);
+    ArticleInfo getInfo(Long id);
 
     void updateStatus(String username, Long id, String newStatus) throws Exception;
 

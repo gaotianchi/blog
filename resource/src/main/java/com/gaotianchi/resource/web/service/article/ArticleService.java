@@ -66,8 +66,8 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public ArticleInfo getInfo(String username, Long id) {
-        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
+    public ArticleInfo getInfo(Long id) {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
         return new ArticleInfo(articleEntity);
     }
 

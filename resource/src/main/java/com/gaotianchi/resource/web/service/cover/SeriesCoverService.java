@@ -61,8 +61,8 @@ public class SeriesCoverService implements SeriesCoverServiceInterface {
     }
 
     @Override
-    public SeriesCoverInfo getInfo(String username, Long id) {
-        SeriesCoverEntity seriesCoverEntity = entityBelongService.seriesCoverBelongToUser(username, id);
+    public SeriesCoverInfo getInfo(Long id) {
+        SeriesCoverEntity seriesCoverEntity = entityFounderService.getSeriesCoverOrNotFound(id);
         return new SeriesCoverInfo(seriesCoverEntity);
     }
 

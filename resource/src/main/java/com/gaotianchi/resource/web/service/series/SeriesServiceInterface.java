@@ -13,7 +13,7 @@ public interface SeriesServiceInterface {
 
     void deleteSeries(String username, Long id) throws IOException;
 
-    SeriesInfo getInfo(String username, Long id);
+    SeriesInfo getInfo(Long id);
 
     PageSeriesInfo getPageInfo(String username, Integer page);
 

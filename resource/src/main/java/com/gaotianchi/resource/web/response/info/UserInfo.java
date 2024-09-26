@@ -15,11 +15,15 @@ public class UserInfo {
     private String profile;
     private TimeZone timeZone;
 
+    private String avatarLocation;
+
     public UserInfo(UserEntity userEntity) {
         id = userEntity.getId();
         username = userEntity.getUsername();
         penName = userEntity.getPenName();
         profile = userEntity.getProfile();
         timeZone = userEntity.getTimeZone();
+
+        avatarLocation = "";
     }
 }

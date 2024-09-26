@@ -11,7 +11,7 @@ public interface SeriesCoverServiceInterface {
 
     void delete(String username, Long id) throws IOException;
 
-    SeriesCoverInfo getInfo(String username, Long id);
+    SeriesCoverInfo getInfo(Long id);
 
     PageSeriesCoverInfo getPageInfo(String username, int page);
 }

@@ -80,8 +80,8 @@ public class IllustrationService implements IllustrationServiceInterface {
     }
 
     @Override
-    public IllustrationInfo getInfo(String username, Long id) {
-        IllustrationEntity illustrationEntity = entityBelongService.illustrationBelongToUser(username, id);
+    public IllustrationInfo getInfo(Long id) {
+        IllustrationEntity illustrationEntity = entityFounderService.getIllustrationOrNotFound(id);
         return new IllustrationInfo(illustrationEntity);
     }
 

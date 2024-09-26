@@ -8,7 +8,7 @@ import java.io.IOException;
 public interface AvatarServiceInterface {
     AvatarInfo newAvatar(String username, MultipartFile file) throws IOException;
 
-    AvatarInfo getActiveInfo(String username);
+    AvatarInfo getInfo(String username);
 
     void deleteAvatar(String username) throws IOException;
 }

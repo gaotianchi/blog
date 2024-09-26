@@ -40,7 +40,7 @@ public class AvatarService implements AvatarServiceInterface {
     }
 
     @Override
-    public AvatarInfo getActiveInfo(String username) {
+    public AvatarInfo getInfo(String username) {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         AvatarEntity avatarEntity = userEntity.getAvatar();
         return new AvatarInfo(avatarEntity);
