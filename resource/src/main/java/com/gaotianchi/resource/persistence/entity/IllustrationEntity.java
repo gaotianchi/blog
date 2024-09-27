@@ -20,8 +20,7 @@ public class IllustrationEntity {
     private String filename;
     private String title;
     private String alt;
-    private String originalUrl;
-    private String thumbnailUrl;
+    private String url;
     private OffsetDateTime creationDatetime;
     private OffsetDateTime updateDatetime;
 

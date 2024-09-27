@@ -13,8 +13,7 @@ public class IllustrationInfo {
     private String filename;
     private String title;
     private String alt;
-    private String originalUrl;
-    private String thumbnailUrl;
+    private String url;
     private OffsetDateTime creationDatetime;
     private OffsetDateTime updateDatetime;
 
@@ -26,8 +25,7 @@ public class IllustrationInfo {
         filename = illustrationEntity.getFilename();
         title = illustrationEntity.getTitle();
         alt = illustrationEntity.getAlt();
-        originalUrl = illustrationEntity.getOriginalUrl();
-        thumbnailUrl = illustrationEntity.getThumbnailUrl();
+        url = illustrationEntity.getUrl();
         creationDatetime = illustrationEntity.getCreationDatetime();
         updateDatetime = illustrationEntity.getUpdateDatetime();
 
