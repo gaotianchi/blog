@@ -66,7 +66,7 @@ public class ArticleController {
 
     @PostMapping("/articles/series/{id}/{newSeriesId}")
     public APIResponse<SeriesInfo> setSeries(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @PathVariable Long newSeriesId) {
-        SeriesInfo seriesInfo = articleService.updateSeries(jwt.getSubject(), id, newSeriesId);
+        SeriesInfo seriesInfo = articleService.setSeries(jwt.getSubject(), id, newSeriesId);
         return APIResponse.success(seriesInfo);
     }
 
