@@ -5,6 +5,7 @@ import com.gaotianchi.resource.persistence.entity.ArticleEntity;
 import com.gaotianchi.resource.persistence.entity.SeriesCoverEntity;
 import com.gaotianchi.resource.persistence.entity.SeriesEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
+import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.SeriesCoverRepo;
 import com.gaotianchi.resource.persistence.repo.SeriesRepo;
 import com.gaotianchi.resource.web.response.PageInfo;
@@ -32,15 +33,17 @@ public class SeriesService implements SeriesServiceInterface {
     private final SeriesCoverRepo seriesCoverRepo;
     private final SeriesCoverStorageService seriesCoverStorageService;
     private final PaginationConfig paginationConfig;
+    private final ArticleRepo articleRepo;
 
     @Autowired
-    public SeriesService(SeriesRepo seriesRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService, SeriesCoverRepo seriesCoverRepo, SeriesCoverStorageService seriesCoverStorageService, PaginationConfig paginationConfig) {
+    public SeriesService(SeriesRepo seriesRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService, SeriesCoverRepo seriesCoverRepo, SeriesCoverStorageService seriesCoverStorageService, PaginationConfig paginationConfig, ArticleRepo articleRepo) {
         this.seriesRepo = seriesRepo;
         this.entityFounderService = entityFounderService;
         this.entityBelongService = entityBelongService;
         this.seriesCoverRepo = seriesCoverRepo;
         this.seriesCoverStorageService = seriesCoverStorageService;
         this.paginationConfig = paginationConfig;
+        this.articleRepo = articleRepo;
     }
 
     @Override
@@ -63,6 +66,7 @@ public class SeriesService implements SeriesServiceInterface {
         for (ArticleEntity articleEntity : articleEntities) {
             articleEntity.setSeries(null);
         }
+        articleRepo.saveAll(articleEntities);
         deleteCover(seriesEntity);
         seriesRepo.delete(seriesEntity);
     }

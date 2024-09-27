@@ -16,5 +16,7 @@ public class PaginationConfig {
     @Getter
     public static class NumberOfInfoPerPage {
         private int userSeries;
+        private int userIllustration;
+        private int tag;
     }
 }

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
-import java.util.List;
 
 @Service
 public class ArticleService implements ArticleServiceInterface {
@@ -117,11 +116,13 @@ public class ArticleService implements ArticleServiceInterface {
         if (oldSeries != null) {
             oldSeries.getArticleList().remove(articleEntity);
             oldSeries.decreaseArticleCount();
+            seriesRepo.save(oldSeries);
         }
         SeriesEntity newSeries = entityBelongService.seriesBelongToUser(username, newSeriesId);
         articleEntity.setSeries(newSeries);
         newSeries.getArticleList().add(articleEntity);
         newSeries.increaseArticleCount();
+        seriesRepo.save(newSeries);
 
         articleRepo.save(articleEntity);
         return new SeriesInfo(newSeries);
@@ -189,18 +190,6 @@ public class ArticleService implements ArticleServiceInterface {
     public String getBody(Long id) {
         ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
         return articleEntity.getBody();
-    }
-
-    @Override
-    public List<TagInfo> getTagList(Long id) {
-        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
-        return articleEntity.getTagList().stream().map(TagInfo::new).toList();
-    }
-
-    @Override
-    public List<IllustrationInfo> getIllustrationList(Long id) {
-        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
-        return articleEntity.getIllustrationList().stream().map(IllustrationInfo::new).toList();
     }
 
     private boolean changeStatusIsPermitted(ArticleStatus from, ArticleStatus to) {

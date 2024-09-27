@@ -1,13 +1,13 @@
 package com.gaotianchi.resource.web.service.Illustration;
 
 import com.gaotianchi.resource.Utils;
+import com.gaotianchi.resource.config.PaginationConfig;
 import com.gaotianchi.resource.persistence.entity.ArticleEntity;
 import com.gaotianchi.resource.persistence.entity.IllustrationEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.IllustrationRepo;
 import com.gaotianchi.resource.web.response.PageInfo;
-import com.gaotianchi.resource.web.response.info.ArticleInfo;
 import com.gaotianchi.resource.web.response.info.IllustrationInfo;
 import com.gaotianchi.resource.web.service.belong.EntityBelongService;
 import com.gaotianchi.resource.web.service.founder.EntityFounderService;
@@ -31,14 +31,16 @@ public class IllustrationService implements IllustrationServiceInterface {
     private final EntityBelongService entityBelongService;
     private final ArticleRepo articleRepo;
     private final IllustrationStorageService illustrationStorageService;
+    private final PaginationConfig paginationConfig;
 
     @Autowired
-    public IllustrationService(IllustrationRepo illustrationRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService, ArticleRepo articleRepo, IllustrationStorageService illustrationStorageService) {
+    public IllustrationService(IllustrationRepo illustrationRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService, ArticleRepo articleRepo, IllustrationStorageService illustrationStorageService, PaginationConfig paginationConfig) {
         this.illustrationRepo = illustrationRepo;
         this.entityFounderService = entityFounderService;
         this.entityBelongService = entityBelongService;
         this.articleRepo = articleRepo;
         this.illustrationStorageService = illustrationStorageService;
+        this.paginationConfig = paginationConfig;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class IllustrationService implements IllustrationServiceInterface {
         illustrationEntity.setFilename(filename);
         illustrationEntity.setUser(userEntity);
         illustrationEntity.setTitle(title);
-        // TODO: 设置链接
+        illustrationEntity.setUrl("http://localhost:8090/images/illustration/" + filename);
         if (alt != null && !alt.isEmpty()) {
             illustrationEntity.setAlt(alt);
         }
@@ -85,9 +87,9 @@ public class IllustrationService implements IllustrationServiceInterface {
     }
 
     @Override
-    public PageInfo<IllustrationInfo> getPageInfo(String username, Integer page, boolean orderByCreationDatetime, boolean desc) {
-        UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
-        Pageable pageable = PageRequest.of(page, 10);
+    public PageInfo<IllustrationInfo> getUserIllustrationInfoPage(Long userId, Integer page, boolean orderByCreationDatetime, boolean desc) {
+        UserEntity userEntity = entityFounderService.getUserOrNorFound(userId);
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getUserIllustration());
         Page<IllustrationEntity> illustrationEntityPage;
         if (orderByCreationDatetime) {
             if (desc) {
@@ -104,11 +106,5 @@ public class IllustrationService implements IllustrationServiceInterface {
         }
         List<IllustrationInfo> illustrationInfoList = illustrationEntityPage.getContent().stream().map(IllustrationInfo::new).toList();
         return new PageInfo<>(illustrationInfoList, illustrationEntityPage.getTotalPages(), page);
-    }
-
-    @Override
-    public List<ArticleInfo> getArticleList(String username, Long id) {
-        IllustrationEntity illustrationEntity = entityBelongService.illustrationBelongToUser(username, id);
-        return illustrationEntity.getArticleList().stream().map(ArticleInfo::new).toList();
     }
 }

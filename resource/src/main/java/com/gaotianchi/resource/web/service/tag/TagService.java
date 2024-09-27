@@ -1,12 +1,13 @@
 package com.gaotianchi.resource.web.service.tag;
 
+import com.gaotianchi.resource.config.PaginationConfig;
 import com.gaotianchi.resource.persistence.entity.ArticleEntity;
 import com.gaotianchi.resource.persistence.entity.TagEntity;
 import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.TagRepo;
 import com.gaotianchi.resource.web.error.EntityAlreadyExistException;
+import com.gaotianchi.resource.web.response.PageInfo;
 import com.gaotianchi.resource.web.response.info.TagInfo;
-import com.gaotianchi.resource.web.response.page.PageTagInfo;
 import com.gaotianchi.resource.web.service.founder.EntityFounderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,12 +24,14 @@ public class TagService implements TagServiceInterface {
     private final ArticleRepo articleRepo;
     private final TagRepo tagRepo;
     private final EntityFounderService entityFounderService;
+    private final PaginationConfig paginationConfig;
 
     @Autowired
-    public TagService(ArticleRepo articleRepo, TagRepo tagRepo, EntityFounderService entityFounderService) {
+    public TagService(ArticleRepo articleRepo, TagRepo tagRepo, EntityFounderService entityFounderService, PaginationConfig paginationConfig) {
         this.articleRepo = articleRepo;
         this.tagRepo = tagRepo;
         this.entityFounderService = entityFounderService;
+        this.paginationConfig = paginationConfig;
     }
 
     @Override
@@ -60,11 +63,11 @@ public class TagService implements TagServiceInterface {
     }
 
     @Override
-    public PageTagInfo getPageInfo(Integer page) {
-        Pageable pageable = PageRequest.of(page, 100);
+    public PageInfo<TagInfo> getPageInfo(Integer page) {
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getTag());
         Page<TagEntity> tagEntityPage = tagRepo.findByOrderByArticleCountDesc(pageable);
         List<TagInfo> tagInfoList = tagEntityPage.getContent().stream().map(TagInfo::new).toList();
-        return new PageTagInfo(tagInfoList, tagEntityPage.getTotalPages(), page);
+        return new PageInfo<>(tagInfoList, tagEntityPage.getTotalPages(), page);
     }
 
     @Override

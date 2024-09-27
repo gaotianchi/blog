@@ -55,3 +55,5 @@ storage:
 pagination:
   number-of-info-per-page:
     user-series: 10
+    user-illustration: 10
+    tag: 100
