@@ -29,16 +29,16 @@ spring:
 storage:
   illustration:
     location: "D:/documents/blog/resource/uploads/illustration"
-    original-prefix: "original_"
-    thumbnail-prefix: "thumbnail_"
     max-width: 300
     quality: 0.5F
+    original-dir-name: "original"
+    thumbnail-dir-name: "thumbnail"
   series-cover:
     location: "D:/documents/blog/resource/uploads/cover"
-    original-prefix: "original_"
-    thumbnail-prefix: "thumbnail_"
     max-width: 600
     quality: 0.5F
+    original-dir-name: "original"
+    thumbnail-dir-name: "thumbnail"
   avatar:
     location: "D:/documents/blog/resource/uploads/avatar"
 

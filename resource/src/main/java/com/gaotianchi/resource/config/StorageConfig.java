@@ -21,8 +21,8 @@ public class StorageConfig {
     public static class Illustration {
         private String location;
         private List<String> allowedExtensions;
-        private String originalPrefix;
-        private String thumbnailPrefix;
+        private String originalDirName;
+        private String thumbnailDirName;
         private int maxWidth;
         private double quality;
     }
@@ -32,8 +32,8 @@ public class StorageConfig {
     public static class SeriesCover {
         private String location;
         private List<String> allowedExtensions;
-        private String originalPrefix;
-        private String thumbnailPrefix;
+        private String originalDirName;
+        private String thumbnailDirName;
         private int maxWidth;
         private double quality;
     }

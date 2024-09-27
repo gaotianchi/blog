@@ -24,12 +24,22 @@ public class IllustrationStorageService implements IllustrationStorageServiceInt
     public void save(String filename, MultipartFile file) throws IOException {
         // 存储原始文件
         Path originalFilePath = getOriginalPath(filename);
+        if (!originalFilePath.getParent().toFile().exists()) {
+            if (!originalFilePath.getParent().toFile().mkdirs()) {
+                throw new IOException("Fail to make dirs");
+            }
+        }
         file.transferTo(originalFilePath);
 
         // 压缩原始文件获取缩略图
         BufferedImage originalImage = ImageIO.read(originalFilePath.toFile());
         int originalWidth = originalImage.getWidth();
         Path thumbnailFilePath = getThumbnailPath(filename);
+        if (!thumbnailFilePath.getParent().toFile().exists()) {
+            if (!thumbnailFilePath.getParent().toFile().mkdirs()) {
+                throw new IOException("Fail to make dirs");
+            }
+        }
         int maxWidth = storageConfig.getIllustration().getMaxWidth();
         double quality = storageConfig.getIllustration().getQuality();
         if (originalWidth > maxWidth) {
@@ -51,18 +61,17 @@ public class IllustrationStorageService implements IllustrationStorageServiceInt
         // 删除原始文件、缩略图以及文件夹
         Files.deleteIfExists(getOriginalPath(filename));
         Files.deleteIfExists(getThumbnailPath(filename));
-        Files.deleteIfExists(getThumbnailPath(filename).getParent());
     }
 
     @Override
     public Path getOriginalPath(String filename) {
         Path fileDir = Paths.get(storageConfig.getIllustration().getLocation()).resolve(filename).normalize();
-        return fileDir.resolve(storageConfig.getIllustration().getOriginalPrefix() + filename);
+        return fileDir.resolve(storageConfig.getIllustration().getOriginalDirName()).resolve(filename).normalize();
     }
 
     @Override
     public Path getThumbnailPath(String filename) {
         Path fileDir = Paths.get(storageConfig.getIllustration().getLocation()).resolve(filename).normalize();
-        return fileDir.resolve(storageConfig.getIllustration().getThumbnailPrefix() + filename);
+        return fileDir.resolve(storageConfig.getIllustration().getThumbnailDirName()).resolve(filename).normalize();
     }
 }

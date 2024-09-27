@@ -24,10 +24,20 @@ public class SeriesCoverStorageService implements SeriesCoverStorageServiceInter
     @Override
     public void save(String filename, MultipartFile file) throws IOException {
         Path originalFilePath = getOriginalPath(filename);
+        if (!originalFilePath.getParent().toFile().exists()) {
+            if (!originalFilePath.getParent().toFile().mkdirs()) {
+                throw new IOException("Fail to make dirs");
+            }
+        }
         file.transferTo(originalFilePath);
         BufferedImage originalImage = ImageIO.read(originalFilePath.toFile());
         int originalWidth = originalImage.getWidth();
         Path thumbnailFilePath = getThumbnailPath(filename);
+        if (!thumbnailFilePath.getParent().toFile().exists()) {
+            if (!thumbnailFilePath.getParent().toFile().mkdirs()) {
+                throw new IOException("Fail to make dirs");
+            }
+        }
         int maxWidth = storageConfig.getSeriesCover().getMaxWidth();
         double quality = storageConfig.getSeriesCover().getQuality();
         if (originalWidth > maxWidth) {
@@ -49,18 +59,17 @@ public class SeriesCoverStorageService implements SeriesCoverStorageServiceInter
         // 删除原始文件、缩略图以及文件夹
         Files.deleteIfExists(getOriginalPath(filename));
         Files.deleteIfExists(getThumbnailPath(filename));
-        Files.deleteIfExists(getThumbnailPath(filename).getParent());
     }
 
     @Override
     public Path getOriginalPath(String filename) {
         Path fileDir = Paths.get(storageConfig.getSeriesCover().getLocation()).resolve(filename).normalize();
-        return fileDir.resolve(storageConfig.getSeriesCover().getOriginalPrefix() + filename);
+        return fileDir.resolve(storageConfig.getIllustration().getOriginalDirName()).resolve(filename).normalize();
     }
 
     @Override
     public Path getThumbnailPath(String filename) {
         Path fileDir = Paths.get(storageConfig.getSeriesCover().getLocation()).resolve(filename).normalize();
-        return fileDir.resolve(storageConfig.getSeriesCover().getThumbnailPrefix() + filename);
+        return fileDir.resolve(storageConfig.getIllustration().getThumbnailDirName()).resolve(filename).normalize();
     }
 }

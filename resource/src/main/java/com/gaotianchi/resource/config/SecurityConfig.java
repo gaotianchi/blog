@@ -4,7 +4,6 @@ import com.gaotianchi.resource.web.controller.hook.BeforeRequestHookAccessDenied
 import com.gaotianchi.resource.web.controller.hook.BeforeRequestHookAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -25,12 +24,7 @@ public class SecurityConfig {
         });
         http
                 .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/picture/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/users/new").permitAll()
-                                .requestMatchers("/users/**").hasRole("SUBSCRIBER")
-                                .requestMatchers("/blogger/**").hasRole("BLOGGER")
-                                .anyRequest().authenticated()
+                        authorizeRequests.anyRequest().permitAll()
                 )
                 .oauth2ResourceServer((oauth2) -> oauth2
                         .jwt(Customizer.withDefaults()))
