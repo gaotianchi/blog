@@ -52,5 +52,6 @@ storage:
       - ".png"
       - ".jpeg"
 
-web:
-  root-url: "http://localhost:8090"
+pagination:
+  number-of-info-per-page:
+    user-series: 10
