@@ -35,20 +35,20 @@ public class AvatarService implements AvatarServiceInterface {
         avatarEntity.setCreationDatetime(OffsetDateTime.now());
         avatarEntity.setUser(userEntity);
         avatarEntity.setFilename(filename);
-        // TODO: 设置连接
+        avatarEntity.setUrl("http://localhost:8090/images/avatar/" + filename);
         return new AvatarInfo(avatarRepo.save(avatarEntity));
-    }
-
-    @Override
-    public AvatarInfo getInfo(Long id) {
-        AvatarEntity avatarEntity = entityFounderService.getAvatarOrNotFound(id);
-        return new AvatarInfo(avatarEntity);
     }
 
     @Override
     public void deleteAvatar(String username) throws IOException {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         _deleteAvatar(userEntity);
+    }
+
+    @Override
+    public AvatarInfo getInfo(Long id) {
+        AvatarEntity avatarEntity = entityFounderService.getAvatarOrNotFound(id);
+        return new AvatarInfo(avatarEntity);
     }
 
     private void _deleteAvatar(UserEntity userEntity) throws IOException {
