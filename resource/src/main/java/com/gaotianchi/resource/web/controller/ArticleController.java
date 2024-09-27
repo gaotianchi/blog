@@ -1,7 +1,6 @@
 package com.gaotianchi.resource.web.controller;
 
-import com.gaotianchi.resource.web.request.UpdateArticleBodyRequest;
-import com.gaotianchi.resource.web.request.UpdateArticleSummaryRequest;
+import com.gaotianchi.resource.web.request.UpdateShallowDataRequest;
 import com.gaotianchi.resource.web.response.APIResponse;
 import com.gaotianchi.resource.web.response.info.ArticleInfo;
 import com.gaotianchi.resource.web.response.info.SeriesInfo;
@@ -39,32 +38,32 @@ public class ArticleController {
     }
 
     @PatchMapping("/articles/status/{id}")
-    public APIResponse<Void> updateStatus(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestParam(name = "newStatus") String newStatus) throws Exception {
-        articleService.updateStatus(jwt.getSubject(), id, newStatus);
+    public APIResponse<Void> updateStatus(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateShallowDataRequest updateShallowDataRequest) throws Exception {
+        articleService.updateStatus(jwt.getSubject(), id, updateShallowDataRequest.getStatus());
         return APIResponse.success();
     }
 
     @PatchMapping("/articles/title/{id}")
-    public APIResponse<Void> updateTitle(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestParam(name = "newTitle") String newTitle) {
-        articleService.updateTitle(jwt.getSubject(), id, newTitle);
+    public APIResponse<Void> updateTitle(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateShallowDataRequest updateShallowDataRequest) {
+        articleService.updateTitle(jwt.getSubject(), id, updateShallowDataRequest.getTitle());
         return APIResponse.success();
     }
 
     @PatchMapping("/articles/summary/{id}")
-    public APIResponse<Void> updateSummary(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateArticleSummaryRequest updateArticleSummaryRequest) {
-        articleService.updateSummary(jwt.getSubject(), id, updateArticleSummaryRequest.getSummary());
+    public APIResponse<Void> updateSummary(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateShallowDataRequest updateShallowDataRequest) {
+        articleService.updateSummary(jwt.getSubject(), id, updateShallowDataRequest.getSummary());
         return APIResponse.success();
     }
 
     @PatchMapping("/articles/slug/{id}")
-    public APIResponse<Void> updateSlug(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestParam(name = "newSlug") String newSlug) {
-        articleService.updateSlug(jwt.getSubject(), id, newSlug);
+    public APIResponse<Void> updateSlug(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateShallowDataRequest updateShallowDataRequest) {
+        articleService.updateSlug(jwt.getSubject(), id, updateShallowDataRequest.getSlug());
         return APIResponse.success();
     }
 
     @PatchMapping("/articles/body/{id}")
-    public APIResponse<Void> updateBody(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateArticleBodyRequest updateArticleBodyRequest) {
-        articleService.updateBody(jwt.getSubject(), id, updateArticleBodyRequest.getBody());
+    public APIResponse<Void> updateBody(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateShallowDataRequest updateShallowDataRequest) {
+        articleService.updateBody(jwt.getSubject(), id, updateShallowDataRequest.getBody());
         return APIResponse.success();
     }
 
