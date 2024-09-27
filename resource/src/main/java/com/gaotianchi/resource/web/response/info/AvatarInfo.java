@@ -14,7 +14,7 @@ public class AvatarInfo {
     private String url;
     private OffsetDateTime creationDatetime;
 
-    private String userLocation;
+    private String userInfoLocation;
 
     public AvatarInfo(AvatarEntity avatarEntity) {
         id = avatarEntity.getId();
@@ -22,6 +22,6 @@ public class AvatarInfo {
         url = avatarEntity.getUrl();
         creationDatetime = avatarEntity.getCreationDatetime();
 
-        userLocation = "http://localhost:8090/users/info/" + avatarEntity.getUser().getId();
+        userInfoLocation = "http://localhost:8090/users/info/" + avatarEntity.getUser().getId();
     }
 }

@@ -18,8 +18,8 @@ public class IllustrationInfo {
     private OffsetDateTime creationDatetime;
     private OffsetDateTime updateDatetime;
 
-    private String userLocation;
-    private String pageArticleLocation;
+    private String userInfoLocation;
+    private String articleInfoPageLocation;
 
     public IllustrationInfo(IllustrationEntity illustrationEntity) {
         id = illustrationEntity.getId();
@@ -31,7 +31,7 @@ public class IllustrationInfo {
         creationDatetime = illustrationEntity.getCreationDatetime();
         updateDatetime = illustrationEntity.getUpdateDatetime();
 
-        userLocation = "http://localhost:8090/users/info/" + illustrationEntity.getUser().getId();
-        pageArticleLocation = "";
+        userInfoLocation = "http://localhost:8090/users/info/" + illustrationEntity.getUser().getId();
+        articleInfoPageLocation = "";
     }
 }

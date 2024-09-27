@@ -16,9 +16,9 @@ public class SeriesInfo {
     private OffsetDateTime creationDatetime;
     private int articleCount;
 
-    private String userLocation;
-    private String coverLocation;
-    private String pageArticleLocation;
+    private String userInfoLocation;
+    private String coverInfoLocation;
+    private String articleInfoPageLocation;
 
     public SeriesInfo(SeriesEntity seriesEntity) {
         id = seriesEntity.getId();
@@ -27,10 +27,10 @@ public class SeriesInfo {
         creationDatetime = seriesEntity.getCreationDatetime();
         articleCount = seriesEntity.getArticleCount();
 
-        userLocation = "http://localhost:8090/users/info/" + seriesEntity.getUser().getId();
+        userInfoLocation = "http://localhost:8090/users/info/" + seriesEntity.getUser().getId();
         SeriesCoverEntity seriesCoverEntity = seriesEntity.getCover();
         if (seriesCoverEntity != null)
-            coverLocation = "http://localhost:8090/series-cover/info/" + seriesCoverEntity.getId();
-        pageArticleLocation = "";
+            coverInfoLocation = "http://localhost:8090/series-cover/info/" + seriesCoverEntity.getId();
+        articleInfoPageLocation = "";
     }
 }

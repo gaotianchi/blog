@@ -15,12 +15,12 @@ public class UserInfo {
     private String profile;
     private TimeZone timeZone;
 
-    private String avatarLocation;
-    private String pageArticleLocation;
-    private String pageIllustrationLocation;
-    private String pageSeriesLocation;
-    private String pageSeriesCoverLocation;
-    private String pageCommentLocation;
+    private String avatarInfoLocation;
+    private String articleInfoPageLocation;
+    private String illustrationInfoPageLocation;
+    private String seriesInfoPageLocation;
+    private String seriesCoverInfoPageLocation;
+    private String commentInfoPageLocation;
 
 
     public UserInfo(UserEntity userEntity) {
@@ -30,11 +30,11 @@ public class UserInfo {
         timeZone = userEntity.getTimeZone();
 
         AvatarEntity avatarEntity = userEntity.getAvatar();
-        if (avatarEntity != null) avatarLocation = "http://localhost:8090/avatar/info/" + avatarEntity.getId();
-        pageArticleLocation = "";
-        pageCommentLocation = "";
-        pageIllustrationLocation = "";
-        pageSeriesCoverLocation = "";
-        pageSeriesLocation = "";
+        if (avatarEntity != null) avatarInfoLocation = "http://localhost:8090/avatar/info/" + avatarEntity.getId();
+        articleInfoPageLocation = "";
+        commentInfoPageLocation = "";
+        illustrationInfoPageLocation = "";
+        seriesCoverInfoPageLocation = "";
+        seriesInfoPageLocation = "";
     }
 }

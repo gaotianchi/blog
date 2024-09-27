@@ -28,7 +28,6 @@ public class IllustrationService implements IllustrationServiceInterface {
 
     private final IllustrationRepo illustrationRepo;
     private final EntityFounderService entityFounderService;
-
     private final EntityBelongService entityBelongService;
     private final ArticleRepo articleRepo;
     private final IllustrationStorageService illustrationStorageService;

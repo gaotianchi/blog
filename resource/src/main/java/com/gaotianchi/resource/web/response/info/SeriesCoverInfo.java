@@ -15,8 +15,8 @@ public class SeriesCoverInfo {
     private String url;
     private OffsetDateTime creationDatetime;
 
-    private String userLocation;
-    private String seriesLocation;
+    private String userInfoLocation;
+    private String seriesInfoLocation;
 
     public SeriesCoverInfo(SeriesCoverEntity seriesCoverEntity) {
         id = seriesCoverEntity.getId();
@@ -24,8 +24,8 @@ public class SeriesCoverInfo {
         url = seriesCoverEntity.getUrl();
         creationDatetime = seriesCoverEntity.getCreationDatetime();
 
-        userLocation = "http://localhost:8090/users/info/" + seriesCoverEntity.getUser().getId();
+        userInfoLocation = "http://localhost:8090/users/info/" + seriesCoverEntity.getUser().getId();
         SeriesEntity seriesEntity = seriesCoverEntity.getSeries();
-        if (seriesEntity != null) seriesLocation = "http://localhost:8090/series/info/" + seriesEntity.getId();
+        if (seriesEntity != null) seriesInfoLocation = "http://localhost:8090/series/info/" + seriesEntity.getId();
     }
 }

@@ -19,13 +19,13 @@ public class ArticleInfo {
     private OffsetDateTime publishDatetime;
     private OffsetDateTime lastUpdatedDatetime;
 
-    private String bodyLocation;
-    private String userLocation;
-    private String seriesLocation;
-    private String illustrationListLocation;
-    private String commentListLocation;
-    private String tagListLocation;
-    private String voteRecordListLocation;
+    private String bodyValueLocation;
+    private String userInfoLocation;
+    private String seriesInfoLocation;
+
+    private String illustrationInfoPageLocation;
+    private String commentInfoPageLocation;
+    private String tagInfoPageLocation;
 
     public ArticleInfo(ArticleEntity articleEntity) {
         id = articleEntity.getId();
@@ -37,13 +37,12 @@ public class ArticleInfo {
         publishDatetime = articleEntity.getPublishDatetime();
         lastUpdatedDatetime = articleEntity.getUpdateDatetime();
 
-        bodyLocation = "";
-        userLocation = "http://localhost:8090/users/info/" + articleEntity.getUser().getId();
+        bodyValueLocation = "";
+        userInfoLocation = "http://localhost:8090/users/info/" + articleEntity.getUser().getId();
         SeriesEntity seriesEntity = articleEntity.getSeries();
-        if (seriesEntity != null) seriesLocation = "http://localhost:8090/series/info/" + seriesEntity.getId();
-        illustrationListLocation = "";
-        commentListLocation = "";
-        tagListLocation = "";
-        voteRecordListLocation = "";
+        if (seriesEntity != null) seriesInfoLocation = "http://localhost:8090/series/info/" + seriesEntity.getId();
+        illustrationInfoPageLocation = "";
+        commentInfoPageLocation = "";
+        tagInfoPageLocation = "";
     }
 }
