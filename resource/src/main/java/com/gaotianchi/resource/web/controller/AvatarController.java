@@ -3,9 +3,12 @@ package com.gaotianchi.resource.web.controller;
 import com.gaotianchi.resource.web.response.APIResponse;
 import com.gaotianchi.resource.web.response.info.AvatarInfo;
 import com.gaotianchi.resource.web.service.avatar.AvatarService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 public class AvatarController {
@@ -13,6 +16,17 @@ public class AvatarController {
 
     public AvatarController(AvatarService avatarService) {
         this.avatarService = avatarService;
+    }
+
+    @PostMapping("/avatar/new")
+    public APIResponse<AvatarInfo> newAvatar(@AuthenticationPrincipal Jwt jwt, MultipartFile file) throws IOException {
+        return APIResponse.success(avatarService.newAvatar(jwt.getSubject(), file));
+    }
+
+    @DeleteMapping("/avatar/delete")
+    public APIResponse<Void> newAvatar(@AuthenticationPrincipal Jwt jwt) throws IOException {
+        avatarService.deleteAvatar(jwt.getSubject());
+        return APIResponse.success();
     }
 
     @GetMapping("/avatar/info/{id}")
