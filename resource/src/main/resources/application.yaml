@@ -54,10 +54,12 @@ storage:
 
 pagination:
   number-of-info-per-page:
-    user-series: 10
-    user-illustration: 10
+    series-for-user: 20
     tag: 100
-    illustration-article: 100
-    user-article: 20
-    tag-article: 20
-    series-article: 20
+    illustration-for-user: 20
+    article-for-illustration: 10
+    illustration-for-article: 10
+    article-for-series: 20
+    article-for-tag: 20
+    article-for-user: 20
+

@@ -202,7 +202,7 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public PageInfo<ArticleInfo> getUserArticleInfoPage(Long userId, int page) {
         UserEntity userEntity = entityFounderService.getUserOrNorFound(userId);
-        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getUserArticle());
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getArticleForUser());
         Page<ArticleEntity> articleEntityPage = articleRepo.findByUserOrderByCreationDatetimeDesc(userEntity, pageable);
         return _getArticleInfoPage(articleEntityPage, page);
     }
@@ -210,7 +210,7 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public PageInfo<ArticleInfo> getSeriesArticleInfoPage(Long seriesId, int page) {
         SeriesEntity seriesEntity = entityFounderService.getSeriesOrNotFound(seriesId);
-        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getSeriesArticle());
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getArticleForSeries());
         Page<ArticleEntity> articleEntityPage = articleRepo.findBySeriesOrderByCreationDatetimeDesc(seriesEntity, pageable);
         return _getArticleInfoPage(articleEntityPage, page);
     }
@@ -218,7 +218,7 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public PageInfo<ArticleInfo> getTagArticleInfoPage(Long tagId, int page) {
         TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
-        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getTagArticle());
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getArticleForTag());
         Page<ArticleEntity> articleEntityPage = articleRepo.findByTagListContainingOrderByCreationDatetimeDesc(tagEntity, pageable);
         return _getArticleInfoPage(articleEntityPage, page);
     }
@@ -226,7 +226,7 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public PageInfo<ArticleInfo> getIllustrationArticleInfoPage(Long illustrationId, int page) {
         IllustrationEntity illustrationEntity = entityFounderService.getIllustrationOrNotFound(illustrationId);
-        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getIllustrationArticle());
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getArticleForIllustration());
         Page<ArticleEntity> articleEntityPage = articleRepo.findByIllustrationListContainingOrderByCreationDatetimeDesc(illustrationEntity, pageable);
         return _getArticleInfoPage(articleEntityPage, page);
     }

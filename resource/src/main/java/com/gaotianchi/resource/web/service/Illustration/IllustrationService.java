@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 @Service
 public class IllustrationService implements IllustrationServiceInterface {
@@ -87,24 +86,22 @@ public class IllustrationService implements IllustrationServiceInterface {
     }
 
     @Override
-    public PageInfo<IllustrationInfo> getUserIllustrationInfoPage(Long userId, Integer page, boolean orderByCreationDatetime, boolean desc) {
+    public PageInfo<IllustrationInfo> getUserIllustrationInfoPage(Long userId, int page) {
         UserEntity userEntity = entityFounderService.getUserOrNorFound(userId);
-        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getUserIllustration());
-        Page<IllustrationEntity> illustrationEntityPage;
-        if (orderByCreationDatetime) {
-            if (desc) {
-                illustrationEntityPage = illustrationRepo.findByUserOrderByCreationDatetimeDesc(userEntity, pageable);
-            } else {
-                illustrationEntityPage = illustrationRepo.findByUserOrderByCreationDatetimeAsc(userEntity, pageable);
-            }
-        } else {
-            if (desc) {
-                illustrationEntityPage = illustrationRepo.findByUserOrderByUpdateDatetimeDesc(userEntity, pageable);
-            } else {
-                illustrationEntityPage = illustrationRepo.findByUserOrderByUpdateDatetimeAsc(userEntity, pageable);
-            }
-        }
-        List<IllustrationInfo> illustrationInfoList = illustrationEntityPage.getContent().stream().map(IllustrationInfo::new).toList();
-        return new PageInfo<>(illustrationInfoList, illustrationEntityPage.getTotalPages(), page);
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getIllustrationForUser());
+        Page<IllustrationEntity> illustrationEntityPage = illustrationRepo.findByUserOrderByCreationDatetimeDesc(userEntity, pageable);
+        return _getIllustrationPageInfo(illustrationEntityPage, page);
+    }
+
+    @Override
+    public PageInfo<IllustrationInfo> getArticleIllustrationInfoPage(Long articleId, int page) {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getIllustrationForArticle());
+        Page<IllustrationEntity> illustrationEntityPage = illustrationRepo.findByArticleListContaining(articleEntity, pageable);
+        return _getIllustrationPageInfo(illustrationEntityPage, page);
+    }
+
+    private PageInfo<IllustrationInfo> _getIllustrationPageInfo(Page<IllustrationEntity> illustrationEntityPage, int page) {
+        return new PageInfo<>(illustrationEntityPage.getContent().stream().map(IllustrationInfo::new).toList(), illustrationEntityPage.getTotalPages(), page);
     }
 }

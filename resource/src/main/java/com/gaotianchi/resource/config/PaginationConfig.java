@@ -15,12 +15,13 @@ public class PaginationConfig {
     @Setter
     @Getter
     public static class NumberOfInfoPerPage {
-        private int userSeries;
-        private int userIllustration;
+        private int seriesForUser;
+        private int illustrationForUser;
+        private int illustrationForArticle;
         private int tag;
-        private int userArticle;
-        private int tagArticle;
-        private int illustrationArticle;
-        private int seriesArticle;
+        private int articleForUser;
+        private int articleForTag;
+        private int articleForIllustration;
+        private int articleForSeries;
     }
 }

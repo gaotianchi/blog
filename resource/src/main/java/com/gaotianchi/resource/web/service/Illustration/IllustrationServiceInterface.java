@@ -16,5 +16,7 @@ public interface IllustrationServiceInterface {
 
     IllustrationInfo getInfo(Long id);
 
-    PageInfo<IllustrationInfo> getUserIllustrationInfoPage(Long userId, Integer page, boolean orderByCreationDatetime, boolean desc);
+    PageInfo<IllustrationInfo> getUserIllustrationInfoPage(Long userId, int page);
+
+    PageInfo<IllustrationInfo> getArticleIllustrationInfoPage(Long articleId, int page);
 }

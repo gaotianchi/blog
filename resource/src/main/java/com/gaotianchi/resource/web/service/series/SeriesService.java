@@ -106,7 +106,7 @@ public class SeriesService implements SeriesServiceInterface {
     @Override
     public PageInfo<SeriesInfo> getUserSeriesInfoPage(Long userId, Integer page) {
         UserEntity userEntity = entityFounderService.getUserOrNorFound(userId);
-        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getUserSeries());
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getSeriesForUser());
         Page<SeriesEntity> seriesEntityPage = seriesRepo.findByUserOrderByCreationDatetimeDesc(userEntity, pageable);
         List<SeriesInfo> seriesEntityList = seriesEntityPage.getContent().stream().map(SeriesInfo::new).toList();
         return new PageInfo<>(seriesEntityList, seriesEntityPage.getTotalPages(), page);
