@@ -2,6 +2,7 @@ package com.gaotianchi.resource.web.controller;
 
 import com.gaotianchi.resource.web.request.UpdateShallowDataRequest;
 import com.gaotianchi.resource.web.response.APIResponse;
+import com.gaotianchi.resource.web.response.PageInfo;
 import com.gaotianchi.resource.web.response.info.ArticleInfo;
 import com.gaotianchi.resource.web.response.info.IllustrationInfo;
 import com.gaotianchi.resource.web.response.info.SeriesInfo;
@@ -108,5 +109,35 @@ public class ArticleController {
     public APIResponse<String> getBody(@PathVariable Long id) {
         String body = articleService.getBody(id);
         return APIResponse.success(body);
+    }
+
+    @GetMapping("/articles/user/{userId}")
+    public APIResponse<PageInfo<ArticleInfo>> getUserArticleInfoPage(@PathVariable Long userId, @RequestParam(value = "page", defaultValue = "0", required = false) int page) {
+        PageInfo<ArticleInfo> articleInfoPageInfo = articleService.getUserArticleInfoPage(userId, page);
+        return APIResponse.success(articleInfoPageInfo);
+    }
+
+    @GetMapping("/articles/series/{seriesId}")
+    public APIResponse<PageInfo<ArticleInfo>> getSeriesArticleInfoPage(@PathVariable Long seriesId, @RequestParam(value = "page", defaultValue = "0", required = false) int page) {
+        PageInfo<ArticleInfo> articleInfoPageInfo = articleService.getSeriesArticleInfoPage(seriesId, page);
+        return APIResponse.success(articleInfoPageInfo);
+    }
+
+    @GetMapping("/articles/tag/{tagId}")
+    public APIResponse<PageInfo<ArticleInfo>> getTagArticleInfoPage(@PathVariable Long tagId, @RequestParam(value = "page", defaultValue = "0", required = false) int page) {
+        PageInfo<ArticleInfo> articleInfoPageInfo = articleService.getTagArticleInfoPage(tagId, page);
+        return APIResponse.success(articleInfoPageInfo);
+    }
+
+    @GetMapping("/articles/illustration/{illustrationId}")
+    public APIResponse<PageInfo<ArticleInfo>> getIllustrationArticleInfoPage(@PathVariable Long illustrationId, @RequestParam(value = "page", defaultValue = "0", required = false) int page) {
+        PageInfo<ArticleInfo> articleInfoPageInfo = articleService.getIllustrationArticleInfoPage(illustrationId, page);
+        return APIResponse.success(articleInfoPageInfo);
+    }
+
+    @GetMapping("/articles/comment/{commentId}")
+    public APIResponse<PageInfo<ArticleInfo>> getCommentArticleInfoPage(@PathVariable Long commentId, @RequestParam(value = "page", defaultValue = "0", required = false) int page) {
+        PageInfo<ArticleInfo> articleInfoPageInfo = articleService.getIllustrationArticleInfoPage(commentId, page);
+        return APIResponse.success(articleInfoPageInfo);
     }
 }
