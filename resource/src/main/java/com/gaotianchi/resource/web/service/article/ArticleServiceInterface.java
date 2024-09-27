@@ -1,5 +1,6 @@
 package com.gaotianchi.resource.web.service.article;
 
+import com.gaotianchi.resource.web.response.PageInfo;
 import com.gaotianchi.resource.web.response.info.ArticleInfo;
 import com.gaotianchi.resource.web.response.info.IllustrationInfo;
 import com.gaotianchi.resource.web.response.info.SeriesInfo;
@@ -38,4 +39,14 @@ public interface ArticleServiceInterface {
     ArticleInfo getInfo(Long id);
 
     String getBody(Long id);
+
+    PageInfo<ArticleInfo> getUserArticleInfoPage(Long userId, int page);
+
+    PageInfo<ArticleInfo> getSeriesArticleInfoPage(Long seriesId, int page);
+
+    PageInfo<ArticleInfo> getTagArticleInfoPage(Long tagId, int page);
+
+    PageInfo<ArticleInfo> getIllustrationArticleInfoPage(Long illustrationId, int page);
+
+    PageInfo<ArticleInfo> getCommentArticleInfoPage(Long commentId, int page);
 }

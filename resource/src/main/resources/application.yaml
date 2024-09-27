@@ -57,3 +57,7 @@ pagination:
     user-series: 10
     user-illustration: 10
     tag: 100
+    illustration-article: 100
+    user-article: 20
+    tag-article: 20
+    series-article: 20

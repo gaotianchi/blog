@@ -11,8 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 public class ArticleController {
 
@@ -110,17 +108,5 @@ public class ArticleController {
     public APIResponse<String> getBody(@PathVariable Long id) {
         String body = articleService.getBody(id);
         return APIResponse.success(body);
-    }
-
-    @GetMapping("/articles/tagList/{id}")
-    public APIResponse<List<TagInfo>> getTagList(@PathVariable Long id) {
-        List<TagInfo> tagInfoList = articleService.getTagList(id);
-        return APIResponse.success(tagInfoList);
-    }
-
-    @GetMapping("/articles/illustrationList/{id}")
-    public APIResponse<List<IllustrationInfo>> getIllustrationList(@PathVariable Long id) {
-        List<IllustrationInfo> illustrationInfoList = articleService.getIllustrationList(id);
-        return APIResponse.success(illustrationInfoList);
     }
 }

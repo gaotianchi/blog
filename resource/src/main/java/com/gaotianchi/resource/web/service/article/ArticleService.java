@@ -1,11 +1,13 @@
 package com.gaotianchi.resource.web.service.article;
 
+import com.gaotianchi.resource.config.PaginationConfig;
 import com.gaotianchi.resource.persistence.entity.*;
 import com.gaotianchi.resource.persistence.enums.ArticleStatus;
 import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.IllustrationRepo;
 import com.gaotianchi.resource.persistence.repo.SeriesRepo;
 import com.gaotianchi.resource.persistence.repo.TagRepo;
+import com.gaotianchi.resource.web.response.PageInfo;
 import com.gaotianchi.resource.web.response.info.ArticleInfo;
 import com.gaotianchi.resource.web.response.info.IllustrationInfo;
 import com.gaotianchi.resource.web.response.info.SeriesInfo;
@@ -13,6 +15,9 @@ import com.gaotianchi.resource.web.response.info.TagInfo;
 import com.gaotianchi.resource.web.service.belong.EntityBelongService;
 import com.gaotianchi.resource.web.service.founder.EntityFounderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -26,15 +31,17 @@ public class ArticleService implements ArticleServiceInterface {
     private final EntityBelongService entityBelongService;
     private final IllustrationRepo illustrationRepo;
     private final SeriesRepo seriesRepo;
+    private final PaginationConfig paginationConfig;
 
     @Autowired
-    public ArticleService(ArticleRepo articleRepo, TagRepo tagRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService, IllustrationRepo illustrationRepo, SeriesRepo seriesRepo) {
+    public ArticleService(ArticleRepo articleRepo, TagRepo tagRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService, IllustrationRepo illustrationRepo, SeriesRepo seriesRepo, PaginationConfig paginationConfig) {
         this.articleRepo = articleRepo;
         this.tagRepo = tagRepo;
         this.entityFounderService = entityFounderService;
         this.entityBelongService = entityBelongService;
         this.illustrationRepo = illustrationRepo;
         this.seriesRepo = seriesRepo;
+        this.paginationConfig = paginationConfig;
     }
 
     @Override
@@ -190,6 +197,47 @@ public class ArticleService implements ArticleServiceInterface {
     public String getBody(Long id) {
         ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
         return articleEntity.getBody();
+    }
+
+    @Override
+    public PageInfo<ArticleInfo> getUserArticleInfoPage(Long userId, int page) {
+        UserEntity userEntity = entityFounderService.getUserOrNorFound(userId);
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getUserArticle());
+        Page<ArticleEntity> articleEntityPage = articleRepo.findByUserOrderByCreationDatetimeDesc(userEntity, pageable);
+        return _getArticleInfoPage(articleEntityPage, page);
+    }
+
+    @Override
+    public PageInfo<ArticleInfo> getSeriesArticleInfoPage(Long seriesId, int page) {
+        SeriesEntity seriesEntity = entityFounderService.getSeriesOrNotFound(seriesId);
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getSeriesArticle());
+        Page<ArticleEntity> articleEntityPage = articleRepo.findBySeriesOrderByCreationDatetimeDesc(seriesEntity, pageable);
+        return _getArticleInfoPage(articleEntityPage, page);
+    }
+
+    @Override
+    public PageInfo<ArticleInfo> getTagArticleInfoPage(Long tagId, int page) {
+        TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getTagArticle());
+        Page<ArticleEntity> articleEntityPage = articleRepo.findByTagListContainingOrderByCreationDatetimeDesc(tagEntity, pageable);
+        return _getArticleInfoPage(articleEntityPage, page);
+    }
+
+    @Override
+    public PageInfo<ArticleInfo> getIllustrationArticleInfoPage(Long illustrationId, int page) {
+        IllustrationEntity illustrationEntity = entityFounderService.getIllustrationOrNotFound(illustrationId);
+        Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getIllustrationArticle());
+        Page<ArticleEntity> articleEntityPage = articleRepo.findByIllustrationListContainingOrderByCreationDatetimeDesc(illustrationEntity, pageable);
+        return _getArticleInfoPage(articleEntityPage, page);
+    }
+
+    @Override
+    public PageInfo<ArticleInfo> getCommentArticleInfoPage(Long commentId, int page) {
+        return null;
+    }
+
+    private PageInfo<ArticleInfo> _getArticleInfoPage(Page<ArticleEntity> articleEntityPage, int page) {
+        return new PageInfo<>(articleEntityPage.getContent().stream().map(ArticleInfo::new).toList(), articleEntityPage.getTotalPages(), page);
     }
 
     private boolean changeStatusIsPermitted(ArticleStatus from, ArticleStatus to) {

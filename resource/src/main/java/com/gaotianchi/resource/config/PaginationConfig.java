@@ -18,5 +18,9 @@ public class PaginationConfig {
         private int userSeries;
         private int userIllustration;
         private int tag;
+        private int userArticle;
+        private int tagArticle;
+        private int illustrationArticle;
+        private int seriesArticle;
     }
 }
