@@ -1,5 +1,6 @@
 package com.gaotianchi.resource.web.response.info;
 
+import com.gaotianchi.resource.persistence.entity.AvatarEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +29,8 @@ public class UserInfo {
         profile = userEntity.getProfile();
         timeZone = userEntity.getTimeZone();
 
-        avatarLocation = "http://localhost:8090/avatar/info/" + userEntity.getAvatar().getId();
+        AvatarEntity avatarEntity = userEntity.getAvatar();
+        if (avatarEntity != null) avatarLocation = "http://localhost:8090/avatar/info/" + avatarEntity.getId();
         pageArticleLocation = "";
         pageCommentLocation = "";
         pageIllustrationLocation = "";
