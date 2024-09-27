@@ -1,9 +1,9 @@
 package com.gaotianchi.resource.web.service.Illustration;
 
 
+import com.gaotianchi.resource.web.response.PageInfo;
 import com.gaotianchi.resource.web.response.info.ArticleInfo;
 import com.gaotianchi.resource.web.response.info.IllustrationInfo;
-import com.gaotianchi.resource.web.response.page.PageIllustrationInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ public interface IllustrationServiceInterface {
 
     IllustrationInfo getInfo(Long id);
 
-    PageIllustrationInfo getPageInfo(String username, Integer page, boolean orderByCreationDatetime, boolean desc);
+    PageInfo<IllustrationInfo> getPageInfo(String username, Integer page, boolean orderByCreationDatetime, boolean desc);
 
     List<ArticleInfo> getArticleList(String username, Long id);
 }

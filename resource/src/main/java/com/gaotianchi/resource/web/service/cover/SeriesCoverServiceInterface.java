@@ -1,7 +1,7 @@
 package com.gaotianchi.resource.web.service.cover;
 
+import com.gaotianchi.resource.web.response.PageInfo;
 import com.gaotianchi.resource.web.response.info.SeriesCoverInfo;
-import com.gaotianchi.resource.web.response.page.PageSeriesCoverInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,5 +13,5 @@ public interface SeriesCoverServiceInterface {
 
     SeriesCoverInfo getInfo(Long id);
 
-    PageSeriesCoverInfo getPageInfo(String username, int page);
+    PageInfo<SeriesCoverInfo> getPageInfo(String username, int page);
 }

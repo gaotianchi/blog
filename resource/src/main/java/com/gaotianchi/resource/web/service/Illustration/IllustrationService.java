@@ -6,9 +6,9 @@ import com.gaotianchi.resource.persistence.entity.IllustrationEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.IllustrationRepo;
+import com.gaotianchi.resource.web.response.PageInfo;
 import com.gaotianchi.resource.web.response.info.ArticleInfo;
 import com.gaotianchi.resource.web.response.info.IllustrationInfo;
-import com.gaotianchi.resource.web.response.page.PageIllustrationInfo;
 import com.gaotianchi.resource.web.service.belong.EntityBelongService;
 import com.gaotianchi.resource.web.service.founder.EntityFounderService;
 import com.gaotianchi.resource.web.service.storage.illustration.IllustrationStorageService;
@@ -86,7 +86,7 @@ public class IllustrationService implements IllustrationServiceInterface {
     }
 
     @Override
-    public PageIllustrationInfo getPageInfo(String username, Integer page, boolean orderByCreationDatetime, boolean desc) {
+    public PageInfo<IllustrationInfo> getPageInfo(String username, Integer page, boolean orderByCreationDatetime, boolean desc) {
         UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         Pageable pageable = PageRequest.of(page, 10);
         Page<IllustrationEntity> illustrationEntityPage;
@@ -104,7 +104,7 @@ public class IllustrationService implements IllustrationServiceInterface {
             }
         }
         List<IllustrationInfo> illustrationInfoList = illustrationEntityPage.getContent().stream().map(IllustrationInfo::new).toList();
-        return new PageIllustrationInfo(illustrationInfoList, illustrationEntityPage.getTotalPages(), page);
+        return new PageInfo<>(illustrationInfoList, illustrationEntityPage.getTotalPages(), page);
     }
 
     @Override
