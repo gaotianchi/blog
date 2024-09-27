@@ -6,20 +6,15 @@ import com.gaotianchi.resource.persistence.entity.SeriesEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import com.gaotianchi.resource.persistence.repo.SeriesCoverRepo;
 import com.gaotianchi.resource.persistence.repo.SeriesRepo;
-import com.gaotianchi.resource.web.response.PageInfo;
 import com.gaotianchi.resource.web.response.info.SeriesCoverInfo;
 import com.gaotianchi.resource.web.service.belong.EntityBelongService;
 import com.gaotianchi.resource.web.service.founder.EntityFounderService;
 import com.gaotianchi.resource.web.service.storage.cover.SeriesCoverStorageService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.List;
 
 @Service
 public class SeriesCoverService implements SeriesCoverServiceInterface {
@@ -46,7 +41,7 @@ public class SeriesCoverService implements SeriesCoverServiceInterface {
         seriesCoverEntity.setFilename(filename);
         seriesCoverEntity.setCreationDatetime(OffsetDateTime.now());
         seriesCoverEntity.setUser(userEntity);
-        // TODO: 设置链接
+        seriesCoverEntity.setUrl("http://localhost:8090/images/series-cover/" + filename);
         return new SeriesCoverInfo(seriesCoverRepo.save(seriesCoverEntity));
     }
 
@@ -64,14 +59,5 @@ public class SeriesCoverService implements SeriesCoverServiceInterface {
     public SeriesCoverInfo getInfo(Long id) {
         SeriesCoverEntity seriesCoverEntity = entityFounderService.getSeriesCoverOrNotFound(id);
         return new SeriesCoverInfo(seriesCoverEntity);
-    }
-
-    @Override
-    public PageInfo<SeriesCoverInfo> getPageInfo(String username, int page) {
-        UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<SeriesCoverEntity> seriesCoverEntityPage = seriesCoverRepo.findByUserOrderByCreationDatetimeDesc(userEntity, pageable);
-        List<SeriesCoverInfo> seriesCoverInfoList = seriesCoverEntityPage.getContent().stream().map(SeriesCoverInfo::new).toList();
-        return new PageInfo<>(seriesCoverInfoList, seriesCoverEntityPage.getTotalPages(), page);
     }
 }
