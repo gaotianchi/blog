@@ -15,13 +15,17 @@ public class UserEntity {
 
     @Id
     @GeneratedValue
+    // shallow data
     private Long id;
-    private String username;
     private String penName;
     @Column(length = 1000)
     private String profile;
     private TimeZone timeZone;
 
+    // private data
+    private String username;
+
+    // depth data
     @OneToOne(orphanRemoval = true)
     private AvatarEntity avatar;
 

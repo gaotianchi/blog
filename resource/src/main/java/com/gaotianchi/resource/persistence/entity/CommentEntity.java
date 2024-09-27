@@ -14,6 +14,7 @@ import java.util.Collection;
 public class CommentEntity {
     @Id
     @GeneratedValue
+    // shallow data
     private Long id;
     private String body;
     @Enumerated(EnumType.STRING)
@@ -21,6 +22,7 @@ public class CommentEntity {
     private OffsetDateTime creationDatetime;
     private OffsetDateTime lastUpdatedDatetime;
 
+    // depth data
     @ManyToOne
     private UserEntity user;
 

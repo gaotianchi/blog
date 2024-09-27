@@ -14,12 +14,14 @@ import java.util.Collection;
 public class SeriesEntity {
     @Id
     @GeneratedValue
+    // shallow data
     private Long id;
     private String title;
     private String profile;
     private OffsetDateTime creationDatetime;
     private int articleCount;
 
+    // depth data
     @OneToOne(orphanRemoval = true)
     private SeriesCoverEntity cover;
 

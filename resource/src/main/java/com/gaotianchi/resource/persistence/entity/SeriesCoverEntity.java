@@ -12,11 +12,13 @@ import java.time.OffsetDateTime;
 public class SeriesCoverEntity {
     @Id
     @GeneratedValue
+    // shallow data
     private Long id;
     private String filename;
     private String url;
     private OffsetDateTime creationDatetime;
 
+    // depth
     @ManyToOne
     private UserEntity user;
 

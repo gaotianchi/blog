@@ -15,6 +15,7 @@ public class IllustrationEntity {
 
     @Id
     @GeneratedValue
+    // shallow data
     private Long id;
     private String filename;
     private String title;
@@ -24,6 +25,7 @@ public class IllustrationEntity {
     private OffsetDateTime creationDatetime;
     private OffsetDateTime updateDatetime;
 
+    // depth
     @ManyToOne
     private UserEntity user;
 

@@ -15,11 +15,13 @@ import java.time.OffsetDateTime;
 public class AccessRecordEntity {
     @Id
     @GeneratedValue
+    // shallow data
     private Long id;
     private OffsetDateTime accessTime;
     private String accessPath;
     private String ipAddress;
 
+    // depth data
     @ManyToOne
     private UserEntity user;
 }

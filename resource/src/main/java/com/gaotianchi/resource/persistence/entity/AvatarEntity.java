@@ -15,11 +15,13 @@ import java.time.OffsetDateTime;
 public class AvatarEntity {
     @Id
     @GeneratedValue
+    // shallow data
     private Long id;
     private String filename;
     private String url;
     private OffsetDateTime creationDatetime;
 
+    // depth data
     @OneToOne
     private UserEntity user;
 }

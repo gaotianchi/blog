@@ -15,6 +15,7 @@ import java.util.Collection;
 public class ArticleEntity {
     @Id
     @GeneratedValue
+    // shallow data
     private Long id;
     private String title;
     @Column(columnDefinition = "TEXT")
@@ -28,6 +29,7 @@ public class ArticleEntity {
     private OffsetDateTime publishDatetime;
     private OffsetDateTime updateDatetime;
 
+    // depth data
     @ManyToOne
     private UserEntity user;
 

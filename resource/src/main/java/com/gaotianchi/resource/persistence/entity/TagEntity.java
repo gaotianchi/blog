@@ -17,11 +17,13 @@ import java.util.Collection;
 public class TagEntity {
     @Id
     @GeneratedValue
+    // shallow data
     private Long id;
     private String name;
     private OffsetDateTime creationDatetime;
     private Integer articleCount;
 
+    // depth data
     @ManyToMany
     private Collection<ArticleEntity> articleList = new ArrayList<>();
 
