@@ -65,13 +65,13 @@ public class IllustrationStorageService implements IllustrationStorageServiceInt
 
     @Override
     public Path getOriginalPath(String filename) {
-        Path fileDir = Paths.get(storageConfig.getIllustration().getLocation()).resolve(filename).normalize();
+        Path fileDir = Paths.get(storageConfig.getIllustration().getLocation()).normalize();
         return fileDir.resolve(storageConfig.getIllustration().getOriginalDirName()).resolve(filename).normalize();
     }
 
     @Override
     public Path getThumbnailPath(String filename) {
-        Path fileDir = Paths.get(storageConfig.getIllustration().getLocation()).resolve(filename).normalize();
+        Path fileDir = Paths.get(storageConfig.getIllustration().getLocation()).normalize();
         return fileDir.resolve(storageConfig.getIllustration().getThumbnailDirName()).resolve(filename).normalize();
     }
 }

@@ -63,13 +63,13 @@ public class SeriesCoverStorageService implements SeriesCoverStorageServiceInter
 
     @Override
     public Path getOriginalPath(String filename) {
-        Path fileDir = Paths.get(storageConfig.getSeriesCover().getLocation()).resolve(filename).normalize();
+        Path fileDir = Paths.get(storageConfig.getSeriesCover().getLocation()).normalize();
         return fileDir.resolve(storageConfig.getIllustration().getOriginalDirName()).resolve(filename).normalize();
     }
 
     @Override
     public Path getThumbnailPath(String filename) {
-        Path fileDir = Paths.get(storageConfig.getSeriesCover().getLocation()).resolve(filename).normalize();
+        Path fileDir = Paths.get(storageConfig.getSeriesCover().getLocation()).normalize();
         return fileDir.resolve(storageConfig.getIllustration().getThumbnailDirName()).resolve(filename).normalize();
     }
 }

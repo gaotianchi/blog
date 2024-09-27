@@ -33,14 +33,24 @@ storage:
     quality: 0.5F
     original-dir-name: "original"
     thumbnail-dir-name: "thumbnail"
+    allowed-extensions:
+      - ".png"
+      - ".jpeg"
+      - ".gif"
   series-cover:
     location: "D:/documents/blog/resource/uploads/cover"
     max-width: 600
     quality: 0.5F
     original-dir-name: "original"
     thumbnail-dir-name: "thumbnail"
+    allowed-extensions:
+      - ".png"
+      - ".jpeg"
   avatar:
     location: "D:/documents/blog/resource/uploads/avatar"
+    allowed-extensions:
+      - ".png"
+      - ".jpeg"
 
 web:
   root-url: "http://localhost:8090"
