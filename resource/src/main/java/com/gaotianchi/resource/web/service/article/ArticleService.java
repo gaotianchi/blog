@@ -4,6 +4,7 @@ import com.gaotianchi.resource.persistence.entity.*;
 import com.gaotianchi.resource.persistence.enums.ArticleStatus;
 import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.IllustrationRepo;
+import com.gaotianchi.resource.persistence.repo.SeriesRepo;
 import com.gaotianchi.resource.persistence.repo.TagRepo;
 import com.gaotianchi.resource.web.response.info.ArticleInfo;
 import com.gaotianchi.resource.web.response.info.IllustrationInfo;
@@ -25,14 +26,16 @@ public class ArticleService implements ArticleServiceInterface {
     private final EntityFounderService entityFounderService;
     private final EntityBelongService entityBelongService;
     private final IllustrationRepo illustrationRepo;
+    private final SeriesRepo seriesRepo;
 
     @Autowired
-    public ArticleService(ArticleRepo articleRepo, TagRepo tagRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService, IllustrationRepo illustrationRepo) {
+    public ArticleService(ArticleRepo articleRepo, TagRepo tagRepo, EntityFounderService entityFounderService, EntityBelongService entityBelongService, IllustrationRepo illustrationRepo, SeriesRepo seriesRepo) {
         this.articleRepo = articleRepo;
         this.tagRepo = tagRepo;
         this.entityFounderService = entityFounderService;
         this.entityBelongService = entityBelongService;
         this.illustrationRepo = illustrationRepo;
+        this.seriesRepo = seriesRepo;
     }
 
     @Override
@@ -63,12 +66,6 @@ public class ArticleService implements ArticleServiceInterface {
         }
         illustrationRepo.saveAll(illustrationList);
         articleRepo.delete(articleEntity);
-    }
-
-    @Override
-    public ArticleInfo getInfo(Long id) {
-        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
-        return new ArticleInfo(articleEntity);
     }
 
     @Override
@@ -114,25 +111,32 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public String getBody(String username, Long id) {
+    public SeriesInfo setSeries(String username, Long id, Long newSeriesId) {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
-        return articleEntity.getBody();
-    }
+        SeriesEntity oldSeries = articleEntity.getSeries();
+        if (oldSeries != null) {
+            oldSeries.getArticleList().remove(articleEntity);
+            oldSeries.decreaseArticleCount();
+        }
+        SeriesEntity newSeries = entityBelongService.seriesBelongToUser(username, newSeriesId);
+        articleEntity.setSeries(newSeries);
+        newSeries.getArticleList().add(articleEntity);
+        newSeries.increaseArticleCount();
 
-    @Override
-    public SeriesInfo setSeries(String username, Long id, Long seriesId) {
-        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
-        SeriesEntity seriesEntity = entityBelongService.seriesBelongToUser(username, seriesId);
-        articleEntity.setSeries(seriesEntity);
         articleRepo.save(articleEntity);
-        return new SeriesInfo(seriesEntity);
+        return new SeriesInfo(newSeries);
     }
 
     @Override
     public void removeSeries(String username, Long id) {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
-        articleEntity.setSeries(null);
-        articleRepo.save(articleEntity);
+        SeriesEntity oldSeries = articleEntity.getSeries();
+        if (oldSeries != null) {
+            oldSeries.getArticleList().remove(articleEntity);
+            oldSeries.decreaseArticleCount();
+            articleEntity.setSeries(null);
+            articleRepo.save(articleEntity);
+        }
     }
 
     @Override
@@ -142,7 +146,6 @@ public class ArticleService implements ArticleServiceInterface {
         articleEntity.getTagList().add(tagEntity);
         tagEntity.getArticleList().add(articleEntity);
         tagEntity.increaseArticleCount();
-        tagRepo.save(tagEntity);
         articleRepo.save(articleEntity);
         return new TagInfo(tagEntity);
     }
@@ -154,14 +157,7 @@ public class ArticleService implements ArticleServiceInterface {
         articleEntity.getTagList().remove(tagEntity);
         tagEntity.getArticleList().remove(articleEntity);
         tagEntity.decreaseArticleCount();
-        tagRepo.save(tagEntity);
         articleRepo.save(articleEntity);
-    }
-
-    @Override
-    public List<TagInfo> getTagList(String username, Long id) {
-        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
-        return articleEntity.getTagList().stream().map(TagInfo::new).toList();
     }
 
     @Override
@@ -181,6 +177,30 @@ public class ArticleService implements ArticleServiceInterface {
         articleEntity.getIllustrationList().remove(illustrationEntity);
         illustrationEntity.getArticleList().remove(articleEntity);
         articleRepo.save(articleEntity);
+    }
+
+    @Override
+    public ArticleInfo getInfo(Long id) {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
+        return new ArticleInfo(articleEntity);
+    }
+
+    @Override
+    public String getBody(Long id) {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
+        return articleEntity.getBody();
+    }
+
+    @Override
+    public List<TagInfo> getTagList(Long id) {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
+        return articleEntity.getTagList().stream().map(TagInfo::new).toList();
+    }
+
+    @Override
+    public List<IllustrationInfo> getIllustrationList(Long id) {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(id);
+        return articleEntity.getIllustrationList().stream().map(IllustrationInfo::new).toList();
     }
 
     private boolean changeStatusIsPermitted(ArticleStatus from, ArticleStatus to) {

@@ -30,4 +30,12 @@ public class SeriesEntity {
 
     @OneToMany(mappedBy = "series", orphanRemoval = true)
     private Collection<ArticleEntity> articleList = new ArrayList<>();
+
+    public void increaseArticleCount() {
+        articleCount += 1;
+    }
+
+    public void decreaseArticleCount() {
+        articleCount -= 1;
+    }
 }

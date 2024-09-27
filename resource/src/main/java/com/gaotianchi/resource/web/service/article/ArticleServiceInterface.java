@@ -9,12 +9,12 @@ import java.util.List;
 
 public interface ArticleServiceInterface {
 
+    // 创建与删除资源
     ArticleInfo newArticle(String username);
 
     void deleteArticle(String username, Long id);
 
-    ArticleInfo getInfo(Long id);
-
+    // 更新实体的浅层数据
     void updateStatus(String username, Long id, String newStatus) throws Exception;
 
     void updateTitle(String username, Long id, String newTitle);
@@ -25,9 +25,7 @@ public interface ArticleServiceInterface {
 
     void updateBody(String username, Long id, String newBody);
 
-    String getBody(String username, Long id);
-
-    SeriesInfo setSeries(String username, Long id, Long seriesId);
+    SeriesInfo setSeries(String username, Long id, Long newSeriesId);
 
     void removeSeries(String username, Long id);
 
@@ -35,9 +33,15 @@ public interface ArticleServiceInterface {
 
     void removeTag(String username, Long tagId, Long id);
 
-    List<TagInfo> getTagList(String username, Long id);
-
     IllustrationInfo addIllustration(String username, Long id, Long illustrationId);
 
     void removeIllustration(String username, Long id, Long illustrationId);
+
+    ArticleInfo getInfo(Long id);
+
+    String getBody(Long id);
+
+    List<TagInfo> getTagList(Long id);
+
+    List<IllustrationInfo> getIllustrationList(Long id);
 }
