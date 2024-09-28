@@ -21,6 +21,11 @@ public class AvatarStorageService implements AvatarStorageServiceInterface {
     @Override
     public void save(String filename, MultipartFile file) throws IOException {
         Path originalFilePath = getOriginalPath(filename);
+        if (!originalFilePath.getParent().toFile().exists()) {
+            if (!originalFilePath.getParent().toFile().mkdirs()) {
+                throw new IOException("fail to create avatar folder.");
+            }
+        }
         file.transferTo(originalFilePath);
     }
 

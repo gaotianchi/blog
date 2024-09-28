@@ -26,7 +26,7 @@ public class UserEntity {
     private String username;
 
     // depth data
-    @OneToOne(orphanRemoval = true)
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
     private AvatarEntity avatar;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true)
