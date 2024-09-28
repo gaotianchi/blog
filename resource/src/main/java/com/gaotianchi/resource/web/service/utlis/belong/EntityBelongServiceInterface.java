@@ -1,4 +1,4 @@
-package com.gaotianchi.resource.web.service.belong;
+package com.gaotianchi.resource.web.service.utlis.belong;
 
 import com.gaotianchi.resource.persistence.entity.ArticleEntity;
 import com.gaotianchi.resource.persistence.entity.IllustrationEntity;

@@ -7,9 +7,9 @@ import com.gaotianchi.resource.persistence.entity.UserEntity;
 import com.gaotianchi.resource.persistence.repo.SeriesCoverRepo;
 import com.gaotianchi.resource.persistence.repo.SeriesRepo;
 import com.gaotianchi.resource.web.response.info.SeriesCoverInfo;
-import com.gaotianchi.resource.web.service.belong.EntityBelongService;
-import com.gaotianchi.resource.web.service.founder.EntityFounderService;
 import com.gaotianchi.resource.web.service.storage.cover.SeriesCoverStorageService;
+import com.gaotianchi.resource.web.service.utlis.belong.EntityBelongService;
+import com.gaotianchi.resource.web.service.utlis.founder.EntityFounderService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -5,8 +5,8 @@ import com.gaotianchi.resource.persistence.entity.AvatarEntity;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import com.gaotianchi.resource.persistence.repo.AvatarRepo;
 import com.gaotianchi.resource.web.response.info.AvatarInfo;
-import com.gaotianchi.resource.web.service.founder.EntityFounderService;
 import com.gaotianchi.resource.web.service.storage.avatar.AvatarStorageService;
+import com.gaotianchi.resource.web.service.utlis.founder.EntityFounderService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

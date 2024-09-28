@@ -1,4 +1,4 @@
-package com.gaotianchi.resource.web.service.founder;
+package com.gaotianchi.resource.web.service.utlis.founder;
 
 import com.gaotianchi.resource.persistence.entity.*;
 import com.gaotianchi.resource.web.error.EntityNotFoundException;

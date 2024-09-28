@@ -8,7 +8,7 @@ import com.gaotianchi.resource.persistence.repo.TagRepo;
 import com.gaotianchi.resource.web.error.EntityAlreadyExistException;
 import com.gaotianchi.resource.web.response.PageInfo;
 import com.gaotianchi.resource.web.response.info.TagInfo;
-import com.gaotianchi.resource.web.service.founder.EntityFounderService;
+import com.gaotianchi.resource.web.service.utlis.founder.EntityFounderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

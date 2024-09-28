@@ -3,7 +3,7 @@ package com.gaotianchi.resource.web.service.user;
 import com.gaotianchi.resource.persistence.entity.UserEntity;
 import com.gaotianchi.resource.persistence.repo.UserRepo;
 import com.gaotianchi.resource.web.response.info.UserInfo;
-import com.gaotianchi.resource.web.service.founder.EntityFounderService;
+import com.gaotianchi.resource.web.service.utlis.founder.EntityFounderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
