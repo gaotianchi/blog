@@ -42,4 +42,9 @@ public class TagController {
     public APIResponse<List<String>> getAllNames() {
         return APIResponse.success(tagService.getAllNames());
     }
+
+    @GetMapping("/tags/article/{articleId}")
+    public APIResponse<List<TagInfo>> getArticleTagList(@PathVariable Long articleId) {
+        return APIResponse.success(tagService.getArticleTagList(articleId));
+    }
 }

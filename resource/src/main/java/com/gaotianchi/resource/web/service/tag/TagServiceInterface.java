@@ -15,4 +15,6 @@ public interface TagServiceInterface {
     PageInfo<TagInfo> getPageInfo(Integer page);
 
     List<String> getAllNames();
+
+    List<TagInfo> getArticleTagList(Long articleId);
 }

@@ -37,12 +37,12 @@ public class ArticleInfo {
         publishDatetime = articleEntity.getPublishDatetime();
         lastUpdatedDatetime = articleEntity.getUpdateDatetime();
 
-        bodyValueLocation = "";
+        bodyValueLocation = "http://localhost:8090/articles/body/" + id;
         userInfoLocation = "http://localhost:8090/users/info/" + articleEntity.getUser().getId();
         SeriesEntity seriesEntity = articleEntity.getSeries();
         if (seriesEntity != null) seriesInfoLocation = "http://localhost:8090/series/info/" + seriesEntity.getId();
-        illustrationInfoPageLocation = "";
+        illustrationInfoPageLocation = "http://localhost:8090/illustrations/article/" + id;
+        tagInfoPageLocation = "http://localhost:8090/tags/article/" + id;
         commentInfoPageLocation = "";
-        tagInfoPageLocation = "";
     }
 }

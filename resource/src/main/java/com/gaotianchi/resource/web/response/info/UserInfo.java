@@ -31,10 +31,10 @@ public class UserInfo {
 
         AvatarEntity avatarEntity = userEntity.getAvatar();
         if (avatarEntity != null) avatarInfoLocation = "http://localhost:8090/avatar/info/" + avatarEntity.getId();
-        articleInfoPageLocation = "";
+        articleInfoPageLocation = "http://localhost:8090/articles/user/" + id;
         commentInfoPageLocation = "";
-        illustrationInfoPageLocation = "";
-        seriesCoverInfoPageLocation = "";
-        seriesInfoPageLocation = "";
+        illustrationInfoPageLocation = "http://localhost:8090/illustrations/user/" + id;
+        seriesCoverInfoPageLocation = "http://localhost:8090/series-cover/user/" + id;
+        seriesInfoPageLocation = "http://localhost:8090/series/user/" + id;
     }
 }

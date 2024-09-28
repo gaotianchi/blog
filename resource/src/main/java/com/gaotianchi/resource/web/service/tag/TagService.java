@@ -74,4 +74,10 @@ public class TagService implements TagServiceInterface {
     public List<String> getAllNames() {
         return tagRepo.findAllTagNames();
     }
+
+    @Override
+    public List<TagInfo> getArticleTagList(Long articleId) {
+        ArticleEntity articleEntity = entityFounderService.getArticleOrNotFound(articleId);
+        return articleEntity.getTagList().stream().map(TagInfo::new).toList();
+    }
 }

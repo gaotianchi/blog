@@ -31,6 +31,6 @@ public class SeriesInfo {
         SeriesCoverEntity seriesCoverEntity = seriesEntity.getCover();
         if (seriesCoverEntity != null)
             coverInfoLocation = "http://localhost:8090/series-cover/info/" + seriesCoverEntity.getId();
-        articleInfoPageLocation = "";
+        articleInfoPageLocation = "http://localhost:8090/articles/series/" + id;
     }
 }

@@ -30,6 +30,6 @@ public class IllustrationInfo {
         updateDatetime = illustrationEntity.getUpdateDatetime();
 
         userInfoLocation = "http://localhost:8090/users/info/" + illustrationEntity.getUser().getId();
-        articleInfoPageLocation = "";
+        articleInfoPageLocation = "http://localhost:8090/articles/illustration/" + id;
     }
 }

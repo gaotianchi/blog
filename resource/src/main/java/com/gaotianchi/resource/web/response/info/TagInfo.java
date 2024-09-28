@@ -22,6 +22,6 @@ public class TagInfo {
         creationDatetime = tagEntity.getCreationDatetime();
         articleCount = tagEntity.getArticleCount();
 
-        articleInfoPageLocation = "";
+        articleInfoPageLocation = "http://localhost:8090/articles/tag/" + id;
     }
 }
