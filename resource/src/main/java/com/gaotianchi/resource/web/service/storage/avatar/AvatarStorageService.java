@@ -32,7 +32,6 @@ public class AvatarStorageService implements AvatarStorageServiceInterface {
     @Override
     public void delete(String filename) throws IOException {
         Files.deleteIfExists(getOriginalPath(filename));
-        Files.deleteIfExists(getOriginalPath(filename).getParent());
     }
 
     @Override

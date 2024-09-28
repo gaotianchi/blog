@@ -66,3 +66,24 @@ export type ArticleListResponse = {
 	totalPage: number;
 	currentPage: number;
 };
+
+export type UserInfo = {
+	id: number;
+	penName: string;
+	profile: string;
+	timeZone: string;
+	avatarInfoLocation: string;
+	articleInfoPageLocation: string;
+	illustrationInfoPageLocation: string;
+	seriesInfoPageLocation: string;
+	seriesCoverInfoPageLocation: string;
+	commentInfoPageLocation: string;
+};
+
+export type AvatarInfo = {
+	id: number;
+	filename: string;
+	url: string;
+	creationDatetime: string;
+	userInfoLocation: string;
+};

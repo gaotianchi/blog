@@ -10,12 +10,7 @@
 				{{ node.attrs.source }}
 			</figcaption>
 		</figure>
-		<ModalComponentNew
-			:modal-id="modalId"
-			ref="blockquoteRef"
-			title="编辑引言"
-			@save-change="handleSaveChage"
-		>
+		<ModalComponentNew ref="blockquoteRef" title="编辑引言" @save-change="handleSaveChage">
 			<template #body>
 				<div class="form-floating mb-3">
 					<textarea
@@ -88,13 +83,15 @@
 	import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3';
 	import ModalComponentNew from '@/component/ModalComponentNew.vue';
 	import { ref, watch } from 'vue';
+	import { v4 as uuidv4 } from 'uuid';
 
 	const props = defineProps(nodeViewProps);
 	const blockquoteRef = ref();
 	const quote = ref(props.node.attrs.quote);
 	const source = ref(props.node.attrs.source);
 	const align = ref<'text-start' | 'text-center' | 'text-end'>('text-start');
-	const modalId = 'modal-' + Math.random();
+
+	const modalId = uuidv4();
 	watch([quote, source, align], () => {
 		updateAtrri();
 	});

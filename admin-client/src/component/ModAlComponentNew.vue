@@ -1,16 +1,10 @@
 <template>
 	<!-- Modal -->
-	<div
-		class="modal fade"
-		:id="modalId"
-		:tabindex="-1"
-		:aria-labelledby="`${modalId}Label`"
-		:aria-hidden="true"
-	>
+	<div class="modal fade" :id="id" :tabindex="-1" :aria-labelledby="id" :aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" :class="modalWidth">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h1 class="modal-title fs-5" :id="`${modalId}Label`">
+					<h1 class="modal-title fs-5" :id="id">
 						{{ title }}
 					</h1>
 					<button
@@ -40,6 +34,9 @@
 <script setup lang="ts">
 	import { ref, onMounted } from 'vue';
 	import * as bootstrap from 'bootstrap';
+	import { v4 as uuidv4 } from 'uuid';
+
+	const id = uuidv4();
 
 	const emits = defineEmits(['saveChange']);
 
@@ -56,14 +53,6 @@
 			type: String,
 			default: '保存修改',
 		},
-		modalId: {
-			type: String,
-			required: true,
-		},
-		show: {
-			type: Boolean,
-			default: false,
-		},
 		modalWidth: {
 			type: String,
 			required: false,
@@ -74,7 +63,7 @@
 
 	const show = () => {
 		if (!modalInstance.value) {
-			const modalElement = document.getElementById(props.modalId);
+			const modalElement = document.getElementById(id);
 			if (modalElement) {
 				modalInstance.value = new bootstrap.Modal(modalElement);
 			}
@@ -95,7 +84,7 @@
 	};
 
 	onMounted(() => {
-		const modalElement = document.getElementById(props.modalId);
+		const modalElement = document.getElementById(id);
 		if (modalElement) {
 			modalInstance.value = new bootstrap.Modal(modalElement);
 		}

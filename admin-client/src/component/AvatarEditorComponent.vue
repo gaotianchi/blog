@@ -1,95 +1,124 @@
 <template>
-	<ModalComponent
+	<img
+		:src="avatar?.url || 'http://localhost:8800/default/avatar.svg'"
+		class="img-thumbnail"
+		alt="avatar"
+		width="200"
+		style="cursor: pointer"
+		@click="openModal"
+	/>
+	<ModalComponentNew
 		@save-change="handleSave"
-		modal-id="avatar-modal"
+		ref="avatarModal"
 		title="编辑头像"
 		button-text="编辑头像"
 	>
-		<template #button>
-			<button type="button" class="btn btn-link p-1">
-				<i class="bi bi-pencil-square"></i>
-			</button>
-		</template>
 		<template #body>
 			<div class="row">
-				<div class="col-sm-8">
+				<div class="col-sm-6 align-self-center position-relative">
+					<a
+						v-if="avatarUrl"
+						class="btn btn-link position-absolute"
+						href="#"
+						role="button"
+						style="right: 20px; top: 0"
+						@click="handleRemove"
+					>
+						<i class="bi bi-trash"></i>
+					</a>
 					<avatar-editor
-						:key="initImageUrl"
+						:key="avatarUrl"
 						:width="200"
 						:height="200"
 						:border="2"
-						:image="initImageUrl"
+						:image="avatarUrl || 'http://localhost:8800/default/avatar.svg'"
 						ref="avatarEditorRef"
-						@image-ready="(scale: number) => {scaleVal = scale}"
-						v-model:scale="scaleVal"
+						@image-ready="s => handleImageReady(s)"
+						v-model:scale="scale.value"
 					/>
 				</div>
-				<div class="col-sm-4">
-					<label for="customRange1" class="form-label">缩放图片</label>
-					<input
-						type="range"
-						class="form-range w-auto"
-						id="customRange1"
-						:min="scaleMin"
-						:max="scaleMax"
-						:step="scaleStep"
-						v-model="scaleVal"
-					/>
+				<div class="col-sm-6">
+					<div class="d-flex flex-column">
+						<label for="customRange1" class="form-label">缩放图片</label>
+						<input
+							type="range"
+							class="form-range w-auto"
+							id="customRange1"
+							:min="scale.min"
+							:max="scale.max"
+							:step="scale.step"
+							v-model="scale.value"
+						/>
+					</div>
 				</div>
 			</div>
 		</template>
-	</ModalComponent>
+	</ModalComponentNew>
 </template>
 <script lang="ts" setup>
-	import ModalComponent from './ModalComponent.vue';
 	import { AvatarEditor } from 'avatar-editor';
-	import { computed, onMounted, onUnmounted, ref } from 'vue';
+	import { onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 	import { makeRequest } from '@/service/request.service';
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
-	import type { APIResponse, ImageResponse } from '@/type/response.type';
+	import type { APIResponse, AvatarInfo, ImageResponse } from '@/type/response.type';
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
+	import { dataURLToBlob } from '@/utlis';
+	import ModalComponentNew from './ModalComponentNew.vue';
 
-	// 定义可传入的 props
 	const props = defineProps<{
-		initUrl?: string;
+		avatar: AvatarInfo | null;
 	}>();
-
-	const initImageUrl = computed(() => {
-		return props.initUrl;
-	});
 	const emits = defineEmits<{
-		save: [imageResponse: ImageResponse];
+		saveChange: [avatar: AvatarInfo];
 	}>();
-
-	const scaleVal = ref<number>(1);
-	const scaleStep = 0.02;
-	const scaleMin = 1;
-	const scaleMax = 3;
 	const avatarEditorRef = ref<any>(null);
+	const avatarUrl = ref(props?.avatar?.url || '');
+	const avatarModal = ref();
+	const scale = reactive({
+		value: 1,
+		step: 0.02,
+		min: 1,
+		max: 3,
+	});
 
-	const handleWheelEvent = (e: WheelEvent) => {
-		if (e.deltaY > 0 && scaleVal.value - scaleStep >= scaleMin) {
-			// Down
-			scaleVal.value -= scaleStep;
-		} else {
-			// Up
-			if (scaleVal.value + scaleStep <= scaleMax) {
-				scaleVal.value += scaleStep;
+	const openModal = () => {
+		if (avatarModal.value) {
+			avatarModal.value.show();
+		}
+	};
+
+	const closeModal = () => {
+		if (avatarModal.value) {
+			avatarModal.value.hide();
+		}
+	};
+
+	const handleRemove = async () => {
+		if (props.avatar) {
+			const response: APIResponse<void> = await makeRequest(
+				RESOURCE_BASE_URL + '/avatar/delete',
+				{
+					method: 'DELETE',
+				}
+			);
+			if (response.code === 0) {
+				showMessage('成功移除头像', AlertType.SUCCESS);
+			} else {
+				showMessage('删除头像失败，稍后再试！', AlertType.ERROR);
 			}
 		}
 	};
+	let oldDataUrl = '';
 
 	const handleSave = async () => {
 		if (avatarEditorRef.value) {
 			const canvasData = avatarEditorRef.value.getImageScaled();
-			const img = canvasData.toDataURL('image/png');
-			const blob = dataURLToBlob(img);
-			// 创建 multipart/form-data
+			const blob = dataURLToBlob(canvasData.toDataURL('image/png'));
 			const formData = new FormData();
-			formData.append('file', blob, 'avatar.png'); // 添加文件
-			const response: APIResponse<ImageResponse> = await makeRequest(
-				RESOURCE_BASE_URL + '/images/new',
+			formData.append('file', blob, 'avatar.png');
+			const response: APIResponse<AvatarInfo> = await makeRequest(
+				RESOURCE_BASE_URL + '/avatar/new',
 				{
 					method: 'POST',
 					body: formData,
@@ -97,23 +126,28 @@
 			);
 			if (response.code === 0) {
 				showMessage('图片上传成功。', AlertType.SUCCESS);
-				emits('save', response.data);
+				emits('saveChange', response.data);
 			} else {
 				showMessage('图片上传失败，请稍后重试！', AlertType.ERROR);
 			}
 		}
+		closeModal();
 	};
 
-	// 将 base64 转换为 Blob
-	const dataURLToBlob = (dataURL: string) => {
-		const byteString = atob(dataURL.split(',')[1]); // 去掉头部的 'data:image/png;base64,'
-		const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0]; // 获取 mime 类型
+	const handleImageReady = (s: number) => {
+		scale.value = s;
+		const canvasData = avatarEditorRef.value.getImageScaled();
+		oldDataUrl = canvasData.toDataURL('image/png');
+	};
 
-		const byteArray = new Uint8Array(byteString.length);
-		for (let i = 0; i < byteString.length; i++) {
-			byteArray[i] = byteString.charCodeAt(i);
+	const handleWheelEvent = (e: WheelEvent) => {
+		if (e.deltaY > 0 && scale.value - scale.step >= scale.min) {
+			scale.value -= scale.step;
+		} else {
+			if (scale.value + scale.step <= scale.max) {
+				scale.value += scale.step;
+			}
 		}
-		return new Blob([byteArray], { type: mimeString });
 	};
 
 	onMounted(() => {
@@ -123,4 +157,10 @@
 	onUnmounted(() => {
 		document.removeEventListener('wheel', handleWheelEvent);
 	});
+	watch(
+		() => props?.avatar?.url,
+		newValue => {
+			avatarUrl.value = newValue || '';
+		}
+	);
 </script>

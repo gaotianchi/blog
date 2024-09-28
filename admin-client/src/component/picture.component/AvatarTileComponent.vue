@@ -23,7 +23,6 @@
 		<div class="tile-footer"></div>
 
 		<ModalComponentNew
-			modalId="avatar-detail-modal"
 			ref="avatarModal"
 			modal-width="modal-lg"
 			title="查看头像"

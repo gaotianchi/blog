@@ -23,8 +23,7 @@
 						'form-control': !readonlyRef,
 					},
 				]"
-				name="userprofile"
-				id="userprofile"
+				:id="id"
 				rows="3"
 				v-model="model"
 				:disabled="readonlyRef"
@@ -39,8 +38,7 @@
 						'form-select': !readonlyRef,
 					},
 				]"
-				id="timezone"
-				name="timezone"
+				:id="id"
 				:disabled="readonlyRef"
 				v-model="model"
 				:style="{ appearance: readonlyRef ? 'none' : 'initial' }"

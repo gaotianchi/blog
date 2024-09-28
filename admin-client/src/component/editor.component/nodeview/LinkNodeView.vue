@@ -34,7 +34,6 @@
 			</div>
 		</div>
 		<ModalComponentNew
-			:modal-id="currentModalId"
 			title="编辑链接"
 			ref="linkModalRef"
 			@save-change="onSaveModal"

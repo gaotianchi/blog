@@ -32,7 +32,6 @@
 
 		<ModalComponentNew
 			@save-change="handleSaveChange"
-			:modal-id="modalId"
 			title="编辑插图"
 			ref="imageRef"
 			modal-width="modal-xl"
