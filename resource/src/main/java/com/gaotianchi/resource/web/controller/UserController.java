@@ -24,8 +24,14 @@ public class UserController {
     }
 
     @GetMapping("/users/info/{id}")
-    public APIResponse<UserInfo> getInfo(@PathVariable Long id) {
-        UserInfo userInfo = userService.getInfo(id);
+    public APIResponse<UserInfo> getPublicInfo(@PathVariable Long id) {
+        UserInfo userInfo = userService.getPublicInfo(id);
+        return APIResponse.success(userInfo);
+    }
+
+    @GetMapping("/users/info")
+    public APIResponse<UserInfo> getPrivateInfo(@AuthenticationPrincipal Jwt jwt) {
+        UserInfo userInfo = userService.getPrivateInfo(jwt.getSubject());
         return APIResponse.success(userInfo);
     }
 }

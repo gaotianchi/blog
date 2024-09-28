@@ -48,8 +48,14 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public UserInfo getInfo(Long id) {
+    public UserInfo getPublicInfo(Long id) {
         UserEntity userEntity = entityFounderService.getUserOrNorFound(id);
+        return new UserInfo(userEntity);
+    }
+
+    @Override
+    public UserInfo getPrivateInfo(String username) {
+        UserEntity userEntity = entityFounderService.getUserOrNotFound(username);
         return new UserInfo(userEntity);
     }
 }
