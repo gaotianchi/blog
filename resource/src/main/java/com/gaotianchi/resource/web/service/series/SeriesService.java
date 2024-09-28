@@ -72,7 +72,7 @@ public class SeriesService implements SeriesServiceInterface {
     }
 
     @Override
-    public void updateContent(String username, Long id, String newTitle, String newProfile) {
+    public void updateInfo(String username, Long id, String newTitle, String newProfile) {
         SeriesEntity seriesEntity = entityBelongService.seriesBelongToUser(username, id);
         seriesEntity.setTitle(newTitle);
         if (newProfile != null && !newProfile.isEmpty()) {

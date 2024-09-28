@@ -2,7 +2,7 @@ package com.gaotianchi.resource.web.controller;
 
 import com.gaotianchi.resource.web.response.APIResponse;
 import com.gaotianchi.resource.web.response.info.AvatarInfo;
-import com.gaotianchi.resource.web.service.avatar.AvatarService;
+import com.gaotianchi.resource.web.service.user.avatar.AvatarService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;

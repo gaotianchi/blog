@@ -1,4 +1,4 @@
-package com.gaotianchi.resource.web.service.avatar;
+package com.gaotianchi.resource.web.service.user.avatar;
 
 import com.gaotianchi.resource.Utils;
 import com.gaotianchi.resource.persistence.entity.AvatarEntity;

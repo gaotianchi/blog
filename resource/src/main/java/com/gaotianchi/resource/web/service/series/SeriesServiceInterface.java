@@ -11,7 +11,7 @@ public interface SeriesServiceInterface {
 
     void deleteSeries(String username, Long id) throws IOException;
 
-    void updateContent(String username, Long id, String newTitle, String newProfile);
+    void updateInfo(String username, Long id, String newTitle, String newProfile);
 
     SeriesCoverInfo setCover(String username, Long id, Long newCoverId) throws IOException;
 

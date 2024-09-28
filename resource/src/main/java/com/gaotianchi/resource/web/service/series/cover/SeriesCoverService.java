@@ -1,4 +1,4 @@
-package com.gaotianchi.resource.web.service.cover;
+package com.gaotianchi.resource.web.service.series.cover;
 
 import com.gaotianchi.resource.Utils;
 import com.gaotianchi.resource.persistence.entity.SeriesCoverEntity;

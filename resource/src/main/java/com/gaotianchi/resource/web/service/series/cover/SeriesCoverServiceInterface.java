@@ -1,4 +1,4 @@
-package com.gaotianchi.resource.web.service.cover;
+package com.gaotianchi.resource.web.service.series.cover;
 
 import com.gaotianchi.resource.web.response.info.SeriesCoverInfo;
 import org.springframework.web.multipart.MultipartFile;
