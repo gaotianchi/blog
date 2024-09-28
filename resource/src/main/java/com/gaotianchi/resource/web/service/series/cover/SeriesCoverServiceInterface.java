@@ -8,7 +8,7 @@ import java.io.IOException;
 public interface SeriesCoverServiceInterface {
     SeriesCoverInfo newSeriesCover(String username, MultipartFile file) throws IOException;
 
-    void delete(String username, Long id) throws IOException;
+    void deleteSeriesCover(String username, Long id) throws IOException;
 
     SeriesCoverInfo getInfo(Long id);
 }

@@ -46,7 +46,7 @@ public class SeriesCoverService implements SeriesCoverServiceInterface {
     }
 
     @Override
-    public void delete(String username, Long id) throws IOException {
+    public void deleteSeriesCover(String username, Long id) throws IOException {
         SeriesCoverEntity seriesCoverEntity = entityBelongService.seriesCoverBelongToUser(username, id);
         SeriesEntity seriesEntity = seriesCoverEntity.getSeries();
         seriesEntity.setCover(null);
