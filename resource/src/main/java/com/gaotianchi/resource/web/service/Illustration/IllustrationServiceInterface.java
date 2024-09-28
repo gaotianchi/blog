@@ -12,7 +12,7 @@ public interface IllustrationServiceInterface {
 
     void deleteIllustration(String username, Long id) throws IOException;
 
-    void updateContent(String username, Long id, String newTitle, String newAlt);
+    void updateInfo(String username, Long id, String newTitle, String newAlt);
 
     IllustrationInfo getInfo(Long id);
 

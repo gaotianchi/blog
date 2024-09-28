@@ -72,7 +72,7 @@ public class IllustrationService implements IllustrationServiceInterface {
     }
 
     @Override
-    public void updateContent(String username, Long id, String newTitle, String newAlt) {
+    public void updateInfo(String username, Long id, String newTitle, String newAlt) {
         IllustrationEntity illustrationEntity = entityBelongService.illustrationBelongToUser(username, id);
         illustrationEntity.setTitle(newTitle);
         illustrationEntity.setAlt(newAlt);
