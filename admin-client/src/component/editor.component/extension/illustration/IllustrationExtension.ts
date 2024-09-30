@@ -1,5 +1,5 @@
 import { Node, type NodeViewProps } from '@tiptap/core';
-import ImageNodeView from '../nodeview/ImageNodeView.vue';
+import IllustrationNodeView from './IllustrationNodeView.vue';
 import { VueNodeViewRenderer } from '@tiptap/vue-3';
 import type { Component } from 'vue';
 import { type ImageOptions, Image } from '@tiptap/extension-image';
@@ -27,7 +27,7 @@ export const ImageExtension = Image.extend<ImageOptions>({
 		};
 	},
 	addNodeView() {
-		return VueNodeViewRenderer(ImageNodeView as Component<NodeViewProps>);
+		return VueNodeViewRenderer(IllustrationNodeView as Component<NodeViewProps>);
 	},
 	addCommands() {
 		return {

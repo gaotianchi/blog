@@ -1,7 +1,7 @@
 import { Node, type NodeViewProps, mergeAttributes } from '@tiptap/core';
 import { VueNodeViewRenderer } from '@tiptap/vue-3';
 import type { Component } from 'vue';
-import LinkNodeView from '../nodeview/LinkNodeView.vue';
+import LinkNodeView from './LinkNodeView.vue';
 
 declare module '@tiptap/core' {
 	interface Commands<ReturnType> {
