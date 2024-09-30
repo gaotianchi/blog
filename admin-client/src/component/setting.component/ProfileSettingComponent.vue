@@ -6,7 +6,7 @@
 			<div class="col-auto">
 				<AvatarEditorComponent
 					:avatar="avatarInfo"
-					@save-change="avatar => handleSaveChange(avatar)"
+					@save-change="avatar => handleSaveAvatarChange(avatar)"
 				/>
 			</div>
 			<div class="col">
@@ -17,6 +17,7 @@
 							input-type="text"
 							:readonly="penName.readonly"
 							v-model="penName.currentValue"
+							@edit="penName.readonly = false"
 							@reset="handleReset('penName')"
 						/>
 					</li>
@@ -27,6 +28,7 @@
 							:readonly="timezone.readonly"
 							:select-options="allWorldTimeZone"
 							v-model="timezone.currentValue"
+							@edit="timezone.readonly = false"
 							@reset="handleReset('timezone')"
 						/>
 					</li>
@@ -36,6 +38,7 @@
 							input-type="textarea"
 							:readonly="profile.readonly"
 							v-model="profile.currentValue"
+							@edit="profile.readonly = false"
 							@reset="handleReset('profile')"
 						/>
 					</li>
@@ -46,7 +49,9 @@
 			v-if="penName.changed || timezone.changed || profile.changed"
 			class="tile-footer text-end"
 		>
-			<button @click="" type="button" class="btn btn-primary m-1">保存更改</button>
+			<button @click="handleSaveChange" type="button" class="btn btn-primary m-1">
+				保存更改
+			</button>
 		</div>
 	</div>
 </template>
@@ -85,8 +90,40 @@
 	const userInfo = ref<UserInfo | null>(null);
 	const avatarInfo = ref<AvatarInfo | null>(null);
 
-	const handleSaveChange = (avatar: AvatarInfo) => {
+	const handleSaveAvatarChange = (avatar: AvatarInfo) => {
 		avatarInfo.value = avatar;
+	};
+
+	const handleSaveChange = async () => {
+		const response: APIResponse<void> = await makeRequest(RESOURCE_BASE_URL + '/users/info', {
+			method: 'PATCH',
+			body: JSON.stringify({
+				penName: penName.currentValue,
+				timezone: timezone.currentValue,
+				profile: profile.currentValue,
+			}),
+		});
+		if (response.code === 0) {
+			showMessage('成功更新个人简介', AlertType.SUCCESS);
+			if (userInfo.value) {
+				userInfo.value.penName = penName.currentValue;
+				userInfo.value.timeZone = timezone.currentValue;
+				userInfo.value.profile = profile.currentValue;
+			}
+			resetStatus();
+		} else {
+			showMessage('更新失败', AlertType.ERROR);
+		}
+	};
+
+	const resetStatus = () => {
+		penName.changed = false;
+		timezone.changed = false;
+		profile.changed = false;
+
+		penName.readonly = true;
+		timezone.readonly = true;
+		profile.readonly = true;
 	};
 
 	onMounted(async () => {

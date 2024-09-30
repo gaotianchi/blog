@@ -70,7 +70,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-	import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+	import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 	import { v4 as uuidv4 } from 'uuid';
 	import * as bootstrap from 'bootstrap';
 
@@ -101,24 +101,17 @@
 			required: false,
 		},
 	});
-	const readonlyRef = ref(props.readonly);
+	const readonlyRef = computed(() => {
+		return props.readonly;
+	});
 
 	const handleClicked = () => {
 		if (readonlyRef.value) {
-			readonlyRef.value = false;
 			emits('edit');
 		} else {
-			readonlyRef.value = true;
 			emits('reset');
 		}
 	};
-
-	watch(
-		() => props.readonly,
-		() => {
-			readonlyRef.value = props.readonly;
-		}
-	);
 
 	watch(
 		() => props.inputType,
