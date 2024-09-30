@@ -56,7 +56,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-	import AvatarEditorComponent from '@/component/AvatarEditorComponent.vue';
+	import AvatarEditorComponent from '@/component/setting.component/AvatarEditorComponent.vue';
 	import { computed, onMounted, reactive, ref, watch } from 'vue';
 	import { makeRequest } from '@/service/request.service';
 	import { allWorldTimeZone } from '@/const/timezone.const';

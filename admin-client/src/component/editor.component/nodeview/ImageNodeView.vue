@@ -30,7 +30,7 @@
 			</div>
 		</div>
 
-		<ModalComponentNew
+		<ModalComponent
 			@save-change="handleSaveChange"
 			title="编辑插图"
 			ref="imageRef"
@@ -146,12 +146,12 @@
 					</div>
 				</div>
 			</template>
-		</ModalComponentNew>
+		</ModalComponent>
 	</NodeViewWrapper>
 </template>
 <script setup lang="ts">
 	import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3';
-	import ModalComponentNew from '@/component/ModalComponentNew.vue';
+	import ModalComponent from '@/component/ModalComponent.vue';
 	import { ref, watch, onBeforeUnmount, onMounted, nextTick, reactive } from 'vue';
 	import { v4 as uuidv4 } from 'uuid';
 	import { makeRequest } from '@/service/request.service';

@@ -7,7 +7,7 @@
 		style="cursor: pointer"
 		@click="openModal"
 	/>
-	<ModalComponentNew
+	<ModalComponent
 		@save-change="handleSave"
 		ref="avatarModal"
 		title="编辑头像"
@@ -53,7 +53,7 @@
 				</div>
 			</div>
 		</template>
-	</ModalComponentNew>
+	</ModalComponent>
 </template>
 <script lang="ts" setup>
 	import { AvatarEditor } from 'avatar-editor';
@@ -64,7 +64,7 @@
 	import type { APIResponse, AvatarInfo, ImageResponse } from '@/type/response.type';
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
 	import { dataURLToBlob } from '@/utlis';
-	import ModalComponentNew from './ModalComponentNew.vue';
+	import ModalComponent from '../ModalComponent.vue';
 
 	const props = defineProps<{
 		avatar: AvatarInfo | null;

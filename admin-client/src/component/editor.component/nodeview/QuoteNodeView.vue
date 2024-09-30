@@ -10,7 +10,7 @@
 				{{ node.attrs.source }}
 			</figcaption>
 		</figure>
-		<ModalComponentNew ref="blockquoteRef" title="编辑引言" @save-change="handleSaveChage">
+		<ModalComponent ref="blockquoteRef" title="编辑引言" @save-change="handleSaveChage">
 			<template #body>
 				<div class="form-floating mb-3">
 					<textarea
@@ -76,12 +76,12 @@
 					</div>
 				</div>
 			</template>
-		</ModalComponentNew>
+		</ModalComponent>
 	</NodeViewWrapper>
 </template>
 <script setup lang="ts">
 	import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3';
-	import ModalComponentNew from '@/component/ModalComponentNew.vue';
+	import ModalComponent from '@/component/ModalComponent.vue';
 	import { ref, watch } from 'vue';
 	import { v4 as uuidv4 } from 'uuid';
 

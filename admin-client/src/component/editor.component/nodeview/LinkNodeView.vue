@@ -33,11 +33,7 @@
 				</div>
 			</div>
 		</div>
-		<ModalComponentNew
-			title="编辑链接"
-			ref="linkModalRef"
-			@save-change="onSaveModal"
-		>
+		<ModalComponent title="编辑链接" ref="linkModalRef" @save-change="onSaveModal">
 			<template #body>
 				<div class="form-floating mb-3">
 					<input
@@ -68,12 +64,12 @@
 					<label class="form-check-label" for="flexSwitchCheckChecked">打开新标签</label>
 				</div>
 			</template>
-		</ModalComponentNew>
+		</ModalComponent>
 	</NodeViewWrapper>
 </template>
 <script setup lang="ts">
 	import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3';
-	import ModalComponentNew from '@/component/ModalComponentNew.vue';
+	import ModalComponent from '@/component/ModalComponent.vue';
 	import { nextTick, onMounted, ref, watch } from 'vue';
 	const props = defineProps(nodeViewProps);
 
