@@ -21,7 +21,7 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
-    @PostMapping("/articles/new/")
+    @PostMapping("/articles/new")
     public APIResponse<ArticleInfo> newArticle(@AuthenticationPrincipal Jwt jwt) {
         ArticleInfo articleInfo = articleService.newArticle(jwt.getSubject());
         return APIResponse.success(articleInfo);

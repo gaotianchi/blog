@@ -99,15 +99,7 @@
 					</div>
 				</div>
 				<div class="tile">
-					<div class="tile-title">固定链接</div>
-					<div class="tile-body"></div>
-				</div>
-				<div class="tile">
 					<div class="tile-title">摘要</div>
-					<div class="title-body"></div>
-				</div>
-				<div class="tile">
-					<div class="tile-title">封面</div>
 					<div class="title-body"></div>
 				</div>
 				<div class="tile">
@@ -118,6 +110,10 @@
 					<div class="tile-title">系列</div>
 					<div class="title-body"></div>
 				</div>
+				<div class="tile">
+					<div class="tile-title">固定链接</div>
+					<div class="tile-body"></div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -127,9 +123,9 @@
 	import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 	import StarterKit from '@tiptap/starter-kit';
 	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
-	import { QuoteExtension } from '@/component/editor.component/extension/QuoteExtension';
-	import { LinkExtension } from '@/component/editor.component/extension/LinkExtension';
-	import { ImageExtension } from '@/component/editor.component/extension/ImageExtension';
+	import { QuoteExtension } from '@/component/editor.component/extension/quote/QuoteExtension';
+	import { LinkExtension } from '@/component/editor.component/extension/link/LinkExtension';
+	import { ImageExtension } from '@/component/editor.component/extension/illustration/IllustrationExtension';
 	import Placeholder from '@tiptap/extension-placeholder';
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
 	import { makeRequest } from '@/service/request.service';
@@ -144,18 +140,6 @@
 
 	const titleRef = ref<HTMLTextAreaElement>();
 	const titleRow = ref(1);
-
-	watch(title, () => {
-		if (titleRef.value) {
-			if (titleRef.value.scrollHeight > titleRef.value.clientHeight) {
-				titleRow.value += 1;
-			}
-		}
-	});
-
-	onMounted(() => {
-		initBodyEditor();
-	});
 
 	const getCurrentArticle = async () => {
 		const articleResponse = await makeRequest(RESOURCE_BASE_URL + '/');
@@ -191,6 +175,10 @@
 		htmlContent.value = bodyEditor.value.getHTML();
 	};
 
+	onMounted(() => {
+		initBodyEditor();
+	});
+
 	const updateHtmlContent = () => {
 		if (bodyEditor.value) {
 			htmlContent.value = bodyEditor.value?.getHTML();
@@ -200,6 +188,14 @@
 	onBeforeUnmount(() => {
 		if (bodyEditor.value) {
 			bodyEditor.value.destroy();
+		}
+	});
+
+	watch(title, () => {
+		if (titleRef.value) {
+			if (titleRef.value.scrollHeight > titleRef.value.clientHeight) {
+				titleRow.value += 1;
+			}
 		}
 	});
 </script>
