@@ -9,6 +9,6 @@ import java.util.TimeZone;
 @Setter
 public class UpdateUserInfoRequest {
     private String penName;
-    private TimeZone timeZone;
+    private TimeZone timezone;
     private String profile;
 }
