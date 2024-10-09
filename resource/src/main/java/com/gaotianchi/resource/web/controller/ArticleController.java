@@ -42,7 +42,7 @@ public class ArticleController {
     }
 
     @PatchMapping("/articles/content/{id}")
-    public APIResponse<Void> updateTitle(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
+    public APIResponse<Void> updateContent(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
         articleService.updateContent(jwt.getSubject(), id, updateArticleContentRequest.getTitle(), updateArticleContentRequest.getBody());
         return APIResponse.success();
     }

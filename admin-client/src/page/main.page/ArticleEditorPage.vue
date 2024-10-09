@@ -275,7 +275,38 @@
 				</div>
 				<div class="tile">
 					<div class="tile-title">固定链接</div>
-					<div class="tile-body"></div>
+					<div class="tile-body">
+						<div class="mb-3">
+							<input
+								aria-label="slug-input"
+								type="text"
+								class="form-control"
+								name="slug-input"
+								id="slug-input"
+								aria-describedby="helpId"
+								placeholder="Slug"
+								v-model="article.slug"
+							/>
+						</div>
+					</div>
+					<div class="tile-footer" v-if="changed.slug">
+						<div class="row justify-content-end">
+							<button
+								@click="article.slug = articleInfo ? articleInfo.slug : ''"
+								type="button"
+								class="btn btn-secondary w-auto me-2"
+							>
+								还原
+							</button>
+							<button
+								@click="openUpdateSlugModal"
+								type="button"
+								class="btn btn-primary w-auto me-2"
+							>
+								保存
+							</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -296,6 +327,14 @@
 	>
 		<template #body>
 			<p>发布文章《{{ article.title }}》之后所有人都可以看到，确定要发布吗？</p>
+		</template>
+	</ModalComponent>
+
+	<ModalComponent title="更新文章固定链接" ref="updateSlugModal" @save-change="updateSlug">
+		<template #body>
+			<p>确定要将该文章的链接更改为：</p>
+			<p>{{ 'http://localhost:8090/' + route.params.id + '/' + article.slug }}</p>
+			<p>吗？</p>
 		</template>
 	</ModalComponent>
 </template>
@@ -322,12 +361,14 @@
 	const titleRef = ref<HTMLTextAreaElement>();
 	const titleRow = ref(1);
 	const publishModal = ref();
+	const updateSlugModal = ref();
 
 	// 当前数据
 	const article = reactive({
 		title: '',
 		body: '',
 		summary: '',
+		slug: '',
 	});
 
 	// 追踪数据的变动状态
@@ -335,16 +376,13 @@
 		title: false,
 		body: false,
 		summary: false,
+		slug: false,
 	});
 
 	// 云端数据
 	const articleInfo = ref<ArticleInfo | null>(null);
 	const userInfo = ref<UserInfo | null>(null);
 	const articleBody = ref('');
-
-	const contentSync = computed(() => {
-		return !changed.body && !changed.title;
-	});
 
 	const updateArticleContent = async () => {
 		const response: APIResponse<void> = await makeRequest(
@@ -389,9 +427,37 @@
 		}
 	};
 
+	const updateSlug = async () => {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/slug/' + route.params.id,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					slug: article.slug,
+				}),
+			}
+		);
+		if (response.code === 0) {
+			if (articleInfo.value) {
+				articleInfo.value.slug = article.slug;
+				changed.slug = false;
+				showMessage('更新成功', AlertType.SUCCESS);
+			}
+		} else {
+			showMessage('更新失败', AlertType.ERROR);
+		}
+		updateSlugModal.value.hide();
+	};
+
 	const openPublishModal = () => {
 		if (publishModal.value) {
 			publishModal.value.show();
+		}
+	};
+
+	const openUpdateSlugModal = () => {
+		if (updateSlugModal.value) {
+			updateSlugModal.value.show();
 		}
 	};
 
@@ -438,6 +504,7 @@
 		article.body = articleBody.value;
 		article.title = articleInfo.value.title;
 		article.summary = articleInfo.value.summary;
+		article.slug = articleInfo.value.slug;
 
 		console.log(articleInfo.value);
 	};
@@ -482,6 +549,10 @@
 		}
 	};
 
+	const contentSync = computed(() => {
+		return !changed.body && !changed.title;
+	});
+
 	onBeforeUnmount(() => {
 		if (bodyEditor.value) {
 			bodyEditor.value.destroy();
@@ -511,6 +582,13 @@
 		() => article.summary,
 		newValue => {
 			changed.summary = newValue != articleInfo.value?.summary;
+		}
+	);
+
+	watch(
+		() => article.slug,
+		newValue => {
+			changed.slug = newValue != articleInfo.value?.slug;
 		}
 	);
 </script>
