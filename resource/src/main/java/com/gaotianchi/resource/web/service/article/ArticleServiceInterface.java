@@ -16,13 +16,11 @@ public interface ArticleServiceInterface {
     // 更新实体的浅层数据
     void updateStatus(String username, Long id, String newStatus) throws Exception;
 
-    void updateTitle(String username, Long id, String newTitle);
+    void updateContent(String username, Long id, String newTitle, String newBody);
 
     void updateSummary(String username, Long id, String newSummary);
 
     void updateSlug(String username, Long id, String newSlug);
-
-    void updateBody(String username, Long id, String newBody);
 
     SeriesInfo setSeries(String username, Long id, Long newSeriesId);
 

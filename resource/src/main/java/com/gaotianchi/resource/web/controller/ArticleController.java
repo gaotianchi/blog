@@ -1,5 +1,6 @@
 package com.gaotianchi.resource.web.controller;
 
+import com.gaotianchi.resource.web.request.UpdateArticleContentRequest;
 import com.gaotianchi.resource.web.request.UpdateShallowDataRequest;
 import com.gaotianchi.resource.web.response.APIResponse;
 import com.gaotianchi.resource.web.response.PageInfo;
@@ -33,15 +34,15 @@ public class ArticleController {
         return APIResponse.success();
     }
 
-    @PatchMapping("/articles/status/{id}")
-    public APIResponse<Void> updateStatus(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateShallowDataRequest updateShallowDataRequest) throws Exception {
-        articleService.updateStatus(jwt.getSubject(), id, updateShallowDataRequest.getStatus());
+    @PatchMapping("/articles/status/{id}/{statusName}")
+    public APIResponse<Void> updateStatus(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @PathVariable String statusName) throws Exception {
+        articleService.updateStatus(jwt.getSubject(), id, statusName);
         return APIResponse.success();
     }
 
-    @PatchMapping("/articles/title/{id}")
-    public APIResponse<Void> updateTitle(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateShallowDataRequest updateShallowDataRequest) {
-        articleService.updateTitle(jwt.getSubject(), id, updateShallowDataRequest.getTitle());
+    @PatchMapping("/articles/content/{id}")
+    public APIResponse<Void> updateTitle(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
+        articleService.updateContent(jwt.getSubject(), id, updateArticleContentRequest.getTitle(), updateArticleContentRequest.getBody());
         return APIResponse.success();
     }
 
@@ -54,12 +55,6 @@ public class ArticleController {
     @PatchMapping("/articles/slug/{id}")
     public APIResponse<Void> updateSlug(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateShallowDataRequest updateShallowDataRequest) {
         articleService.updateSlug(jwt.getSubject(), id, updateShallowDataRequest.getSlug());
-        return APIResponse.success();
-    }
-
-    @PatchMapping("/articles/body/{id}")
-    public APIResponse<Void> updateBody(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateShallowDataRequest updateShallowDataRequest) {
-        articleService.updateBody(jwt.getSubject(), id, updateShallowDataRequest.getBody());
         return APIResponse.success();
     }
 

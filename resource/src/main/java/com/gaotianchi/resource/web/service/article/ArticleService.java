@@ -75,10 +75,10 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public void updateStatus(String username, Long id, String newStatus) throws Exception {
+    public void updateStatus(String username, Long id, String statusName) throws Exception {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
         ArticleStatus from = articleEntity.getStatus();
-        ArticleStatus to = ArticleStatus.valueOf(newStatus);
+        ArticleStatus to = ArticleStatus.valueOf(statusName.toUpperCase());
         if (!changeStatusIsPermitted(from, to)) throw new Exception("Invalid target status.");
         articleEntity.setStatus(to);
         if (to.equals(ArticleStatus.PUBLISHED)) {
@@ -89,9 +89,10 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public void updateTitle(String username, Long id, String newTitle) {
+    public void updateContent(String username, Long id, String newTitle, String newBody) {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
         articleEntity.setTitle(newTitle);
+        articleEntity.setBody(newBody);
         articleRepo.save(articleEntity);
     }
 
@@ -106,13 +107,6 @@ public class ArticleService implements ArticleServiceInterface {
     public void updateSlug(String username, Long id, String newSlug) {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
         articleEntity.setSlug(newSlug);
-        articleRepo.save(articleEntity);
-    }
-
-    @Override
-    public void updateBody(String username, Long id, String newBody) {
-        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
-        articleEntity.setBody(newBody);
         articleRepo.save(articleEntity);
     }
 

@@ -77,6 +77,7 @@
 								:id="modalId + 'image-title-input'"
 								placeholder="标题"
 								v-model="illustartion.title"
+								:key="illustartion.title"
 							/>
 							<label :for="modalId + 'image-title-input'">标题</label>
 						</div>
@@ -88,6 +89,7 @@
 								placeholder="描述"
 								style="min-height: 100px"
 								v-model="illustartion.alt"
+								:key="illustartion.alt"
 							></textarea>
 							<label :for="modalId + 'image-alt-input'">描述</label>
 						</div>
@@ -185,17 +187,6 @@
 	const illustrationInfo = ref<IllustrationInfo | null>(null);
 
 	const handleSaveChange = async () => {
-		// 使用原始图片
-		// 更新云端和本地的 title, alt
-		if (changed.title || changed.alt) {
-			const response = await updateIllustrationInfo(illustartion.title, illustartion.alt);
-			if (response.code === 0) {
-				showMessage('更新成功', AlertType.SUCCESS);
-			} else {
-				showMessage('更新失败', AlertType.ERROR);
-			}
-		}
-
 		// 选择了新图片
 		// 更新云端和本地的 src, title, alt, id
 		if (selectedLocalImage.value) {
@@ -218,7 +209,15 @@
 				showMessage('插图上传失败', AlertType.ERROR);
 			}
 			selectedLocalImage.value = null;
+		} else if (changed.title || changed.alt) {
+			const response = await updateIllustrationInfo(illustartion.title, illustartion.alt);
+			if (response.code === 0) {
+				showMessage('更新成功', AlertType.SUCCESS);
+			} else {
+				showMessage('更新失败', AlertType.ERROR);
+			}
 		}
+
 		// 没有任何更改
 		// 不需要更新云端数据
 
@@ -314,7 +313,6 @@
 			if (illustartion.src) {
 				console.log('nextTick');
 				if (illustartion.id) {
-					console.log(illustartion.id);
 					addIllustrationToArticle(illustartion.id);
 				}
 			} else {
