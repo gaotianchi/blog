@@ -99,3 +99,22 @@ export type IllustrationInfo = {
 	userInfoLocation: string;
 	articleInfoPageLocation: string;
 };
+
+export type ArticleInfo = {
+	id: number;
+	title: string;
+	summary: string;
+	status: string;
+	slug: string;
+	creationDatetime: string;
+	publishDatetime: string;
+	lastUpdatedDatetime: string;
+
+	bodyValueLocation: string;
+	userInfoLocation: string;
+	seriesInfoLocation: string;
+
+	illustrationInfoPageLocation: string;
+	commentInfoPageLocation: string;
+	tagInfoPageLocation: string;
+};

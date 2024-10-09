@@ -12,7 +12,7 @@
 				name: '编辑内容详情',
 				routeName: 'ARTICLE_EDITOR',
 				params: {
-					articleId: articleId,
+					id: route.params.id,
 				},
 			},
 		]"
@@ -28,7 +28,7 @@
 				aria-label="文章标题"
 				:rows="titleRow"
 				ref="titleRef"
-				v-model="title"
+				v-model="articleContent.title"
 			></textarea>
 
 			<div v-if="bodyEditor">
@@ -38,23 +38,67 @@
 					:editor="bodyEditor"
 				>
 					<div
-						class="btn-group btn-group-sm"
+						class="btn-group btn-group-sm bg-white"
 						role="group"
 						aria-label="Small button group"
 					>
-						<button
-							@click="bodyEditor.chain().focus().toggleHeading({ level: 1 }).run()"
-							:class="{ 'is-active': bodyEditor.isActive('heading', { level: 1 }) }"
-							class="btn btn-outline-dark"
-						>
-							H1
-						</button>
-						<button
+						<div class="btn-group" role="group">
+							<button
+								type="button"
+								class="btn btn-outline-dark dropdown-toggle"
+								data-bs-toggle="dropdown"
+								aria-expanded="false"
+							>
+								Heading
+							</button>
+							<div class="dropdown-menu button-group">
+								<button
+									class="dropdown-item"
+									@click="
+										bodyEditor.chain().focus().toggleHeading({ level: 1 }).run()
+									"
+									:class="{
+										'is-active': bodyEditor.isActive('heading', {
+											level: 1,
+										}),
+									}"
+								>
+									H1
+								</button>
+								<button
+									class="dropdown-item"
+									@click="
+										bodyEditor.chain().focus().toggleHeading({ level: 2 }).run()
+									"
+									:class="{
+										'is-active': bodyEditor.isActive('heading', {
+											level: 2,
+										}),
+									}"
+								>
+									H2
+								</button>
+								<button
+									class="dropdown-item"
+									@click="
+										bodyEditor.chain().focus().toggleHeading({ level: 3 }).run()
+									"
+									:class="{
+										'is-active': bodyEditor.isActive('heading', {
+											level: 3,
+										}),
+									}"
+								>
+									H3
+								</button>
+							</div>
+						</div>
+						<!-- <button
 							@click="bodyEditor.commands.setQuoteBlock()"
 							class="btn btn-outline-dark"
 						>
 							<i class="bi bi-quote"></i>
-						</button>
+						</button> -->
 						<button
 							@click="bodyEditor.commands.setIllustration()"
 							class="btn btn-outline-dark"
@@ -63,7 +107,7 @@
 						</button>
 					</div>
 				</FloatingMenu>
-				<BubbleMenu
+				<!-- <BubbleMenu
 					:editor="bodyEditor"
 					class="bubble-menu"
 					:tippy-options="{ duration: 100 }"
@@ -80,24 +124,17 @@
 							<i class="bi bi-link"></i>
 						</button>
 					</div>
-				</BubbleMenu>
+				</BubbleMenu> -->
 				<EditorContent :editor="bodyEditor" />
 			</div>
+
 		</div>
+		
 		<div class="col-12 col-md-4">
 			<div class="sticky-top">
 				<div class="tile">
-					<div class="tile-title">内容</div>
-					<div class="tile-body row">
-						<button
-							type="button"
-							class="btn btn-primary d-flex align-items-center"
-							style="width: fit-content"
-						>
-							<i class="bi bi-send"></i>
-							发布
-						</button>
-					</div>
+					<div class="tile-title">标题与正文</div>
+					<div class="tile-body row"></div>
 				</div>
 				<div class="tile">
 					<div class="tile-title">摘要</div>
@@ -117,11 +154,12 @@
 				</div>
 			</div>
 		</div>
+
 	</div>
 	<div class="row">bottom</div>
 </template>
 <script setup lang="ts">
-	import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+	import { ref, onMounted, onBeforeUnmount, watch, reactive } from 'vue';
 	import StarterKit from '@tiptap/starter-kit';
 	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
 	import { QuoteExtension } from '@/component/editor.component/extension/quote/QuoteExtension';
@@ -131,19 +169,47 @@
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
 	import { makeRequest } from '@/service/request.service';
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
-	const props = defineProps<{
-		articleId: string;
-	}>();
+	import { useRoute } from 'vue-router';
+	import type { APIResponse, ArticleInfo } from '@/type/response.type';
+
+	const route = useRoute();
 	const bodyEditor = ref<Editor>();
-
-	const title = ref('');
-	const htmlContent = ref('');
-
 	const titleRef = ref<HTMLTextAreaElement>();
 	const titleRow = ref(1);
 
-	const getCurrentArticle = async () => {
-		const articleResponse = await makeRequest(RESOURCE_BASE_URL + '/');
+	// 当前数据
+	const articleContent = reactive({
+		title: '',
+		body: '',
+	});
+
+	// 追踪数据的变动状态
+	const changed = reactive({
+		title: false,
+		body: false,
+	});
+
+	// 云端数据
+	const articleInfo = ref<ArticleInfo | null>(null);
+	const articleBody = ref('');
+
+	const initArticleData = async () => {
+		const articleInfoResponse: APIResponse<ArticleInfo> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/info/' + route.params.id
+		);
+		articleInfo.value = articleInfoResponse.data;
+		const articleBodyResponse: APIResponse<string> = await makeRequest(
+			articleInfo.value.bodyValueLocation
+		);
+		bodyEditor.value?.commands.setContent(articleBodyResponse.data);
+
+		articleBody.value = articleBodyResponse.data;
+
+		articleContent.body = articleBody.value;
+		articleContent.title = articleInfo.value.title;
+
+		console.log(articleInfo.value);
+		console.log(articleBody.value);
 	};
 
 	const initBodyEditor = () => {
@@ -163,8 +229,7 @@
 					placeholder: '正文 ...',
 				}),
 			],
-			content: `
-		    `,
+			content: '',
 			editorProps: {
 				attributes: {
 					class: 'border-0',
@@ -173,16 +238,17 @@
 		});
 
 		bodyEditor.value.on('update', updateHtmlContent);
-		htmlContent.value = bodyEditor.value.getHTML();
+		articleContent.body = bodyEditor.value.getHTML();
 	};
 
 	onMounted(() => {
 		initBodyEditor();
+		initArticleData();
 	});
 
 	const updateHtmlContent = () => {
 		if (bodyEditor.value) {
-			htmlContent.value = bodyEditor.value?.getHTML();
+			articleContent.body = bodyEditor.value?.getHTML();
 		}
 	};
 
@@ -192,13 +258,23 @@
 		}
 	});
 
-	watch(title, () => {
-		if (titleRef.value) {
-			if (titleRef.value.scrollHeight > titleRef.value.clientHeight) {
-				titleRow.value += 1;
+	watch(
+		() => articleContent.title,
+		() => {
+			if (titleRef.value) {
+				if (titleRef.value.scrollHeight > titleRef.value.clientHeight) {
+					titleRow.value += 1;
+				}
 			}
 		}
-	});
+	);
+
+	watch(
+		() => articleContent.body,
+		newValue => {
+			changed.title = newValue != articleInfo.value?.title;
+		}
+	);
 </script>
 
 <style>

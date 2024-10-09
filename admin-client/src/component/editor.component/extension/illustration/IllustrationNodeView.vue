@@ -326,7 +326,9 @@
 
 	onBeforeUnmount(() => {
 		console.log('onBeforeUnmount');
-		removeIllustrationFromCurrentArticle(illustartion.id);
+		if (illustartion.id) {
+			removeIllustrationFromCurrentArticle(illustartion.id);
+		}
 	});
 
 	watch(

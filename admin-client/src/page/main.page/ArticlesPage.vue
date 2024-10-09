@@ -109,7 +109,9 @@
 	const currentTotalPage = ref(0);
 	const router = useRouter();
 
-	const getPageArticles = async (page: number) => {};
+	const getPageArticles = async (page: number) => {
+		
+	};
 
 	const handleNewArticleButton = async () => {
 		const response: APIResponse<ArticleResponse> = await makeRequest(
