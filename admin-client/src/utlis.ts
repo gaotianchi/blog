@@ -7,3 +7,12 @@ export const dataURLToBlob = (dataURL: string) => {
 	}
 	return new Blob([byteArray], { type: mimeString });
 };
+
+export const getFormarttedDate = (stringData: string | undefined) => {
+	if (!stringData) {
+		return null;
+	}
+	const date = new Date(stringData);
+	const formattedDate = date.toLocaleString();
+	return formattedDate;
+};
