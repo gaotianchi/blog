@@ -1,6 +1,7 @@
 package com.gaotianchi.resource.web.controller;
 
 import com.gaotianchi.resource.web.request.UpdateArticleContentRequest;
+import com.gaotianchi.resource.web.request.UpdateArticleSummaryRequest;
 import com.gaotianchi.resource.web.request.UpdateShallowDataRequest;
 import com.gaotianchi.resource.web.response.APIResponse;
 import com.gaotianchi.resource.web.response.PageInfo;
@@ -47,8 +48,8 @@ public class ArticleController {
     }
 
     @PatchMapping("/articles/summary/{id}")
-    public APIResponse<Void> updateSummary(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateShallowDataRequest updateShallowDataRequest) {
-        articleService.updateSummary(jwt.getSubject(), id, updateShallowDataRequest.getSummary());
+    public APIResponse<Void> updateSummary(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateArticleSummaryRequest updateArticleSummaryRequest) {
+        articleService.updateSummary(jwt.getSubject(), id, updateArticleSummaryRequest.getSummary());
         return APIResponse.success();
     }
 

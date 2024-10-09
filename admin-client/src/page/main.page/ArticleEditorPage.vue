@@ -28,7 +28,7 @@
 				aria-label="文章标题"
 				:rows="titleRow"
 				ref="titleRef"
-				v-model="articleContent.title"
+				v-model="article.title"
 			></textarea>
 
 			<div v-if="bodyEditor">
@@ -236,7 +236,34 @@
 				</div>
 				<div class="tile">
 					<div class="tile-title">摘要</div>
-					<div class="title-body"></div>
+					<div class="title-body">
+						<textarea
+							class="form-control"
+							aria-label="summary textarea"
+							name="summary-textarea"
+							id="summary-textarea"
+							rows="5"
+							v-model="article.summary"
+						></textarea>
+					</div>
+					<div class="tile-footer" v-if="changed.summary">
+						<div class="row justify-content-end">
+							<button
+								@click="article.summary = articleInfo ? articleInfo.summary : ''"
+								type="button"
+								class="btn btn-secondary w-auto me-2"
+							>
+								还原
+							</button>
+							<button
+								@click="updateSummary"
+								type="button"
+								class="btn btn-primary w-auto me-2"
+							>
+								保存
+							</button>
+						</div>
+					</div>
 				</div>
 				<div class="tile">
 					<div class="tile-title">标签</div>
@@ -268,7 +295,7 @@
 		"
 	>
 		<template #body>
-			<p>发布文章《{{ articleContent.title }}》之后所有人都可以看到，确定要发布吗？</p>
+			<p>发布文章《{{ article.title }}》之后所有人都可以看到，确定要发布吗？</p>
 		</template>
 	</ModalComponent>
 </template>
@@ -297,15 +324,17 @@
 	const publishModal = ref();
 
 	// 当前数据
-	const articleContent = reactive({
+	const article = reactive({
 		title: '',
 		body: '',
+		summary: '',
 	});
 
 	// 追踪数据的变动状态
 	const changed = reactive({
 		title: false,
 		body: false,
+		summary: false,
 	});
 
 	// 云端数据
@@ -323,17 +352,38 @@
 			{
 				method: 'PATCH',
 				body: JSON.stringify({
-					title: articleContent.title,
-					body: articleContent.body,
+					title: article.title,
+					body: article.body,
 				}),
 			}
 		);
 		if (response.code === 0) {
 			if (articleInfo.value) {
-				articleInfo.value.title = articleContent.title;
-				articleBody.value = articleContent.body;
+				articleInfo.value.title = article.title;
+				articleBody.value = article.body;
 			}
 			showMessage('更新成功', AlertType.SUCCESS);
+		} else {
+			showMessage('更新失败', AlertType.ERROR);
+		}
+	};
+
+	const updateSummary = async () => {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/summary/' + route.params.id,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					summary: article.summary,
+				}),
+			}
+		);
+		if (response.code === 0) {
+			if (articleInfo.value) {
+				articleInfo.value.summary = article.summary;
+				changed.summary = false;
+				showMessage('更新成功', AlertType.SUCCESS);
+			}
 		} else {
 			showMessage('更新失败', AlertType.ERROR);
 		}
@@ -385,8 +435,9 @@
 		userInfo.value = userInfoResponse.data;
 		articleBody.value = articleBodyResponse.data;
 
-		articleContent.body = articleBody.value;
-		articleContent.title = articleInfo.value.title;
+		article.body = articleBody.value;
+		article.title = articleInfo.value.title;
+		article.summary = articleInfo.value.summary;
 
 		console.log(articleInfo.value);
 	};
@@ -417,7 +468,7 @@
 		});
 
 		bodyEditor.value.on('update', updateHtmlContent);
-		articleContent.body = bodyEditor.value.getHTML();
+		article.body = bodyEditor.value.getHTML();
 	};
 
 	onMounted(() => {
@@ -427,7 +478,7 @@
 
 	const updateHtmlContent = () => {
 		if (bodyEditor.value) {
-			articleContent.body = bodyEditor.value?.getHTML();
+			article.body = bodyEditor.value?.getHTML();
 		}
 	};
 
@@ -438,7 +489,7 @@
 	});
 
 	watch(
-		() => articleContent.title,
+		() => article.title,
 		newValue => {
 			changed.title = newValue != articleInfo.value?.title;
 			if (titleRef.value) {
@@ -450,9 +501,16 @@
 	);
 
 	watch(
-		() => articleContent.body,
+		() => article.body,
 		newValue => {
 			changed.body = newValue != articleBody.value;
+		}
+	);
+
+	watch(
+		() => article.summary,
+		newValue => {
+			changed.summary = newValue != articleInfo.value?.summary;
 		}
 	);
 </script>
