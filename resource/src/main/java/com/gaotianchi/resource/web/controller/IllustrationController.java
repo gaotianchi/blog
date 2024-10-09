@@ -33,7 +33,7 @@ public class IllustrationController {
     }
 
     @PatchMapping("/illustrations/info/{id}")
-    public APIResponse<Void> updateContent(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateIllustrationInfoRequest updateIllustrationInfoRequest) throws IOException {
+    public APIResponse<Void> updateContent(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateIllustrationInfoRequest updateIllustrationInfoRequest) {
         illustrationService.updateInfo(jwt.getSubject(), id, updateIllustrationInfoRequest.getTitle(), updateIllustrationInfoRequest.getAlt());
         return APIResponse.success();
     }

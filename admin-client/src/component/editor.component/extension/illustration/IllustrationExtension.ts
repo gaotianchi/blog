@@ -6,14 +6,14 @@ import { type ImageOptions, Image } from '@tiptap/extension-image';
 
 declare module '@tiptap/core' {
 	interface Commands<ReturnType> {
-		ImageExtension: {
-			setImage: () => ReturnType;
+		Illustration: {
+			setIllustration: () => ReturnType;
 		};
 	}
 }
 
-export const ImageExtension = Image.extend<ImageOptions>({
-	name: 'ImageExtension',
+export const Illustration = Image.extend<ImageOptions>({
+	name: 'Illustration',
 
 	addAttributes() {
 		return {
@@ -21,7 +21,7 @@ export const ImageExtension = Image.extend<ImageOptions>({
 			align: {
 				default: 'float-none',
 			},
-			imageId: {
+			id: {
 				default: null,
 			},
 		};
@@ -31,7 +31,7 @@ export const ImageExtension = Image.extend<ImageOptions>({
 	},
 	addCommands() {
 		return {
-			setImage:
+			setIllustration:
 				() =>
 				({ commands }) => {
 					return commands.insertContent({

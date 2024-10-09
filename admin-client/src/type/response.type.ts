@@ -87,3 +87,15 @@ export type AvatarInfo = {
 	creationDatetime: string;
 	userInfoLocation: string;
 };
+
+export type IllustrationInfo = {
+	id: number;
+	filename: string;
+	title: string;
+	alt: string;
+	url: string;
+	creationDatetime: string;
+	updateDatetime: string;
+	userInfoLocation: string;
+	articleInfoPageLocation: string;
+};

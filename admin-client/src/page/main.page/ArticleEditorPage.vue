@@ -56,7 +56,7 @@
 							<i class="bi bi-quote"></i>
 						</button>
 						<button
-							@click="bodyEditor.commands.setImage()"
+							@click="bodyEditor.commands.setIllustration()"
 							class="btn btn-outline-dark"
 						>
 							<i class="bi bi-image"></i>
@@ -87,7 +87,8 @@
 		<div class="col-12 col-md-4">
 			<div class="sticky-top">
 				<div class="tile">
-					<div class="tile-body row justify-content-end">
+					<div class="tile-title">内容</div>
+					<div class="tile-body row">
 						<button
 							type="button"
 							class="btn btn-primary d-flex align-items-center"
@@ -125,7 +126,7 @@
 	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
 	import { QuoteExtension } from '@/component/editor.component/extension/quote/QuoteExtension';
 	import { LinkExtension } from '@/component/editor.component/extension/link/LinkExtension';
-	import { ImageExtension } from '@/component/editor.component/extension/illustration/IllustrationExtension';
+	import { Illustration } from '@/component/editor.component/extension/illustration/IllustrationExtension';
 	import Placeholder from '@tiptap/extension-placeholder';
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
 	import { makeRequest } from '@/service/request.service';
@@ -148,7 +149,7 @@
 	const initBodyEditor = () => {
 		bodyEditor.value = new Editor({
 			extensions: [
-				ImageExtension,
+				Illustration,
 				LinkExtension,
 				QuoteExtension,
 				StarterKit.configure({

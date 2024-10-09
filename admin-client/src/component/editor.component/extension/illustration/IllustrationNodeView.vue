@@ -33,7 +33,7 @@
 		<ModalComponent
 			@save-change="handleSaveChange"
 			title="编辑插图"
-			ref="imageRef"
+			ref="modalRef"
 			modal-width="modal-xl"
 		>
 			<template #body>
@@ -76,7 +76,7 @@
 								class="form-control"
 								:id="modalId + 'image-title-input'"
 								placeholder="标题"
-								v-model="title"
+								v-model="illustartion.title"
 							/>
 							<label :for="modalId + 'image-title-input'">标题</label>
 						</div>
@@ -87,7 +87,7 @@
 								:id="modalId + 'image-alt-input'"
 								placeholder="描述"
 								style="min-height: 100px"
-								v-model="alt"
+								v-model="illustartion.alt"
 							></textarea>
 							<label :for="modalId + 'image-alt-input'">描述</label>
 						</div>
@@ -102,7 +102,7 @@
 									class="btn-check"
 									:id="modalId + 'btnradio1'"
 									autocomplete="off"
-									v-model="align"
+									v-model="illustartion.align"
 									value="float-start"
 								/>
 								<label
@@ -117,7 +117,7 @@
 									class="btn-check"
 									:id="modalId + 'btnradio2'"
 									autocomplete="off"
-									v-model="align"
+									v-model="illustartion.align"
 									value="float-none"
 								/>
 								<label
@@ -132,7 +132,7 @@
 									class="btn-check"
 									:id="modalId + 'btnradio3'"
 									autocomplete="off"
-									v-model="align"
+									v-model="illustartion.align"
 									value="float-end"
 								/>
 								<label
@@ -150,27 +150,148 @@
 	</NodeViewWrapper>
 </template>
 <script setup lang="ts">
-	import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3';
+	import { nodeViewProps, NodeViewWrapper, type Primitive } from '@tiptap/vue-3';
 	import ModalComponent from '@/component/ModalComponent.vue';
-	import { ref, watch, onBeforeUnmount, onMounted, nextTick, reactive } from 'vue';
+	import { ref, onBeforeUnmount, onMounted, nextTick, reactive, watch } from 'vue';
 	import { v4 as uuidv4 } from 'uuid';
 	import { makeRequest } from '@/service/request.service';
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
-	import type { APIResponse, ImageResponse } from '@/type/response.type';
+	import type { APIResponse, IllustrationInfo } from '@/type/response.type';
 	import { useRoute } from 'vue-router';
+	import showMessage from '@/service/alert.service';
+	import { AlertType } from '@/enum';
 
 	const props = defineProps(nodeViewProps);
-	const route = useRoute();
-	const src = ref(props.node.attrs.src);
-	const title = ref(props.node.attrs.title || '');
-	const alt = ref('');
 	const modalId = uuidv4();
-	const imageRef = ref();
-	const align = ref<'float-start' | 'float-end' | 'float-none'>('float-none');
-	const imageId = ref<number | null>(props.node.attrs.imageId);
+	const route = useRoute();
+	const modalRef = ref();
+
 	const previewUrl = ref<string>('');
 	const imageInputRef = ref<HTMLInputElement>();
 	const selectedLocalImage = ref<File | null>(null);
+
+	const illustartion = reactive({
+		title: props.node.attrs.title,
+		alt: props.node.attrs.alt,
+		align: props.node.attrs.align,
+		id: props.node.attrs.id,
+		src: props.node.attrs.src,
+	});
+	const changed = reactive({
+		title: false,
+		alt: false,
+	});
+
+	const illustrationInfo = ref<IllustrationInfo | null>(null);
+
+	const handleSaveChange = async () => {
+		// 使用原始图片
+		// 更新云端和本地的 title, alt
+		if (changed.title || changed.alt) {
+			const response = await updateIllustrationInfo(illustartion.title, illustartion.alt);
+			if (response.code === 0) {
+				showMessage('更新成功', AlertType.SUCCESS);
+			} else {
+				showMessage('更新失败', AlertType.ERROR);
+			}
+		}
+
+		// 选择了新图片
+		// 更新云端和本地的 src, title, alt, id
+		if (selectedLocalImage.value) {
+			const formData = new FormData();
+			formData.append('file', selectedLocalImage.value);
+			formData.append('title', illustartion.title || '');
+			formData.append('alt', illustartion.alt || '');
+			const newIllustrationResponse = await saveNewIllustration(formData);
+
+			if (newIllustrationResponse.code === 0) {
+				const linkToArticleResponse: APIResponse<IllustrationInfo> =
+					await addIllustrationToArticle(newIllustrationResponse.data.id);
+				if (linkToArticleResponse.code === 0) {
+					illustrationInfo.value = linkToArticleResponse.data;
+					illustartion.src = illustrationInfo.value.url;
+					illustartion.id = illustrationInfo.value.id;
+					showMessage('插图上传成功', AlertType.SUCCESS);
+				}
+			} else {
+				showMessage('插图上传失败', AlertType.ERROR);
+			}
+			selectedLocalImage.value = null;
+		}
+		// 没有任何更改
+		// 不需要更新云端数据
+
+		updateAtrri();
+		hideModal();
+	};
+
+	async function saveNewIllustration(formData: FormData): Promise<APIResponse<IllustrationInfo>> {
+		const newIllustrationResponse: APIResponse<IllustrationInfo> = await makeRequest(
+			RESOURCE_BASE_URL + '/illustrations/new',
+			{
+				method: 'POST',
+				body: formData,
+			}
+		);
+		return newIllustrationResponse;
+	}
+
+	async function addIllustrationToArticle(
+		illustrationId: number
+	): Promise<APIResponse<IllustrationInfo>> {
+		const linkToArticleResponse: APIResponse<IllustrationInfo> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/illustration/' + route.params.id + '/' + illustrationId,
+			{
+				method: 'POST',
+			}
+		);
+		return linkToArticleResponse;
+	}
+
+	async function updateIllustrationInfo(newTitle: string, newAlt: string) {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/illustrations/info/' + illustartion.id,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					title: newTitle,
+					alt: newAlt,
+				}),
+			}
+		);
+		return response;
+	}
+
+	async function removeIllustrationFromCurrentArticle(
+		illustrationId: number
+	): Promise<APIResponse<void>> {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/illustration/' + route.params.id + '/' + illustrationId,
+			{
+				method: 'DELETE',
+			}
+		);
+		return response;
+	}
+
+	const updateAtrri = () => {
+		props.updateAttributes({
+			title: illustartion.title,
+			alt: illustartion.alt,
+			align: illustartion.align,
+			src: illustartion.src,
+			id: illustartion.id,
+		});
+	};
+
+	const openModal = () => {
+		modalRef.value.show();
+	};
+
+	const hideModal = () => {
+		modalRef.value.hide();
+	};
 
 	const handleInputChange = () => {
 		if (imageInputRef.value) {
@@ -186,71 +307,15 @@
 			}
 		}
 	};
-	const handleSaveChange = async () => {
-		if (selectedLocalImage.value) {
-			const formData = new FormData();
-			formData.append('file', selectedLocalImage.value);
-			formData.append('title', title.value);
-			formData.append('alt', alt.value);
-			const uploadImageResponse: APIResponse<ImageResponse> = await makeRequest(
-				RESOURCE_BASE_URL + '/images/new',
-				{
-					method: 'POST',
-					body: formData,
-				}
-			);
-			const imageResponse = uploadImageResponse.data;
-			src.value = imageResponse.urls.MEDIUM;
-			imageId.value = imageResponse.id;
-			selectedLocalImage.value = null;
-			linkToArticle(imageResponse.id);
-		}
-		updateAtrri();
-		hideModal();
-	};
-	const updateAtrri = () => {
-		props.updateAttributes({
-			title: title.value,
-			alt: alt.value,
-			src: src.value,
-			align: align.value,
-			imageId: imageId.value,
-		});
-	};
-
-	const linkToArticle = async (imageId: number) => {
-		await makeRequest(
-			RESOURCE_BASE_URL + `/images/link-to-article/${imageId}/${route.params.id}`,
-			{
-				method: 'PATCH',
-			}
-		);
-	};
-
-	const unLinkToArticle = async (imageId: number) => {
-		await makeRequest(
-			RESOURCE_BASE_URL + `/images/unlink-to-article/${imageId}/${route.params.id}`,
-			{
-				method: 'PATCH',
-			}
-		);
-	};
-
-	const openModal = () => {
-		imageRef.value.show();
-	};
-
-	const hideModal = () => {
-		imageRef.value.hide();
-	};
 
 	onMounted(() => {
 		console.log('onMounted');
 		nextTick(() => {
-			if (src.value) {
+			if (illustartion.src) {
 				console.log('nextTick');
-				if (imageId.value) {
-					linkToArticle(imageId.value);
+				if (illustartion.id) {
+					console.log(illustartion.id);
+					addIllustrationToArticle(illustartion.id);
 				}
 			} else {
 				console.log('UnnextTick');
@@ -261,8 +326,19 @@
 
 	onBeforeUnmount(() => {
 		console.log('onBeforeUnmount');
-		if (imageId.value) {
-			unLinkToArticle(imageId.value);
-		}
+		removeIllustrationFromCurrentArticle(illustartion.id);
 	});
+
+	watch(
+		() => illustartion.title,
+		newValue => {
+			changed.title = newValue != props.node.attrs.title;
+		}
+	);
+	watch(
+		() => illustartion.alt,
+		newValue => {
+			changed.alt = newValue != props.node.attrs.alt;
+		}
+	);
 </script>

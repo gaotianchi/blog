@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 
 @Service
@@ -51,6 +52,8 @@ public class IllustrationService implements IllustrationServiceInterface {
         illustrationEntity.setFilename(filename);
         illustrationEntity.setUser(userEntity);
         illustrationEntity.setTitle(title);
+        illustrationEntity.setUpdateDatetime(OffsetDateTime.now());
+        illustrationEntity.setCreationDatetime(OffsetDateTime.now());
         illustrationEntity.setUrl("http://localhost:8090/images/illustration/" + filename);
         if (alt != null && !alt.isEmpty()) {
             illustrationEntity.setAlt(alt);
@@ -76,6 +79,7 @@ public class IllustrationService implements IllustrationServiceInterface {
         IllustrationEntity illustrationEntity = entityBelongService.illustrationBelongToUser(username, id);
         illustrationEntity.setTitle(newTitle);
         illustrationEntity.setAlt(newAlt);
+        illustrationEntity.setUpdateDatetime(OffsetDateTime.now());
         illustrationRepo.save(illustrationEntity);
     }
 
