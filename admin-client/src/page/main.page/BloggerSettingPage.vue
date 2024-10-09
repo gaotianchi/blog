@@ -12,7 +12,6 @@
 </template>
 <script lang="ts" setup>
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
-	import { onMounted } from 'vue';
 	import ProfileSettingComponent from '@/component/setting.component/ProfileSettingComponent.vue';
 	import AccountSettingComponent from '@/component/setting.component/AccountSettingComponent.vue';
 </script>

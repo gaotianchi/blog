@@ -122,7 +122,7 @@
 		router.push({
 			name: 'ARTICLE_EDITOR',
 			params: {
-				articleId: response.data.id,
+				id: response.data.id,
 			},
 		});
 	};
