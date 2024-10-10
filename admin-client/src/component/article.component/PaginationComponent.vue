@@ -5,7 +5,7 @@
 				<button
 					class="page-link"
 					:class="{ disabled: currentPage === 0 }"
-					@click="handlePrePage"
+					@click="currentPage -= 1"
 				>
 					上一页
 				</button>
@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue';
+	import { ref, watch } from 'vue';
 
 	defineProps({
 		totalPage: {
@@ -47,13 +47,7 @@
 
 	const currentPage = ref(0);
 
-	const handlePrePage = () => {
-		currentPage.value -= 1;
-		emits('pageChanged', currentPage.value);
-	};
-
-	const handleNextPage = () => {
-		currentPage.value += 1;
-		emits('pageChanged', currentPage.value);
-	};
+	watch(currentPage, newValue => {
+		emits('pageChanged', newValue);
+	});
 </script>

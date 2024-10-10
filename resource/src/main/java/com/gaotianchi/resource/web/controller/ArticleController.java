@@ -42,7 +42,7 @@ public class ArticleController {
     }
 
     @PatchMapping("/articles/content/{id}")
-    public APIResponse<Void> updateTitle(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
+    public APIResponse<Void> updateContent(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestBody UpdateArticleContentRequest updateArticleContentRequest) {
         articleService.updateContent(jwt.getSubject(), id, updateArticleContentRequest.getTitle(), updateArticleContentRequest.getBody());
         return APIResponse.success();
     }
@@ -108,8 +108,8 @@ public class ArticleController {
     }
 
     @GetMapping("/articles/user/{userId}")
-    public APIResponse<PageInfo<ArticleInfo>> getUserArticleInfoPage(@PathVariable Long userId, @RequestParam(value = "page", defaultValue = "0", required = false) int page) {
-        PageInfo<ArticleInfo> articleInfoPageInfo = articleService.getUserArticleInfoPage(userId, page);
+    public APIResponse<PageInfo<ArticleInfo>> getUserArticleInfoPage(@PathVariable Long userId, @RequestParam(value = "page", defaultValue = "0", required = false) int page, @RequestParam(value = "status", required = false) String status) {
+        PageInfo<ArticleInfo> articleInfoPageInfo = articleService.getUserArticleInfoPage(userId, status, page);
         return APIResponse.success(articleInfoPageInfo);
     }
 

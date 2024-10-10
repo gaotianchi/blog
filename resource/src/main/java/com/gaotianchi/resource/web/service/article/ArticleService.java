@@ -153,7 +153,7 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public void removeTag(String username, Long tagId, Long id) {
+    public void removeTag(String username, Long id, Long tagId) {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
         TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
         articleEntity.getTagList().remove(tagEntity);
@@ -194,10 +194,16 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public PageInfo<ArticleInfo> getUserArticleInfoPage(Long userId, int page) {
+    public PageInfo<ArticleInfo> getUserArticleInfoPage(Long userId, String status, int page) {
         UserEntity userEntity = entityFounderService.getUserOrNorFound(userId);
         Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getArticleForUser());
-        Page<ArticleEntity> articleEntityPage = articleRepo.findByUserOrderByCreationDatetimeDesc(userEntity, pageable);
+        Page<ArticleEntity> articleEntityPage;
+        if (status == null) {
+            articleEntityPage = articleRepo.findByUserOrderByCreationDatetimeDesc(userEntity, pageable);
+        } else {
+            ArticleStatus articleStatus = ArticleStatus.valueOf(status.toUpperCase());
+            articleEntityPage = articleRepo.findByUserAndStatusOrderByCreationDatetimeDesc(userEntity, articleStatus, pageable);
+        }
         return _getArticleInfoPage(articleEntityPage, page);
     }
 

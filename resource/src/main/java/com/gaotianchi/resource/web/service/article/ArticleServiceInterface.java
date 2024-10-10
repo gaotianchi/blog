@@ -38,7 +38,7 @@ public interface ArticleServiceInterface {
 
     String getBody(Long id);
 
-    PageInfo<ArticleInfo> getUserArticleInfoPage(Long userId, int page);
+    PageInfo<ArticleInfo> getUserArticleInfoPage(Long userId, String status, int page);
 
     PageInfo<ArticleInfo> getSeriesArticleInfoPage(Long seriesId, int page);
 

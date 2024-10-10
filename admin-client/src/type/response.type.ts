@@ -6,6 +6,12 @@ export type APIResponse<T> = {
 	data: T;
 };
 
+export type PageInfo<T> = {
+	items: T[];
+	totalPage: number;
+	currentPage: number;
+};
+
 export type Urls = {
 	LOW: string;
 	ORIGINAL: string;
@@ -110,6 +116,11 @@ export type ArticleInfo = {
 	publishDatetime: string;
 	lastUpdatedDatetime: string;
 
+	penName: string;
+	seriesName: string;
+	tagNames: string[];
+	coverUrl: string;
+
 	bodyValueLocation: string;
 	userInfoLocation: string;
 	seriesInfoLocation: string;
@@ -117,4 +128,12 @@ export type ArticleInfo = {
 	illustrationInfoPageLocation: string;
 	commentInfoPageLocation: string;
 	tagInfoPageLocation: string;
+};
+
+export type TagInfo = {
+	id: number;
+	name: string;
+	creationDatetime: string;
+	articleCount: number;
+	articleInfoPageLocation: string;
 };

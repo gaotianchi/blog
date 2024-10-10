@@ -6,7 +6,51 @@
 		:breadcrumb-items="[{ name: '文章管理', routeName: 'ARTICLES' }]"
 	></MainPageHeaderComponent>
 	<div class="tile">
-		<div class="row justify-content-end">
+		<div class="row justify-content-between">
+			<div class="col-auto">
+				<div class="btn-group" role="group" aria-label="radio toggle button group">
+					<input
+						type="radio"
+						class="btn-check"
+						name="vbtn-radio"
+						id="vbtn-radio1"
+						autocomplete="off"
+						value="all"
+						v-model="filterStatus"
+					/>
+					<label class="btn btn-outline-dark" for="vbtn-radio1">全部</label>
+					<input
+						type="radio"
+						class="btn-check"
+						name="vbtn-radio"
+						id="vbtn-radio2"
+						autocomplete="off"
+						value="published"
+						v-model="filterStatus"
+					/>
+					<label class="btn btn-outline-dark" for="vbtn-radio2">已发布</label>
+					<input
+						type="radio"
+						class="btn-check"
+						name="vbtn-radio"
+						id="vbtn-radio3"
+						autocomplete="off"
+						value="draft"
+						v-model="filterStatus"
+					/>
+					<label class="btn btn-outline-dark" for="vbtn-radio3">草稿</label>
+					<input
+						type="radio"
+						class="btn-check"
+						name="vbtn-radio"
+						id="vbtn-radio4"
+						autocomplete="off"
+						value="trash"
+						v-model="filterStatus"
+					/>
+					<label class="btn btn-outline-dark" for="vbtn-radio4">垃圾箱</label>
+				</div>
+			</div>
 			<div class="col-auto">
 				<button
 					@click="handleNewArticleButton"
@@ -19,60 +63,68 @@
 			</div>
 		</div>
 	</div>
-	<div class="tile" v-for="(article, index) in currentArticles">
+	<div
+		class="tile position-relative"
+		v-for="(article, index) in articleInfoList"
+		@mouseenter="activeTile(index)"
+		@mouseleave="activeTile(null)"
+		:key="index"
+	>
 		<div class="row">
 			<div class="col-auto">
 				<div class="image-container" style="height: 180px; width: 180px; overflow: hidden">
-					<img
-						style="width: 100%; height: 100%"
-						class="rounded object-fit-cover"
-						:src="
-							article.cover?.urls.LOW || 'https://via.assets.so/img.jpg?w=300&h=150'
-						"
-						:alt="article.cover?.alt"
-					/>
+					<RouterLink :to="{ name: 'ARTICLE_EDITOR', params: { id: article.id } }">
+						<img
+							style="width: 100%; height: 100%"
+							class="rounded object-fit-cover"
+							:src="article.coverUrl || 'https://via.assets.so/img.jpg?w=300&h=150'"
+							:alt="''"
+						/>
+					</RouterLink>
 				</div>
 			</div>
 			<div class="col text-truncate">
-				<span class="h4">
-					{{
-						article.title ||
-						'Lorem Ipsum，也称乱数假文或者哑元文本， 是印刷及排版领域所常用的虚拟文字。'
-					}}
-				</span>
+				<RouterLink :to="{ name: 'ARTICLE_EDITOR', params: { id: article.id } }">
+					<span class="h4">
+						{{
+							article.title ||
+							'Lorem Ipsum，也称乱数假文或者哑元文本， 是印刷及排版领域所常用的虚拟文字。'
+						}}
+					</span>
+				</RouterLink>
 
 				<div class="row mt-2 mb-3">
 					<div class="col-auto d-flex align-items-center">
-						<span class="badge" :class="getArtcicleStatusClass(article.articleStatus)">
-							{{ article.articleStatus }}
+						<span class="badge" :class="getArtcicleStatusClass(article.status)">
+							{{ article.status }}
 						</span>
 						<Segmentation />
-						<span class="text-secondary">{{ article.creationDatetime }}</span>
+						<span class="text-secondary">
+							{{ getFormarttedDate(article.creationDatetime) }}
+						</span>
 						<Segmentation />
-						<span class="text-secondary">{{ article.author.penName }}</span>
+						<span class="text-secondary">{{ article.penName }}</span>
 					</div>
 				</div>
 
 				<div class="row">
 					<ul class="list-group list-group-flush">
-						<li class="list-group-item">
+						<li class="list-group-item" v-if="article.tagNames.length > 0">
 							<div class="row">
 								<div class="col-1">标签</div>
 								<div class="col-10">
-									<span class="badge rounded-pill text-bg-secondary me-2">
-										爱
-									</span>
-									<span class="badge rounded-pill text-bg-secondary me-2">
-										温暖
-									</span>
-									<span class="badge rounded-pill text-bg-secondary me-2">
-										家人
+									<span
+										v-for="(tag, index) in article.tagNames"
+										class="badge rounded-pill text-bg-secondary me-2"
+										:key="index"
+									>
+										{{ tag }}
 									</span>
 								</div>
 								<div class="col-1"></div>
 							</div>
 						</li>
-						<li class="list-group-item">
+						<li class="list-group-item" v-if="article.seriesName">
 							<div class="row">
 								<div class="col-1">系列</div>
 								<div class="col-10">系列名称</div>
@@ -90,8 +142,33 @@
 				</div>
 			</div>
 		</div>
+		<div
+			v-if="activedTile === index"
+			class="position-absolute"
+			style="bottom: 1rem; right: 1rem"
+		>
+			<div class="btn-group" role="group" aria-label="Basic mixed styles example">
+				<button v-if="article.status === 'TRASH'" type="button" class="btn btn-danger">
+					删除
+				</button>
+			</div>
+		</div>
 	</div>
-	<PaginationComponent :total-page="0" @page-changed="" />
+
+	<ModalComponent
+		title="删除文章"
+		save-button-text="删除"
+		ref="deleteArticleModal"
+		@save-change="handleSaveDeleteArticleButton"
+	>
+		<template #body></template>
+	</ModalComponent>
+
+	<PaginationComponent
+		:key="filterStatus"
+		:total-page="totalPage"
+		@page-changed="page => handlePageChanged(page)"
+	/>
 </template>
 <script setup lang="ts">
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
@@ -99,18 +176,77 @@
 	import { onMounted, ref, watch } from 'vue';
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
 	import Segmentation from '@/component/icon/Segmentation.vue';
-	import type { APIResponse, ArticleResponse } from '@/type/response.type';
-	import { ArticleStatus } from '@/enum';
+	import type {
+		APIResponse,
+		ArticleInfo,
+		ArticleResponse,
+		PageInfo,
+		UserInfo,
+	} from '@/type/response.type';
+	import { AlertType, ArticleStatus } from '@/enum';
 	import { useRouter } from 'vue-router';
 	import PaginationComponent from '@/component/article.component/PaginationComponent.vue';
+	import { getFormarttedDate } from '@/utlis';
+	import showMessage from '@/service/alert.service';
+	import ModalComponent from '@/component/ModalComponent.vue';
 
-	const currentPage = ref(0);
-	const currentArticles = ref<ArticleResponse[]>([]);
-	const currentTotalPage = ref(0);
 	const router = useRouter();
 
-	const getPageArticles = async (page: number) => {
-		
+	const articleInfoList = ref<ArticleInfo[]>([]);
+	const totalPage = ref(0);
+	const user = ref<UserInfo | null>(null);
+	const activedTile = ref<number | null>(null);
+	const filterStatus = ref<'all' | 'published' | 'trash' | 'draft'>('all');
+	const deleteArticleModal = ref();
+	const articleIdToDelete = ref(0);
+
+	const handleButtonDeleteArticle = async (id: number) => {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/delete/' + id,
+			{
+				method: 'DELETE',
+			}
+		);
+		if (response.code === 0) {
+			showMessage('成功删除文章', AlertType.SUCCESS);
+		} else {
+			showMessage('删除失败', AlertType.ERROR);
+		}
+	};
+
+	const openDeleteArticleModal = (id: number) => {
+		if (deleteArticleModal.value) {
+			deleteArticleModal.value.show();
+		}
+	};
+
+	const handleSaveDeleteArticleButton = async (id: number) => {};
+
+	const loadPageArticles = async (page: number, status: string) => {
+		let pageArticleInfo: APIResponse<PageInfo<ArticleInfo>>;
+		if (status === 'all') {
+			pageArticleInfo = await makeRequest(
+				RESOURCE_BASE_URL + '/articles/user/' + user.value?.id + '?page=' + page
+			);
+		} else {
+			pageArticleInfo = await makeRequest(
+				RESOURCE_BASE_URL +
+					'/articles/user/' +
+					user.value?.id +
+					'?page=' +
+					page +
+					'&status=' +
+					status
+			);
+		}
+		if (pageArticleInfo.code === 0) {
+			articleInfoList.value = pageArticleInfo.data.items;
+			totalPage.value = pageArticleInfo.data.totalPage;
+		}
+	};
+
+	const activeTile = (index: number | null) => {
+		activedTile.value = index;
 	};
 
 	const handleNewArticleButton = async () => {
@@ -140,7 +276,22 @@
 		}
 	};
 
+	const handlePageChanged = (page: number) => {
+		loadPageArticles(page, filterStatus.value);
+	};
+
 	onMounted(async () => {
-		getPageArticles(currentPage.value);
+		const userInfoResponse: APIResponse<UserInfo> = await makeRequest(
+			RESOURCE_BASE_URL + '/users/info'
+		);
+		if (userInfoResponse.code === 0) {
+			user.value = userInfoResponse.data;
+			loadPageArticles(0, 'all');
+		}
+	});
+
+	watch(filterStatus, newValue => {
+		console.log(newValue);
+		handlePageChanged(0);
 	});
 </script>
