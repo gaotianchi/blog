@@ -19,7 +19,7 @@
 	></MainPageHeaderComponent>
 
 	<div class="row col-lg-11 m-auto">
-		<div class="col-md-8 overflow-y-auto" style="max-height: calc(100vh - 150px)">
+		<div class="col-md-8 overflow-y-auto" style="max-height: 120vh">
 			<textarea
 				type="text"
 				class="form-control-plaintext h1"
@@ -93,12 +93,6 @@
 								</button>
 							</div>
 						</div>
-						<!-- <button
-							@click="bodyEditor.commands.setQuoteBlock()"
-							class="btn btn-outline-dark"
-						>
-							<i class="bi bi-quote"></i>
-						</button> -->
 						<button
 							@click="bodyEditor.commands.setIllustration()"
 							class="btn btn-outline-dark"
@@ -107,24 +101,6 @@
 						</button>
 					</div>
 				</FloatingMenu>
-				<!-- <BubbleMenu
-					:editor="bodyEditor"
-					class="bubble-menu"
-					:tippy-options="{ duration: 100 }"
-				>
-					<div
-						class="btn-group btn-group-sm"
-						role="group"
-						aria-label="Small button group"
-					>
-						<button
-							@click="bodyEditor.commands.setCustomLink()"
-							class="btn btn-outline-dark"
-						>
-							<i class="bi bi-link"></i>
-						</button>
-					</div>
-				</BubbleMenu> -->
 				<EditorContent :editor="bodyEditor" />
 			</div>
 		</div>
@@ -132,9 +108,14 @@
 		<div class="col-12 col-md-4">
 			<div class="sticky-top">
 				<div class="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
-					<button class="btn btn-light" type="button">
-						<i class="bi bi-eye-fill"></i>
-						预览
+					<button
+						v-if="articleInfo?.status === 'DRAFT'"
+						class="btn btn-warning"
+						type="button"
+						@click="resetArticleStatus('TRASH')"
+					>
+						<i class="bi bi-trash3-fill"></i>
+						移入垃圾桶
 					</button>
 					<button
 						v-if="articleInfo?.status === 'DRAFT'"
@@ -152,7 +133,7 @@
 						@click="resetArticleStatus('DRAFT')"
 					>
 						<i class="bi bi-file-earmark-arrow-down-fill"></i>
-						还原
+						取消发布
 					</button>
 					<button
 						class="btn btn-warning me-md-2"
@@ -164,107 +145,10 @@
 						更新
 					</button>
 				</div>
-				<div class="tile">
-					<div class="tile-title">信息</div>
-					<div class="tile-body">
-						<ul class="list-group list-group-flush">
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">同步状态</div>
-									<div class="col-8 p-0">
-										<span class="badge text-bg-light" v-if="contentSync">
-											已同步
-										</span>
-										<span class="badge text-bg-warning" v-else>未同步</span>
-									</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">发布状态</div>
-									<div class="col-8 p-0">
-										<span
-											class="badge text-bg-secondary"
-											v-if="articleInfo?.status === 'DRAFT'"
-										>
-											{{ articleInfo?.status }}
-										</span>
-										<span class="badge text-bg-success" v-else>
-											{{ articleInfo?.status }}
-										</span>
-									</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">字数</div>
-									<div class="col-8 p-0">20</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">作者</div>
-									<div class="col-8 p-0">{{ userInfo?.penName }}</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">创建日期</div>
-									<div class="col-8 p-0">
-										{{ getFormarttedDate(articleInfo?.creationDatetime) }}
-									</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">更新日期</div>
-									<div class="col-8 p-0">
-										{{ getFormarttedDate(articleInfo?.lastUpdatedDatetime) }}
-									</div>
-								</div>
-							</li>
-							<li class="list-group-item" v-if="articleInfo?.status === 'PUBLISHED'">
-								<div class="row">
-									<div class="col-4 p-0">发布日期</div>
-									<div class="col-8 p-0">
-										{{ getFormarttedDate(articleInfo?.publishDatetime) }}
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<div class="tile">
-					<div class="tile-title">摘要</div>
-					<div class="title-body">
-						<textarea
-							class="form-control"
-							aria-label="summary textarea"
-							name="summary-textarea"
-							id="summary-textarea"
-							rows="5"
-							v-model="article.summary"
-						></textarea>
-					</div>
-					<div class="tile-footer" v-if="changed.summary">
-						<div class="row justify-content-end">
-							<button
-								@click="article.summary = articleInfo ? articleInfo.summary : ''"
-								type="button"
-								class="btn btn-secondary w-auto me-2"
-							>
-								还原
-							</button>
-							<button
-								@click="updateSummary"
-								type="button"
-								class="btn btn-primary w-auto me-2"
-							>
-								保存
-							</button>
-						</div>
-					</div>
-				</div>
+
+				<InfoComponent :article-info="articleInfo" />
+
+				<SummaryComponent :article-info="articleInfo" v-model="article.summary" />
 				<div class="tile">
 					<div class="tile-title">标签</div>
 					<div class="title-body">
@@ -300,7 +184,38 @@
 				</div>
 				<div class="tile">
 					<div class="tile-title">固定链接</div>
-					<div class="tile-body"></div>
+					<div class="tile-body">
+						<div class="mb-3">
+							<input
+								aria-label="slug-input"
+								type="text"
+								class="form-control"
+								name="slug-input"
+								id="slug-input"
+								aria-describedby="helpId"
+								placeholder="Slug"
+								v-model="article.slug"
+							/>
+						</div>
+					</div>
+					<div class="tile-footer" v-if="changed.slug">
+						<div class="row justify-content-end">
+							<button
+								@click="article.slug = articleInfo ? articleInfo.slug : ''"
+								type="button"
+								class="btn btn-secondary w-auto me-2"
+							>
+								还原
+							</button>
+							<button
+								@click="openUpdateSlugModal"
+								type="button"
+								class="btn btn-primary w-auto me-2"
+							>
+								保存
+							</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -323,6 +238,14 @@
 			<p>发布文章《{{ article.title }}》之后所有人都可以看到，确定要发布吗？</p>
 		</template>
 	</ModalComponent>
+
+	<ModalComponent title="更新文章固定链接" ref="updateSlugModal" @save-change="updateSlug">
+		<template #body>
+			<p>确定要将该文章的链接更改为：</p>
+			<p>{{ 'http://localhost:8090/' + route.params.id + '/' + article.slug }}</p>
+			<p>吗？</p>
+		</template>
+	</ModalComponent>
 </template>
 <script setup lang="ts">
 	import { ref, onMounted, onBeforeUnmount, watch, reactive, computed } from 'vue';
@@ -337,22 +260,24 @@
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
 	import { useRoute } from 'vue-router';
 	import type { APIResponse, ArticleInfo, TagInfo, UserInfo } from '@/type/response.type';
-	import { getFormarttedDate } from '@/utlis';
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
+	import SummaryComponent from '@/component/editor.component/SummaryComponent.vue';
 
 	const route = useRoute();
 	const bodyEditor = ref<Editor>();
 	const titleRef = ref<HTMLTextAreaElement>();
 	const titleRow = ref(1);
 	const publishModal = ref();
+	const updateSlugModal = ref();
 
 	// 当前数据
 	const article = reactive({
 		title: '',
 		body: '',
 		summary: '',
+		slug: '',
 	});
 
 	// 追踪数据的变动状态
@@ -360,17 +285,15 @@
 		title: false,
 		body: false,
 		summary: false,
+		slug: false,
 	});
 
 	// 云端数据
 	const articleInfo = ref<ArticleInfo | null>(null);
 	const userInfo = ref<UserInfo | null>(null);
 	const articleBody = ref('');
-
-	const contentSync = computed(() => {
-		return !changed.body && !changed.title;
-	});
 	const tags = ref<TagInfo[]>([]);
+
 	const newTagName = ref('');
 
 	const handleKeyEnterAddTag = async () => {
@@ -442,30 +365,37 @@
 		}
 	};
 
-	const updateSummary = async () => {
+	const updateSlug = async () => {
 		const response: APIResponse<void> = await makeRequest(
-			RESOURCE_BASE_URL + '/articles/summary/' + route.params.id,
+			RESOURCE_BASE_URL + '/articles/slug/' + route.params.id,
 			{
 				method: 'PATCH',
 				body: JSON.stringify({
-					summary: article.summary,
+					slug: article.slug,
 				}),
 			}
 		);
 		if (response.code === 0) {
 			if (articleInfo.value) {
-				articleInfo.value.summary = article.summary;
-				changed.summary = false;
+				articleInfo.value.slug = article.slug;
+				changed.slug = false;
 				showMessage('更新成功', AlertType.SUCCESS);
 			}
 		} else {
 			showMessage('更新失败', AlertType.ERROR);
 		}
+		updateSlugModal.value.hide();
 	};
 
 	const openPublishModal = () => {
 		if (publishModal.value) {
 			publishModal.value.show();
+		}
+	};
+
+	const openUpdateSlugModal = () => {
+		if (updateSlugModal.value) {
+			updateSlugModal.value.show();
 		}
 	};
 
@@ -512,6 +442,12 @@
 		article.body = articleBody.value;
 		article.title = articleInfo.value.title;
 		article.summary = articleInfo.value.summary;
+		article.slug = articleInfo.value.slug;
+
+		const tagInfoResponse: APIResponse<TagInfo[]> = await makeRequest(
+			articleInfo.value.tagInfoPageLocation
+		);
+		tags.value = tagInfoResponse.data;
 
 		console.log(articleInfo.value);
 	};
@@ -556,6 +492,10 @@
 		}
 	};
 
+	const contentSync = computed(() => {
+		return !changed.body && !changed.title;
+	});
+
 	onBeforeUnmount(() => {
 		if (bodyEditor.value) {
 			bodyEditor.value.destroy();
@@ -587,11 +527,19 @@
 			changed.summary = newValue != articleInfo.value?.summary;
 		}
 	);
+
+	watch(
+		() => article.slug,
+		newValue => {
+			changed.slug = newValue != articleInfo.value?.slug;
+		}
+	);
 </script>
 
 <style>
 	.tiptap {
-		min-height: calc(100vh - 250px);
+		min-height: 100vh;
+		border-bottom: 1px solid gray;
 	}
 	.tiptap:focus,
 	input:focus {
