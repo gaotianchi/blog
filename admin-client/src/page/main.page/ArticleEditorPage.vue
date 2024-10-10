@@ -93,12 +93,6 @@
 								</button>
 							</div>
 						</div>
-						<!-- <button
-							@click="bodyEditor.commands.setQuoteBlock()"
-							class="btn btn-outline-dark"
-						>
-							<i class="bi bi-quote"></i>
-						</button> -->
 						<button
 							@click="bodyEditor.commands.setIllustration()"
 							class="btn btn-outline-dark"
@@ -107,24 +101,6 @@
 						</button>
 					</div>
 				</FloatingMenu>
-				<!-- <BubbleMenu
-					:editor="bodyEditor"
-					class="bubble-menu"
-					:tippy-options="{ duration: 100 }"
-				>
-					<div
-						class="btn-group btn-group-sm"
-						role="group"
-						aria-label="Small button group"
-					>
-						<button
-							@click="bodyEditor.commands.setCustomLink()"
-							class="btn btn-outline-dark"
-						>
-							<i class="bi bi-link"></i>
-						</button>
-					</div>
-				</BubbleMenu> -->
 				<EditorContent :editor="bodyEditor" />
 			</div>
 		</div>
@@ -169,116 +145,10 @@
 						更新
 					</button>
 				</div>
-				<div class="tile">
-					<div class="tile-title">信息</div>
-					<div class="tile-body">
-						<ul class="list-group list-group-flush">
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">同步状态</div>
-									<div class="col-8 p-0">
-										<span class="badge text-bg-light" v-if="contentSync">
-											已同步
-										</span>
-										<span class="badge text-bg-warning" v-else>未同步</span>
-									</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">发布状态</div>
-									<div class="col-8 p-0">
-										<span
-											class="badge text-bg-secondary"
-											v-if="articleInfo?.status === 'DRAFT'"
-										>
-											{{ articleInfo?.status }}
-										</span>
-										<span
-											class="badge text-bg-success"
-											v-if="articleInfo?.status === 'PUBLISHED'"
-										>
-											{{ articleInfo?.status }}
-										</span>
-										<span
-											class="badge text-bg-dark"
-											v-if="articleInfo?.status === 'TRASH'"
-										>
-											{{ articleInfo?.status }}
-										</span>
-									</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">字数</div>
-									<div class="col-8 p-0">20</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">作者</div>
-									<div class="col-8 p-0">{{ userInfo?.penName }}</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">创建日期</div>
-									<div class="col-8 p-0">
-										{{ getFormarttedDate(articleInfo?.creationDatetime) }}
-									</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">更新日期</div>
-									<div class="col-8 p-0">
-										{{ getFormarttedDate(articleInfo?.lastUpdatedDatetime) }}
-									</div>
-								</div>
-							</li>
-							<li class="list-group-item" v-if="articleInfo?.status === 'PUBLISHED'">
-								<div class="row">
-									<div class="col-4 p-0">发布日期</div>
-									<div class="col-8 p-0">
-										{{ getFormarttedDate(articleInfo?.publishDatetime) }}
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<div class="tile">
-					<div class="tile-title">摘要</div>
-					<div class="title-body">
-						<textarea
-							class="form-control"
-							aria-label="summary textarea"
-							name="summary-textarea"
-							id="summary-textarea"
-							rows="5"
-							v-model="article.summary"
-						></textarea>
-					</div>
-					<div class="tile-footer" v-if="changed.summary">
-						<div class="row justify-content-end">
-							<button
-								@click="article.summary = articleInfo ? articleInfo.summary : ''"
-								type="button"
-								class="btn btn-secondary w-auto me-2"
-							>
-								还原
-							</button>
-							<button
-								@click="updateSummary"
-								type="button"
-								class="btn btn-primary w-auto me-2"
-							>
-								保存
-							</button>
-						</div>
-					</div>
-				</div>
+
+				<InfoComponent :article-info="articleInfo" />
+
+				<SummaryComponent :article-info="articleInfo" v-model="article.summary" />
 				<div class="tile">
 					<div class="tile-title">标签</div>
 					<div class="title-body">
@@ -394,6 +264,9 @@
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
+	import BodyEditorComponent from '@/component/editor.component/InfoComponent.vue';
+	import InfoComponent from '@/component/editor.component/InfoComponent.vue';
+	import SummaryComponent from '@/component/editor.component/SummaryComponent.vue';
 
 	const route = useRoute();
 	const bodyEditor = ref<Editor>();
@@ -492,27 +365,6 @@
 				articleBody.value = article.body;
 			}
 			showMessage('更新成功', AlertType.SUCCESS);
-		} else {
-			showMessage('更新失败', AlertType.ERROR);
-		}
-	};
-
-	const updateSummary = async () => {
-		const response: APIResponse<void> = await makeRequest(
-			RESOURCE_BASE_URL + '/articles/summary/' + route.params.id,
-			{
-				method: 'PATCH',
-				body: JSON.stringify({
-					summary: article.summary,
-				}),
-			}
-		);
-		if (response.code === 0) {
-			if (articleInfo.value) {
-				articleInfo.value.summary = article.summary;
-				changed.summary = false;
-				showMessage('更新成功', AlertType.SUCCESS);
-			}
 		} else {
 			showMessage('更新失败', AlertType.ERROR);
 		}

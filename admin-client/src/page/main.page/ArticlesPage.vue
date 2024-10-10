@@ -147,11 +147,22 @@
 			class="position-absolute"
 			style="bottom: 1rem; right: 1rem"
 		>
-			<button v-if="article.status === 'TRASH'" type="button" class="btn btn-danger">
-				彻底删除
-			</button>
+			<div class="btn-group" role="group" aria-label="Basic mixed styles example">
+				<button v-if="article.status === 'TRASH'" type="button" class="btn btn-danger">
+					删除
+				</button>
+			</div>
 		</div>
 	</div>
+
+	<ModalComponent
+		title="删除文章"
+		save-button-text="删除"
+		ref="deleteArticleModal"
+		@save-change="handleSaveDeleteArticleButton"
+	>
+		<template #body></template>
+	</ModalComponent>
 
 	<PaginationComponent
 		:key="filterStatus"
@@ -172,10 +183,12 @@
 		PageInfo,
 		UserInfo,
 	} from '@/type/response.type';
-	import { ArticleStatus } from '@/enum';
+	import { AlertType, ArticleStatus } from '@/enum';
 	import { useRouter } from 'vue-router';
 	import PaginationComponent from '@/component/article.component/PaginationComponent.vue';
 	import { getFormarttedDate } from '@/utlis';
+	import showMessage from '@/service/alert.service';
+	import ModalComponent from '@/component/ModalComponent.vue';
 
 	const router = useRouter();
 
@@ -184,6 +197,30 @@
 	const user = ref<UserInfo | null>(null);
 	const activedTile = ref<number | null>(null);
 	const filterStatus = ref<'all' | 'published' | 'trash' | 'draft'>('all');
+	const deleteArticleModal = ref();
+	const articleIdToDelete = ref(0);
+
+	const handleButtonDeleteArticle = async (id: number) => {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/delete/' + id,
+			{
+				method: 'DELETE',
+			}
+		);
+		if (response.code === 0) {
+			showMessage('成功删除文章', AlertType.SUCCESS);
+		} else {
+			showMessage('删除失败', AlertType.ERROR);
+		}
+	};
+
+	const openDeleteArticleModal = (id: number) => {
+		if (deleteArticleModal.value) {
+			deleteArticleModal.value.show();
+		}
+	};
+
+	const handleSaveDeleteArticleButton = async (id: number) => {};
 
 	const loadPageArticles = async (page: number, status: string) => {
 		let pageArticleInfo: APIResponse<PageInfo<ArticleInfo>>;
