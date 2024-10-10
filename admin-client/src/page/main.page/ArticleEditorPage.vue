@@ -19,6 +19,7 @@
 	></MainPageHeaderComponent>
 
 	<div class="row col-lg-11 m-auto">
+		<!-- 编辑器主体 -->
 		<div class="col-md-8 overflow-y-auto" style="max-height: 120vh">
 			<textarea
 				type="text"
@@ -105,9 +106,11 @@
 			</div>
 		</div>
 
+		<!-- 右侧边栏 -->
 		<div class="col-12 col-md-4">
 			<div class="sticky-top">
 				<div class="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
+					<!-- 操作按钮区域 -->
 					<button
 						v-if="articleInfo?.status === 'DRAFT'"
 						class="btn btn-warning"
@@ -146,7 +149,62 @@
 					</button>
 				</div>
 
-				<InfoComponent :article-info="articleInfo" />
+				<div class="tile">
+					<div class="tile-title">信息</div>
+					<div class="tile-body">
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item">
+								<div class="row">
+									<div class="col-4 p-0">发布状态</div>
+									<div class="col-8 p-0">
+										<span
+											class="badge"
+											:class="getStatusColorClass(articleInfo?.status)"
+										>
+											{{ articleInfo?.status }}
+										</span>
+									</div>
+								</div>
+							</li>
+							<li class="list-group-item">
+								<div class="row">
+									<div class="col-4 p-0">字数</div>
+									<div class="col-8 p-0">20</div>
+								</div>
+							</li>
+							<li class="list-group-item">
+								<div class="row">
+									<div class="col-4 p-0">作者</div>
+									<div class="col-8 p-0">{{ articleInfo?.penName }}</div>
+								</div>
+							</li>
+							<li class="list-group-item">
+								<div class="row">
+									<div class="col-4 p-0">创建日期</div>
+									<div class="col-8 p-0">
+										{{ getFormarttedDate(articleInfo?.creationDatetime) }}
+									</div>
+								</div>
+							</li>
+							<li class="list-group-item">
+								<div class="row">
+									<div class="col-4 p-0">更新日期</div>
+									<div class="col-8 p-0">
+										{{ getFormarttedDate(articleInfo?.lastUpdatedDatetime) }}
+									</div>
+								</div>
+							</li>
+							<li class="list-group-item" v-if="articleInfo?.status === 'PUBLISHED'">
+								<div class="row">
+									<div class="col-4 p-0">发布日期</div>
+									<div class="col-8 p-0">
+										{{ getFormarttedDate(articleInfo?.publishDatetime) }}
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
 
 				<SummaryComponent :article-info="articleInfo" v-model="article.summary" />
 				<div class="tile">
@@ -220,7 +278,6 @@
 			</div>
 		</div>
 	</div>
-	<div class="row">bottom</div>
 
 	<ModalComponent
 		title="发布文章"
@@ -264,8 +321,6 @@
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
-	import BodyEditorComponent from '@/component/editor.component/InfoComponent.vue';
-	import InfoComponent from '@/component/editor.component/InfoComponent.vue';
 	import SummaryComponent from '@/component/editor.component/SummaryComponent.vue';
 
 	const route = useRoute();
@@ -366,7 +421,18 @@
 			showMessage('更新失败', AlertType.ERROR);
 		}
 	};
-
+	const getStatusColorClass = (status?: string) => {
+		switch (status?.toLowerCase()) {
+			case 'published':
+				return 'text-bg-success';
+			case 'draft':
+				return 'text-bg-secondary';
+			case 'trash':
+				return 'text-bg-dark';
+			default:
+				break;
+		}
+	};
 	const updateSlug = async () => {
 		const response: APIResponse<void> = await makeRequest(
 			RESOURCE_BASE_URL + '/articles/slug/' + route.params.id,
