@@ -21,13 +21,14 @@ public class TagEntity {
     private Long id;
     private String name;
     private OffsetDateTime creationDatetime;
-    private Integer articleCount;
+    private Integer articleCount = 0;
 
     // depth data
     @ManyToMany
     private Collection<ArticleEntity> articleList = new ArrayList<>();
 
     public void increaseArticleCount() {
+        if (articleCount == null) articleCount = 0;
         articleCount += 1;
     }
 

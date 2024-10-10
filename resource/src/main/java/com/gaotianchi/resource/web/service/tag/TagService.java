@@ -5,7 +5,6 @@ import com.gaotianchi.resource.persistence.entity.ArticleEntity;
 import com.gaotianchi.resource.persistence.entity.TagEntity;
 import com.gaotianchi.resource.persistence.repo.ArticleRepo;
 import com.gaotianchi.resource.persistence.repo.TagRepo;
-import com.gaotianchi.resource.web.error.EntityAlreadyExistException;
 import com.gaotianchi.resource.web.response.PageInfo;
 import com.gaotianchi.resource.web.response.info.TagInfo;
 import com.gaotianchi.resource.web.service.utlis.founder.EntityFounderService;
@@ -37,7 +36,9 @@ public class TagService implements TagServiceInterface {
     @Override
     public TagInfo newTag(String name) {
         TagEntity tagEntity = tagRepo.findByName(name);
-        if (tagEntity != null) throw new EntityAlreadyExistException("Tag " + name);
+        if (tagEntity != null) {
+            return new TagInfo(tagEntity);
+        }
         tagEntity = new TagEntity();
         tagEntity.setCreationDatetime(OffsetDateTime.now());
         tagEntity.setName(name);

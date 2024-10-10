@@ -118,3 +118,11 @@ export type ArticleInfo = {
 	commentInfoPageLocation: string;
 	tagInfoPageLocation: string;
 };
+
+export type TagInfo = {
+	id: number;
+	name: string;
+	creationDatetime: string;
+	articleCount: number;
+	articleInfoPageLocation: string;
+};

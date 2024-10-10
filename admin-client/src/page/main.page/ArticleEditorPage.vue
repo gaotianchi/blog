@@ -19,7 +19,7 @@
 	></MainPageHeaderComponent>
 
 	<div class="row col-lg-11 m-auto">
-		<div class="col-md-8 overflow-y-auto" style="max-height: calc(100vh - 150px)">
+		<div class="col-md-8 overflow-y-auto" style="max-height: 120vh">
 			<textarea
 				type="text"
 				class="form-control-plaintext h1"
@@ -267,7 +267,32 @@
 				</div>
 				<div class="tile">
 					<div class="tile-title">标签</div>
-					<div class="title-body"></div>
+					<div class="title-body">
+						<div class="mb-3">
+							<div
+								v-for="(tag, index) in tags"
+								:key="index"
+								class="badge rounded-pill bg-secondary me-2 mb-2"
+							>
+								<span class="ms-1" style="padding-bottom: 5px">{{ tag.name }}</span>
+								<button
+									type="button"
+									class="btn-close btn-close-white ms-1"
+									@click="handleBtnRemoveTag(tag)"
+									aria-label="Remove"
+								></button>
+							</div>
+						</div>
+						<div>
+							<input
+								type="text"
+								class="form-control"
+								v-model="newTagName"
+								@keyup.enter="handleKeyEnterAddTag"
+								placeholder="输入标签并按回车键"
+							/>
+						</div>
+					</div>
 				</div>
 				<div class="tile">
 					<div class="tile-title">系列</div>
@@ -350,7 +375,7 @@
 	import { makeRequest } from '@/service/request.service';
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
 	import { useRoute } from 'vue-router';
-	import type { APIResponse, ArticleInfo, UserInfo } from '@/type/response.type';
+	import type { APIResponse, ArticleInfo, TagInfo, UserInfo } from '@/type/response.type';
 	import { getFormarttedDate } from '@/utlis';
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
@@ -362,6 +387,7 @@
 	const titleRow = ref(1);
 	const publishModal = ref();
 	const updateSlugModal = ref();
+	const newTagName = ref('');
 
 	// 当前数据
 	const article = reactive({
@@ -383,6 +409,57 @@
 	const articleInfo = ref<ArticleInfo | null>(null);
 	const userInfo = ref<UserInfo | null>(null);
 	const articleBody = ref('');
+	const tags = ref<TagInfo[]>([]);
+
+	const handleKeyEnterAddTag = async () => {
+		console.log('enter');
+		if (!newTagName.value.trim()) {
+			return showMessage('请输入标签名', AlertType.INFO);
+		}
+		if (tags.value.some(tag => tag.name == newTagName.value)) {
+			newTagName.value = '';
+			return showMessage('标签已经添加', AlertType.INFO);
+		}
+
+		const tagInfoResponse: APIResponse<TagInfo> = await makeRequest(
+			RESOURCE_BASE_URL + '/tags/new/' + newTagName.value,
+			{
+				method: 'POST',
+			}
+		);
+		if (tagInfoResponse.code === 0) {
+			console.log(tagInfoResponse.data);
+			const addTagResponse: APIResponse<TagInfo> = await makeRequest(
+				RESOURCE_BASE_URL +
+					'/articles/tag/' +
+					route.params.id +
+					'/' +
+					tagInfoResponse.data.id,
+				{
+					method: 'POST',
+				}
+			);
+			if (addTagResponse.code === 0) {
+				tags.value.push(tagInfoResponse.data);
+				newTagName.value = '';
+			}
+		} else {
+			showMessage('发生错误', AlertType.ERROR);
+		}
+	};
+
+	const handleBtnRemoveTag = async (tag: TagInfo) => {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/tag/' + route.params.id + '/' + tag.id,
+			{
+				method: 'DELETE',
+			}
+		);
+		if (response.code === 0) {
+			tags.value = tags.value.filter(t => t.id !== tag.id);
+			console.log(tags.value);
+		}
+	};
 
 	const updateArticleContent = async () => {
 		const response: APIResponse<void> = await makeRequest(
@@ -506,6 +583,11 @@
 		article.summary = articleInfo.value.summary;
 		article.slug = articleInfo.value.slug;
 
+		const tagInfoResponse: APIResponse<TagInfo[]> = await makeRequest(
+			articleInfo.value.tagInfoPageLocation
+		);
+		tags.value = tagInfoResponse.data;
+
 		console.log(articleInfo.value);
 	};
 
@@ -595,7 +677,8 @@
 
 <style>
 	.tiptap {
-		min-height: calc(100vh - 250px);
+		min-height: 100vh;
+		border-bottom: 1px solid gray;
 	}
 	.tiptap:focus,
 	input:focus {

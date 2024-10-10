@@ -153,7 +153,7 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public void removeTag(String username, Long tagId, Long id) {
+    public void removeTag(String username, Long id, Long tagId) {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
         TagEntity tagEntity = entityFounderService.getTagOrNotFound(tagId);
         articleEntity.getTagList().remove(tagEntity);
