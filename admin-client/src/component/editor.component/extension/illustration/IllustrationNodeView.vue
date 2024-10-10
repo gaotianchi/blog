@@ -313,7 +313,7 @@
 			if (illustartion.src) {
 				console.log('nextTick');
 				if (illustartion.id) {
-					addIllustrationToArticle(illustartion.id);
+					// addIllustrationToArticle(illustartion.id);
 				}
 			} else {
 				console.log('UnnextTick');
@@ -325,7 +325,7 @@
 	onBeforeUnmount(() => {
 		console.log('onBeforeUnmount');
 		if (illustartion.id) {
-			removeIllustrationFromCurrentArticle(illustartion.id);
+			// removeIllustrationFromCurrentArticle(illustartion.id);
 		}
 	});
 

@@ -18,7 +18,7 @@
 		<!-- Sidebar menu-->
 		<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
 		<aside class="app-sidebar">
-			<div class="app-sidebar__user">
+			<!-- <div class="app-sidebar__user">
 				<img
 					class="app-sidebar__user-avatar"
 					src="https://randomuser.me/api/portraits/men/1.jpg"
@@ -28,7 +28,7 @@
 					<p class="app-sidebar__user-name">John Doe</p>
 					<p class="app-sidebar__user-designation">Frontend Developer</p>
 				</div>
-			</div>
+			</div> -->
 			<SidebarMenuComponent />
 		</aside>
 		<main class="app-content overflow-y-auto">
@@ -38,9 +38,11 @@
 </template>
 
 <script lang="ts" setup>
-	import { ref } from 'vue';
+	import { onMounted, ref } from 'vue';
 	import SidebarMenuComponent from '@/component/SidebarMenuComponent.vue';
 	import NavbarComponent from '@/component/NavbarComponent.vue';
 
 	const Triggered = ref<boolean>(false);
+
+	onMounted(() => {});
 </script>
