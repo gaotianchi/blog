@@ -149,6 +149,7 @@
 					</button>
 				</div>
 
+				<!-- 信息栏组件 -->
 				<div class="tile">
 					<div class="tile-title">信息</div>
 					<div class="tile-body">
@@ -206,7 +207,37 @@
 					</div>
 				</div>
 
-				<SummaryComponent :article-info="articleInfo" v-model="article.summary" />
+				<div class="tile">
+					<div class="tile-title">摘要</div>
+					<div class="title-body">
+						<textarea
+							class="form-control"
+							aria-label="summary textarea"
+							name="summary-textarea"
+							id="summary-textarea"
+							rows="5"
+							v-model="article.summary"
+						></textarea>
+					</div>
+					<div class="tile-footer" v-if="changed.summary">
+						<div class="row justify-content-end">
+							<button
+								@click="article.summary = article ? article.summary : ''"
+								type="button"
+								class="btn btn-secondary w-auto me-2"
+							>
+								还原
+							</button>
+							<button
+								@click="updateSummary"
+								type="button"
+								class="btn btn-primary w-auto me-2"
+							>
+								保存
+							</button>
+						</div>
+					</div>
+				</div>
 				<div class="tile">
 					<div class="tile-title">标签</div>
 					<div class="title-body">
@@ -321,7 +352,6 @@
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
-	import SummaryComponent from '@/component/editor.component/SummaryComponent.vue';
 
 	const route = useRoute();
 	const bodyEditor = ref<Editor>();
@@ -387,7 +417,24 @@
 			}
 		}
 	};
-
+	const updateSummary = async () => {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/summary/' + route.params.id,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					summary: article.summary,
+				}),
+			}
+		);
+		if (response.code === 0) {
+			if (articleInfo.value) {
+				articleInfo.value.summary = article.summary;
+				changed.summary = false;
+			}
+		} else {
+		}
+	};
 	const handleBtnRemoveTag = async (tag: TagInfo) => {
 		const response: APIResponse<void> = await makeRequest(
 			RESOURCE_BASE_URL + '/articles/tag/' + route.params.id + '/' + tag.id,
