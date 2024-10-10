@@ -1,6 +1,7 @@
 package com.gaotianchi.resource.persistence.repo;
 
 import com.gaotianchi.resource.persistence.entity.*;
+import com.gaotianchi.resource.persistence.enums.ArticleStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ArticleRepo extends JpaRepository<ArticleEntity, Long> {
+    Page<ArticleEntity> findByUserAndStatusOrderByCreationDatetimeDesc(UserEntity userEntity, ArticleStatus status, Pageable pageable);
 
     // 根据时间排序分页查询指定用户的文章实体
     Page<ArticleEntity> findByUserOrderByCreationDatetimeDesc(UserEntity userEntity, Pageable pageable);

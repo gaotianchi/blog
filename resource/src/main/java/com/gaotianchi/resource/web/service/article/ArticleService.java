@@ -194,10 +194,16 @@ public class ArticleService implements ArticleServiceInterface {
     }
 
     @Override
-    public PageInfo<ArticleInfo> getUserArticleInfoPage(Long userId, int page) {
+    public PageInfo<ArticleInfo> getUserArticleInfoPage(Long userId, String status, int page) {
         UserEntity userEntity = entityFounderService.getUserOrNorFound(userId);
         Pageable pageable = PageRequest.of(page, paginationConfig.getNumberOfInfoPerPage().getArticleForUser());
-        Page<ArticleEntity> articleEntityPage = articleRepo.findByUserOrderByCreationDatetimeDesc(userEntity, pageable);
+        Page<ArticleEntity> articleEntityPage;
+        if (status == null) {
+            articleEntityPage = articleRepo.findByUserOrderByCreationDatetimeDesc(userEntity, pageable);
+        } else {
+            ArticleStatus articleStatus = ArticleStatus.valueOf(status.toUpperCase());
+            articleEntityPage = articleRepo.findByUserAndStatusOrderByCreationDatetimeDesc(userEntity, articleStatus, pageable);
+        }
         return _getArticleInfoPage(articleEntityPage, page);
     }
 

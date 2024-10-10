@@ -132,9 +132,14 @@
 		<div class="col-12 col-md-4">
 			<div class="sticky-top">
 				<div class="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
-					<button class="btn btn-light" type="button">
-						<i class="bi bi-eye-fill"></i>
-						预览
+					<button
+						v-if="articleInfo?.status === 'DRAFT'"
+						class="btn btn-warning"
+						type="button"
+						@click="resetArticleStatus('TRASH')"
+					>
+						<i class="bi bi-trash3-fill"></i>
+						移入垃圾桶
 					</button>
 					<button
 						v-if="articleInfo?.status === 'DRAFT'"
@@ -152,7 +157,7 @@
 						@click="resetArticleStatus('DRAFT')"
 					>
 						<i class="bi bi-file-earmark-arrow-down-fill"></i>
-						还原
+						取消发布
 					</button>
 					<button
 						class="btn btn-warning me-md-2"
@@ -189,7 +194,16 @@
 										>
 											{{ articleInfo?.status }}
 										</span>
-										<span class="badge text-bg-success" v-else>
+										<span
+											class="badge text-bg-success"
+											v-if="articleInfo?.status === 'PUBLISHED'"
+										>
+											{{ articleInfo?.status }}
+										</span>
+										<span
+											class="badge text-bg-dark"
+											v-if="articleInfo?.status === 'TRASH'"
+										>
 											{{ articleInfo?.status }}
 										</span>
 									</div>
