@@ -260,9 +260,12 @@
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
 	import { useRoute } from 'vue-router';
 	import type { APIResponse, ArticleInfo, TagInfo, UserInfo } from '@/type/response.type';
+	import { getFormarttedDate } from '@/utlis';
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
+	import BodyEditorComponent from '@/component/editor.component/InfoComponent.vue';
+	import InfoComponent from '@/component/editor.component/InfoComponent.vue';
 	import SummaryComponent from '@/component/editor.component/SummaryComponent.vue';
 
 	const route = useRoute();
@@ -271,6 +274,7 @@
 	const titleRow = ref(1);
 	const publishModal = ref();
 	const updateSlugModal = ref();
+	const newTagName = ref('');
 
 	// 当前数据
 	const article = reactive({
@@ -293,8 +297,6 @@
 	const userInfo = ref<UserInfo | null>(null);
 	const articleBody = ref('');
 	const tags = ref<TagInfo[]>([]);
-
-	const newTagName = ref('');
 
 	const handleKeyEnterAddTag = async () => {
 		console.log('enter');
