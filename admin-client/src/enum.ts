@@ -5,7 +5,7 @@ export enum AlertType {
 }
 
 export enum ArticleStatus {
-	PUBLISHED = 'text-bg-succes',
+	PUBLISHED = 'text-bg-success',
 	DRAFT = 'text-bg-secondary',
 	TRASH = 'text-bg-dark',
 }
