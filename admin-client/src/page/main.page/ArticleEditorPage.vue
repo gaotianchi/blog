@@ -20,7 +20,7 @@
 
 	<div class="row col-lg-11 m-auto">
 		<!-- 编辑器主体 -->
-		<div class="col-md-8 overflow-y-auto" style="max-height: 120vh">
+		<div class="col-md-8 tile overflow-y-auto" style="max-height: 120vh">
 			<textarea
 				type="text"
 				class="form-control-plaintext h1"
@@ -109,7 +109,7 @@
 		<!-- 右侧边栏 -->
 		<div class="col-12 col-md-4">
 			<div class="sticky-top">
-				<div class="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
+				<div class="d-grid tile gap-2 d-md-flex justify-content-md-center mb-3">
 					<!-- 操作按钮区域 -->
 					<button
 						v-if="articleInfo?.status === 'DRAFT'"
@@ -654,7 +654,6 @@
 <style>
 	.tiptap {
 		min-height: 100vh;
-		border-bottom: 1px solid gray;
 	}
 	.tiptap:focus,
 	input:focus {
