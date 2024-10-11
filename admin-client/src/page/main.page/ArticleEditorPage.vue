@@ -20,7 +20,7 @@
 
 	<div class="row col-lg-11 m-auto">
 		<!-- 编辑器主体 -->
-		<div class="col-md-8 tile overflow-y-auto" style="max-height: 120vh">
+		<div class="col-md-8 tile overflow-y-auto" style="max-height: 150vh">
 			<textarea
 				type="text"
 				class="form-control-plaintext h1"
@@ -104,6 +104,56 @@
 						</button>
 					</div>
 				</FloatingMenu>
+
+				<!-- 选中文本工具栏 -->
+				<BubbleMenu :editor="bodyEditor" :tippy-options="{ duration: 100 }">
+					<div
+						class="btn-group btn-group-sm bg-white"
+						role="group"
+						aria-label="Small button group"
+					>
+						<!-- 加粗字体 -->
+						<button
+							@click="bodyEditor.chain().focus().toggleBold().run()"
+							type="button"
+							class="btn btn-outline-dark"
+						>
+							<strong>B</strong>
+						</button>
+						<!-- 链接 -->
+						<button @click="" type="button" class="btn btn-outline-dark">
+							<i class="bi bi-link-45deg"></i>
+						</button>
+						<!-- 其他工具 -->
+						<button
+							type="button"
+							class="btn btn-outline-dark dropdown-toggle dropdown-toggle-split"
+							data-bs-toggle="dropdown"
+							aria-expanded="false"
+						>
+							<span class="visually-hidden">Toggle Dropdown</span>
+						</button>
+						<ul class="dropdown-menu bg-white" style="min-width: min-content">
+							<div
+								class="btn-group-vertical btn-group-sm"
+								role="group"
+								aria-label="Small button group"
+							>
+								<!-- 斜体字 -->
+								<button
+									@click="bodyEditor.chain().focus().toggleItalic().run()"
+									type="button"
+									class="btn btn-outline-dark"
+								>
+									<em>I</em>
+								</button>
+								<button @click="" type="button" class="btn btn-outline-dark">
+									其他
+								</button>
+							</div>
+						</ul>
+					</div>
+				</BubbleMenu>
 
 				<!-- 正文编辑器 -->
 				<EditorContent :editor="bodyEditor" />
