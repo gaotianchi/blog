@@ -33,6 +33,7 @@
 			></textarea>
 
 			<div v-if="bodyEditor">
+				<!-- 段首工具栏 -->
 				<FloatingMenu
 					class="floating-menu"
 					:tippy-options="{ duration: 100 }"
@@ -43,57 +44,58 @@
 						role="group"
 						aria-label="Small button group"
 					>
-						<div class="btn-group" role="group">
+						<!-- 标题下拉菜单按钮 -->
+						<div class="btn-group">
+							<button
+								@click="setHeading(2)"
+								type="button"
+								class="btn btn-outline-dark"
+							>
+								H2
+							</button>
 							<button
 								type="button"
-								class="btn btn-outline-dark dropdown-toggle"
+								class="btn btn-outline-dark dropdown-toggle dropdown-toggle-split"
 								data-bs-toggle="dropdown"
 								aria-expanded="false"
 							>
-								Heading
+								<span class="visually-hidden">Toggle Dropdown</span>
 							</button>
-							<div class="dropdown-menu button-group">
-								<button
-									class="dropdown-item"
-									@click="
-										bodyEditor.chain().focus().toggleHeading({ level: 1 }).run()
-									"
-									:class="{
-										'is-active': bodyEditor.isActive('heading', {
-											level: 1,
-										}),
-									}"
+							<ul
+								class="dropdown-menu"
+								style="min-width: min-content; background-color: transparent"
+							>
+								<div
+									class="btn-group-vertical btn-group-sm"
+									role="group"
+									aria-label="Small button group"
 								>
-									H1
-								</button>
-								<button
-									class="dropdown-item"
-									@click="
-										bodyEditor.chain().focus().toggleHeading({ level: 2 }).run()
-									"
-									:class="{
-										'is-active': bodyEditor.isActive('heading', {
-											level: 2,
-										}),
-									}"
-								>
-									H2
-								</button>
-								<button
-									class="dropdown-item"
-									@click="
-										bodyEditor.chain().focus().toggleHeading({ level: 3 }).run()
-									"
-									:class="{
-										'is-active': bodyEditor.isActive('heading', {
-											level: 3,
-										}),
-									}"
-								>
-									H3
-								</button>
-							</div>
+									<button
+										@click="setHeading(3)"
+										type="button"
+										class="btn btn-outline-dark"
+									>
+										H3
+									</button>
+									<button
+										@click="setHeading(4)"
+										type="button"
+										class="btn btn-outline-dark"
+									>
+										H4
+									</button>
+									<button
+										@click="setHeading(5)"
+										type="button"
+										class="btn btn-outline-dark"
+									>
+										H5
+									</button>
+								</div>
+							</ul>
 						</div>
+
+						<!-- 插图按钮 -->
 						<button
 							@click="bodyEditor.commands.setIllustration()"
 							class="btn btn-outline-dark"
@@ -102,6 +104,8 @@
 						</button>
 					</div>
 				</FloatingMenu>
+
+				<!-- 正文编辑器 -->
 				<EditorContent :editor="bodyEditor" />
 			</div>
 		</div>
@@ -521,6 +525,15 @@
 			body.changed = newValue !== remoteBody.value;
 		}
 	);
+	const setHeading = (level: number) => {
+		if (bodyEditor.value) {
+			bodyEditor.value
+				.chain()
+				.focus()
+				.toggleHeading({ level: level as 2 | 3 | 4 | 4 })
+				.run();
+		}
+	};
 
 	// summary 组件
 	const summary = reactive({
