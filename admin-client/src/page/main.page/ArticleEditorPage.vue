@@ -283,14 +283,14 @@
 							id="slug-input"
 							aria-describedby="helpId"
 							placeholder="Slug"
-							v-model="article.slug"
+							v-model="slug.value"
 						/>
 					</div>
 				</div>
-				<div class="tile-footer" v-if="changed.slug">
+				<div class="tile-footer" v-if="slug.changed">
 					<div class="row justify-content-end">
 						<button
-							@click="article.slug = articleInfo ? articleInfo.slug : ''"
+							@click="slug.value = remoteArticleInfo ? remoteArticleInfo.slug : ''"
 							type="button"
 							class="btn btn-secondary w-auto me-2"
 						>
@@ -326,10 +326,11 @@
 		</template>
 	</ModalComponent>
 
+	<!-- 更新 SLUG -->
 	<ModalComponent title="更新文章固定链接" ref="updateSlugModal" @save-change="updateSlug">
 		<template #body>
 			<p>确定要将该文章的链接更改为：</p>
-			<p>{{ 'http://localhost:8090/' + route.params.id + '/' + article.slug }}</p>
+			<p>{{ 'http://localhost:8090/' + route.params.id + '/' + slug.value }}</p>
 			<p>吗？</p>
 		</template>
 	</ModalComponent>
@@ -351,7 +352,6 @@
 	import ModalComponent from '@/component/ModalComponent.vue';
 
 	// 全局
-
 	const route = useRoute();
 	const publishModal = ref();
 	const remoteArticleInfo = ref<ArticleInfo | null>(null);
@@ -440,11 +440,9 @@
 		value: '',
 		changed: false,
 	});
-
 	const contentChanged = computed(() => {
 		return body.changed || title.changed;
 	});
-
 	const initBodyEditor = () => {
 		bodyEditor.value = new Editor({
 			extensions: [
@@ -470,13 +468,11 @@
 		bodyEditor.value?.on('update', updateHtmlContent);
 		body.value = bodyEditor.value.getHTML();
 	};
-
 	const updateHtmlContent = () => {
 		if (bodyEditor.value) {
 			body.value = bodyEditor.value?.getHTML();
 		}
 	};
-
 	const updateArticleContent = async () => {
 		console.log(title.changed);
 		console.log(body.changed);
@@ -498,7 +494,6 @@
 		body.changed = false;
 		title.changed = false;
 	};
-
 	const getStatusColorClass = (status?: string) => {
 		switch (status?.toLowerCase()) {
 			case 'published':
@@ -511,7 +506,6 @@
 				break;
 		}
 	};
-
 	watch(
 		() => title.value,
 		newValue => {
@@ -523,13 +517,13 @@
 			}
 		}
 	);
-
 	watch(
 		() => body.value,
 		newValue => {
 			body.changed = newValue !== remoteBody.value;
 		}
 	);
+
 	// summary 组件
 	const summary = reactive({
 		value: '',
@@ -558,10 +552,10 @@
 			summary.changed = newValue !== remoteArticleInfo.value?.summary;
 		}
 	);
+
 	// tag 组件
 	const tags = ref<TagInfo[]>([]);
 	const newTagName = ref('');
-
 	const addTag = async () => {
 		if (!newTagName.value.trim()) {
 			return showMessage('请输入标签名');
@@ -593,7 +587,6 @@
 		tags.value.push(tagInfoResponse.data);
 		newTagName.value = '';
 	};
-
 	const removeTag = async (tag: TagInfo) => {
 		const response: APIResponse<void> = await makeRequest(
 			RESOURCE_BASE_URL + '/articles/tag/' + route.params.id + '/' + tag.id,
@@ -607,47 +600,31 @@
 		}
 		tags.value = tags.value.filter(t => t.id !== tag.id);
 	};
+
 	// slug 组件
-	const slug = ref('');
-
-	// 其他
-
+	const slug = reactive({
+		value: '',
+		changed: false,
+	});
 	const updateSlugModal = ref();
-
-	const article = reactive({
-		title: '',
-		body: '',
-		summary: '',
-		slug: '',
-	});
-
-	const changed = reactive({
-		title: false,
-		body: false,
-		summary: false,
-		slug: false,
-	});
-
-	const articleInfo = ref<ArticleInfo | null>(null);
-
 	const updateSlug = async () => {
 		const response: APIResponse<void> = await makeRequest(
 			RESOURCE_BASE_URL + '/articles/slug/' + route.params.id,
 			{
 				method: 'PATCH',
 				body: JSON.stringify({
-					slug: article.slug,
+					slug: slug.value,
 				}),
 			}
 		);
-		if (response.code === 0) {
-			if (articleInfo.value) {
-				articleInfo.value.slug = article.slug;
-				changed.slug = false;
-				showMessage('更新成功', AlertType.SUCCESS);
-			}
-		} else {
+		if (response.code !== 0) {
 			showMessage('更新失败', AlertType.ERROR);
+			return console.error(response.message);
+		}
+		if (remoteArticleInfo.value) {
+			remoteArticleInfo.value.slug = slug.value;
+			slug.changed = false;
+			showMessage('更新成功', AlertType.SUCCESS);
 		}
 		updateSlugModal.value.hide();
 	};
@@ -656,6 +633,12 @@
 			updateSlugModal.value.show();
 		}
 	};
+	watch(
+		() => slug.value,
+		newValue => {
+			slug.changed = newValue !== remoteArticleInfo.value?.slug;
+		}
+	);
 </script>
 
 <style>
