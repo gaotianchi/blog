@@ -21,11 +21,11 @@
 			<div class="app-sidebar__user">
 				<img
 					class="app-sidebar__user-avatar"
-					:src="user.avatar || 'https://randomuser.me/api/portraits/men/1.jpg'"
+					:src="user?.avatarUrl || 'https://randomuser.me/api/portraits/men/1.jpg'"
 					alt="User Image"
 				/>
 				<div>
-					<p class="app-sidebar__user-name">{{ user.penName || 'John Doe' }}</p>
+					<p class="app-sidebar__user-name">{{ user?.penName || 'John Doe' }}</p>
 					<!-- <p class="app-sidebar__user-designation">Frontend Developer</p> -->
 				</div>
 			</div>
@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts" setup>
-	import { onMounted, reactive, ref } from 'vue';
+	import { onMounted, ref } from 'vue';
 	import SidebarMenuComponent from '@/component/SidebarMenuComponent.vue';
 	import NavbarComponent from '@/component/NavbarComponent.vue';
 	import type { APIResponse, AvatarInfo, UserInfo } from '@/type/response.type';
@@ -46,24 +46,14 @@
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
 
 	const Triggered = ref<boolean>(false);
-	const user = reactive({
-		penName: '',
-		avatar: '',
-	});
-
+	const user = ref<UserInfo | null>(null);
 	onMounted(async () => {
-		const userInfoResponse: APIResponse<UserInfo> = await makeRequest(
+		const response: APIResponse<UserInfo> = await makeRequest(
 			RESOURCE_BASE_URL + '/users/info'
 		);
-		if (userInfoResponse.code === 0) {
-			user.penName = userInfoResponse.data.penName;
-
-			const avatarResponse: APIResponse<AvatarInfo> = await makeRequest(
-				userInfoResponse.data.avatarInfoLocation
-			);
-			if (avatarResponse.code === 0) {
-				user.avatar = avatarResponse.data.url;
-			}
+		if (response.code !== 0) {
+			return console.error(response.message);
 		}
+		user.value = response.data;
 	});
 </script>

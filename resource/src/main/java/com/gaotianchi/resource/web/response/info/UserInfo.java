@@ -15,6 +15,8 @@ public class UserInfo {
     private String profile;
     private TimeZone timeZone;
 
+    private String avatarUrl;
+
     private String avatarInfoLocation;
     private String articleInfoPageLocation;
     private String illustrationInfoPageLocation;
@@ -30,7 +32,10 @@ public class UserInfo {
         timeZone = userEntity.getTimeZone();
 
         AvatarEntity avatarEntity = userEntity.getAvatar();
-        if (avatarEntity != null) avatarInfoLocation = "http://localhost:8090/avatar/info/" + avatarEntity.getId();
+        if (avatarEntity != null) {
+            avatarUrl = avatarEntity.getUrl();
+            avatarInfoLocation = "http://localhost:8090/avatar/info/" + avatarEntity.getId();
+        }
         articleInfoPageLocation = "http://localhost:8090/articles/user/" + id;
         commentInfoPageLocation = "";
         illustrationInfoPageLocation = "http://localhost:8090/illustrations/user/" + id;

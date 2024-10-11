@@ -113,7 +113,7 @@
 				<!-- 更新按钮 -->
 				<button
 					v-if="remoteArticleInfo?.status !== 'TRASH'"
-					class="btn btn-primary me-md-2"
+					class="btn btn-primary me-md-2 mb-2"
 					type="button"
 					:disabled="!contentChanged"
 					@click="updateArticleContent"
@@ -124,7 +124,7 @@
 				<!--DRAFT 转化为 PUBLISHED -->
 				<button
 					v-if="remoteArticleInfo?.status === 'DRAFT'"
-					class="btn btn-success me-md-2"
+					class="btn btn-success me-md-2 mb-2"
 					type="button"
 					@click="openPublishModal"
 				>
@@ -134,7 +134,7 @@
 				<!-- PUBLISHED, TRASH 转化为草稿 -->
 				<button
 					v-if="remoteArticleInfo?.status !== 'DRAFT'"
-					class="btn btn-light me-md-2"
+					class="btn btn-light me-md-2 mb-2"
 					type="button"
 					@click="resetArticleStatus('DRAFT')"
 				>
@@ -144,7 +144,7 @@
 				<!-- DRAFT, PUBLISHED 转化为 TRASH -->
 				<button
 					v-if="remoteArticleInfo?.status !== 'TRASH'"
-					class="btn btn-dark me-md-2"
+					class="btn btn-dark me-md-2 mb-2"
 					type="button"
 					@click="resetArticleStatus('TRASH')"
 				>

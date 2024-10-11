@@ -78,6 +78,7 @@ export type UserInfo = {
 	penName: string;
 	profile: string;
 	timeZone: string;
+	avatarUrl: string;
 	avatarInfoLocation: string;
 	articleInfoPageLocation: string;
 	illustrationInfoPageLocation: string;

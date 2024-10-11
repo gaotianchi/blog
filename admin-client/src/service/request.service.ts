@@ -1,14 +1,13 @@
 import { User } from 'oidc-client-ts';
 import authService from '@/service/auth.service';
 import type { APIResponse } from '@/type/response.type';
-import { AUTH_BASE_URL, RESOURCE_BASE_URL } from '@/config/global.config';
-import { useRouter } from 'vue-router';
 
 export async function makeRequest<T>(
 	url: string,
 	options: RequestInit = {}
 ): Promise<APIResponse<T>> {
 	try {
+		console.log(url);
 		const user: User | null = await authService.userManager.getUser();
 		if (!user || !user.access_token) {
 			throw new Error('No valid access token found');
