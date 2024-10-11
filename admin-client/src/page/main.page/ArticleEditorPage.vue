@@ -96,17 +96,18 @@
 						</div>
 
 						<!-- 插图按钮 -->
-						<button
-							@click="bodyEditor.commands.setIllustration()"
-							class="btn btn-outline-dark"
-						>
+						<!-- <button @click="" class="btn btn-outline-dark">
 							<i class="bi bi-image"></i>
-						</button>
+						</button> -->
 					</div>
 				</FloatingMenu>
 
-				<!-- 选中文本工具栏 -->
-				<BubbleMenu :editor="bodyEditor" :tippy-options="{ duration: 100 }">
+				<!-- 常规选中文本工具栏 -->
+				<BubbleMenu
+					plugin-key="global"
+					:editor="bodyEditor"
+					:tippy-options="{ duration: 100 }"
+				>
 					<div
 						class="btn-group btn-group-sm bg-white"
 						role="group"
@@ -121,7 +122,7 @@
 							<strong>B</strong>
 						</button>
 						<!-- 链接 -->
-						<button @click="" type="button" class="btn btn-outline-dark">
+						<button @click="toggleLinkNode" type="button" class="btn btn-outline-dark">
 							<i class="bi bi-link-45deg"></i>
 						</button>
 						<!-- 其他工具 -->
@@ -152,6 +153,60 @@
 								</button>
 							</div>
 						</ul>
+					</div>
+				</BubbleMenu>
+
+				<!-- 链接编辑面板 -->
+				<BubbleMenu
+					plugin-key="linkEditorPanel"
+					:editor="bodyEditor"
+					:tippy-options="{ duration: 100 }"
+					:should-show="
+						p => {
+							const linkNode = p.editor.getAttributes('link');
+							link.href = linkNode.href;
+							link.openInNewTab = linkNode.target === '_blank' ? true : false;
+							console.log(linkNode);
+							return p.editor.isActive('link');
+						}
+					"
+				>
+					<div class="card" style="width: 18rem">
+						<div class="card-body">
+							<div class="form-floating mb-2">
+								<input
+									type="text"
+									class="form-control"
+									id="floatingLinkEditor"
+									placeholder="链接"
+									v-model="link.href"
+								/>
+								<label for="floatingLinkEditor">编辑链接</label>
+							</div>
+							<div class="row align-items-center">
+								<div class="col">
+									<div class="form-check form-switch">
+										<input
+											class="form-check-input"
+											type="checkbox"
+											role="switch"
+											id="flexSwitchCheckChecked"
+											v-model="link.openInNewTab"
+										/>
+										<label
+											class="form-check-label"
+											for="flexSwitchCheckChecked"
+										>
+											新标签
+										</label>
+									</div>
+								</div>
+								<div class="col">
+									<a href="#" @click="unsetLink" class="btn btn-link">取消</a>
+									<a href="#" @click="updateLink" class="btn btn-link">保存</a>
+								</div>
+							</div>
+						</div>
 					</div>
 				</BubbleMenu>
 
@@ -403,17 +458,17 @@
 	import { ref, onMounted, watch, reactive, computed } from 'vue';
 	import StarterKit from '@tiptap/starter-kit';
 	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
-	import { Illustration } from '@/component/editor.component/extension/illustration/IllustrationExtension';
 	import Placeholder from '@tiptap/extension-placeholder';
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
 	import { makeRequest } from '@/service/request.service';
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
 	import { useRoute } from 'vue-router';
-	import type { APIResponse, ArticleInfo, TagInfo, UserInfo } from '@/type/response.type';
+	import type { APIResponse, ArticleInfo, TagInfo } from '@/type/response.type';
 	import { getArtcicleStatusClass, getFormarttedDate } from '@/utlis';
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
+	import Link from '@tiptap/extension-link';
 
 	// 全局
 	const route = useRoute();
@@ -510,7 +565,6 @@
 	const initBodyEditor = () => {
 		bodyEditor.value = new Editor({
 			extensions: [
-				Illustration,
 				StarterKit.configure({
 					blockquote: {
 						HTMLAttributes: {
@@ -520,6 +574,10 @@
 				}),
 				Placeholder.configure({
 					placeholder: '正文 ...',
+				}),
+				Link.configure({
+					openOnClick: false,
+					defaultProtocol: 'https',
 				}),
 			],
 			content: '',
@@ -575,6 +633,8 @@
 			body.changed = newValue !== remoteBody.value;
 		}
 	);
+	// 拓展部分
+	// 标题拓展
 	const setHeading = (level: number) => {
 		if (bodyEditor.value) {
 			bodyEditor.value
@@ -582,6 +642,39 @@
 				.focus()
 				.toggleHeading({ level: level as 2 | 3 | 4 | 4 })
 				.run();
+		}
+	};
+	// 链接拓展
+	const link = reactive({
+		href: '',
+		openInNewTab: false,
+	});
+	const toggleLinkNode = () => {
+		if (bodyEditor.value) {
+			if (bodyEditor.value?.isActive('link')) {
+				bodyEditor.value.chain().focus().extendMarkRange('link').unsetLink().run();
+			} else {
+				bodyEditor.value
+					.chain()
+					.focus()
+					.extendMarkRange('link')
+					.toggleLink({ href: '#' })
+					.run();
+			}
+		}
+	};
+	const updateLink = () => {
+		const target = link.openInNewTab ? '_blank' : '_self';
+		bodyEditor.value
+			?.chain()
+			.extendMarkRange('link')
+			.unsetLink()
+			.setLink({ href: link.href, target: target })
+			.run();
+	};
+	const unsetLink = () => {
+		if (bodyEditor.value) {
+			bodyEditor.value.chain().focus().extendMarkRange('link').unsetLink().run();
 		}
 	};
 
