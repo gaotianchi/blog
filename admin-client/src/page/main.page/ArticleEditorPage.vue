@@ -208,13 +208,15 @@
 						name="summary-textarea"
 						id="summary-textarea"
 						rows="5"
-						v-model="article.summary"
+						v-model="summary.value"
 					></textarea>
 				</div>
-				<div class="tile-footer" v-if="changed.summary">
+				<div class="tile-footer" v-if="summary.changed">
 					<div class="row justify-content-end">
 						<button
-							@click="article.summary = article ? article.summary : ''"
+							@click="
+								summary.value = remoteArticleInfo ? remoteArticleInfo.summary : ''
+							"
 							type="button"
 							class="btn btn-secondary w-auto me-2"
 						>
@@ -333,7 +335,7 @@
 	</ModalComponent>
 </template>
 <script setup lang="ts">
-	import { ref, onMounted, onBeforeUnmount, watch, reactive, computed } from 'vue';
+	import { ref, onMounted, watch, reactive, computed } from 'vue';
 	import StarterKit from '@tiptap/starter-kit';
 	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
 	import { Illustration } from '@/component/editor.component/extension/illustration/IllustrationExtension';
@@ -348,9 +350,11 @@
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
 
-	const route = useRoute();
-
 	// 全局
+
+	const route = useRoute();
+	const publishModal = ref();
+	const remoteArticleInfo = ref<ArticleInfo | null>(null);
 	onMounted(() => {
 		// 加载编辑器
 		initBodyEditor();
@@ -358,10 +362,6 @@
 		// 加载数据
 		loadArticleInfo();
 	});
-
-	const publishModal = ref();
-	const remoteArticleInfo = ref<ArticleInfo | null>(null);
-
 	const loadArticleInfo = async () => {
 		// 加载 info
 		const articleInfoResponse: APIResponse<ArticleInfo> = await makeRequest(
@@ -518,8 +518,33 @@
 		}
 	);
 	// summary 组件
-	const summary = ref('');
-
+	const summary = reactive({
+		value: '',
+		changed: false,
+	});
+	const updateSummary = async () => {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/summary/' + route.params.id,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					summary: summary.value,
+				}),
+			}
+		);
+		if (response.code !== 0) {
+			showMessage('更新失败', AlertType.ERROR);
+			return console.error(response.message);
+		}
+		showMessage('更新成功', AlertType.SUCCESS);
+		summary.changed = false;
+	};
+	watch(
+		() => summary.value,
+		newValue => {
+			summary.changed = newValue !== remoteArticleInfo.value?.summary;
+		}
+	);
 	// tag 组件
 	const tags = ref<TagInfo[]>([]);
 
@@ -546,7 +571,6 @@
 	});
 
 	const articleInfo = ref<ArticleInfo | null>(null);
-	const userInfo = ref<UserInfo | null>(null);
 
 	const handleKeyEnterAddTag = async () => {
 		console.log('enter');
@@ -582,24 +606,7 @@
 			}
 		}
 	};
-	const updateSummary = async () => {
-		const response: APIResponse<void> = await makeRequest(
-			RESOURCE_BASE_URL + '/articles/summary/' + route.params.id,
-			{
-				method: 'PATCH',
-				body: JSON.stringify({
-					summary: article.summary,
-				}),
-			}
-		);
-		if (response.code === 0) {
-			if (articleInfo.value) {
-				articleInfo.value.summary = article.summary;
-				changed.summary = false;
-			}
-		} else {
-		}
-	};
+
 	const handleBtnRemoveTag = async (tag: TagInfo) => {
 		const response: APIResponse<void> = await makeRequest(
 			RESOURCE_BASE_URL + '/articles/tag/' + route.params.id + '/' + tag.id,
@@ -651,28 +658,6 @@
 			updateSlugModal.value.show();
 		}
 	};
-
-	onMounted(() => {
-		initBodyEditor();
-	});
-
-	const contentSync = computed(() => {
-		return !changed.body && !changed.title;
-	});
-
-	watch(
-		() => article.summary,
-		newValue => {
-			changed.summary = newValue != articleInfo.value?.summary;
-		}
-	);
-
-	watch(
-		() => article.slug,
-		newValue => {
-			changed.slug = newValue != articleInfo.value?.slug;
-		}
-	);
 </script>
 
 <style>
