@@ -141,6 +141,16 @@
 					<i class="bi bi-send-slash-fill"></i>
 					还原
 				</button>
+				<!-- DRAFT, PUBLISHED 转化为 TRASH -->
+				<button
+					v-if="remoteArticleInfo?.status !== 'TRASH'"
+					class="btn btn-dark me-md-2"
+					type="button"
+					@click="resetArticleStatus('TRASH')"
+				>
+					<i class="bi bi-trash-fill"></i>
+					垃圾
+				</button>
 			</div>
 
 			<!-- 信息栏组件 -->
@@ -154,7 +164,7 @@
 								<div class="col-8 p-0">
 									<span
 										class="badge"
-										:class="getStatusColorClass(remoteArticleInfo?.status)"
+										:class="getArtcicleStatusClass(remoteArticleInfo?.status)"
 									>
 										{{ remoteArticleInfo?.status }}
 									</span>
@@ -346,7 +356,7 @@
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
 	import { useRoute } from 'vue-router';
 	import type { APIResponse, ArticleInfo, TagInfo, UserInfo } from '@/type/response.type';
-	import { getFormarttedDate } from '@/utlis';
+	import { getArtcicleStatusClass, getFormarttedDate } from '@/utlis';
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
@@ -493,18 +503,6 @@
 		showMessage('更新成功', AlertType.SUCCESS);
 		body.changed = false;
 		title.changed = false;
-	};
-	const getStatusColorClass = (status?: string) => {
-		switch (status?.toLowerCase()) {
-			case 'published':
-				return 'text-bg-success';
-			case 'draft':
-				return 'text-bg-secondary';
-			case 'trash':
-				return 'text-bg-dark';
-			default:
-				break;
-		}
 	};
 	watch(
 		() => title.value,
