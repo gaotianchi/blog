@@ -96,9 +96,9 @@
 						</div>
 
 						<!-- 插图按钮 -->
-						<!-- <button @click="" class="btn btn-outline-dark">
+						<button @click="openillustrationEditorModal" class="btn btn-outline-dark">
 							<i class="bi bi-image"></i>
-						</button> -->
+						</button>
 					</div>
 				</FloatingMenu>
 
@@ -156,7 +156,7 @@
 					</div>
 				</BubbleMenu>
 
-				<!-- 链接编辑面板 -->
+				<!-- link 编辑面板 -->
 				<BubbleMenu
 					plugin-key="linkEditorPanel"
 					:editor="bodyEditor"
@@ -166,7 +166,6 @@
 							const linkNode = p.editor.getAttributes('link');
 							link.href = linkNode.href;
 							link.openInNewTab = linkNode.target === '_blank' ? true : false;
-							console.log(linkNode);
 							return p.editor.isActive('link');
 						}
 					"
@@ -207,6 +206,28 @@
 								</div>
 							</div>
 						</div>
+					</div>
+				</BubbleMenu>
+
+				<!-- illustration 编辑面板 -->
+				<BubbleMenu
+					:editor="bodyEditor"
+					plugin-key="illustration"
+					:tippy-options="{ duration: 100 }"
+					:should-show="
+						p => {
+							return p.editor.isActive('illustration');
+						}
+					"
+				>
+					<div
+						class="btn-group btn-group-sm"
+						role="group"
+						aria-label="Small button group"
+					>
+						<button type="button" class="btn btn-outline-dark">Left</button>
+						<button type="button" class="btn btn-outline-dark">Middle</button>
+						<button type="button" class="btn btn-outline-dark">Right</button>
 					</div>
 				</BubbleMenu>
 
@@ -453,6 +474,72 @@
 			<p>吗？</p>
 		</template>
 	</ModalComponent>
+
+	<!-- 编辑 illustration modal -->
+	<ModalComponent
+		title="编辑插图"
+		ref="illustrationEditorModal"
+		@save-change=""
+		modal-width="modal-xl"
+	>
+		<template #body>
+			<div class="row">
+				<div class="col-6">
+					<img
+						:src="previewUrl || 'https://placehold.co/800x400'"
+						class="img-fluid card-img"
+						:alt="''"
+					/>
+				</div>
+				<div class="col-6">
+					<!-- 选择并预览本地图片 -->
+					<div class="input-group mb-3">
+						<button class="btn btn-outline-secondary" type="button">从云端选择</button>
+						<input
+							@change="handleInputChange"
+							ref="inputIllustrationRef"
+							type="file"
+							class="form-control"
+							id="uploadIllustration"
+							aria-describedby="inputGroupFileAddon03"
+							aria-label="Upload"
+							placeholder="从本地选择"
+							accept="image/*"
+						/>
+					</div>
+					<!-- title 标题编辑区 -->
+					<div class="form-floating mb-3">
+						<input
+							type="text"
+							class="form-control"
+							id="illustrationTitleInput"
+							placeholder="标题"
+							v-model="illustration.title"
+							:key="illustration.title"
+						/>
+						<label for="illustrationTitleInput">标题</label>
+					</div>
+					<!-- alt 编辑器 -->
+					<div class="form-floating mb-3">
+						<textarea
+							type="text"
+							class="form-control"
+							id="illustrationAltInput"
+							placeholder="描述"
+							style="min-height: 100px"
+							v-model="illustration.alt"
+							:key="illustration.alt"
+						></textarea>
+						<label for="illustrationAltInput">描述</label>
+					</div>
+					<!-- align 编辑器 -->
+					<div class="mb-3 text-center">
+						<FloatAlignComponent v-model="illustration.align" />
+					</div>
+				</div>
+			</div>
+		</template>
+	</ModalComponent>
 </template>
 <script setup lang="ts">
 	import { ref, onMounted, watch, reactive, computed } from 'vue';
@@ -469,6 +556,8 @@
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
 	import Link from '@tiptap/extension-link';
+	import { Illustration } from '@/component/editor.component/extension/Illustration';
+	import FloatAlignComponent from '@/component/editor.component/FloatAlignComponent.vue';
 
 	// 全局
 	const route = useRoute();
@@ -579,6 +668,7 @@
 					openOnClick: false,
 					defaultProtocol: 'https',
 				}),
+				Illustration,
 			],
 			content: '',
 			editorProps: {
@@ -634,7 +724,7 @@
 		}
 	);
 	// 拓展部分
-	// 标题拓展
+	// Heading 标题拓展
 	const setHeading = (level: number) => {
 		if (bodyEditor.value) {
 			bodyEditor.value
@@ -644,7 +734,7 @@
 				.run();
 		}
 	};
-	// 链接拓展
+	// Link 链接拓展
 	const link = reactive({
 		href: '',
 		openInNewTab: false,
@@ -675,6 +765,37 @@
 	const unsetLink = () => {
 		if (bodyEditor.value) {
 			bodyEditor.value.chain().focus().extendMarkRange('link').unsetLink().run();
+		}
+	};
+
+	// Illustration 插图拓展
+	const previewUrl = ref<string | null>(null);
+	const illustrationEditorModal = ref();
+	const inputIllustrationRef = ref();
+	const selectedLocalImage = ref<File | null>(null);
+	const illustration = reactive({
+		title: '',
+		alt: '',
+		align: 'float-none',
+		src: '#',
+	});
+	const openillustrationEditorModal = () => {
+		if (illustrationEditorModal.value) {
+			illustrationEditorModal.value.show();
+		}
+	};
+	const handleInputChange = () => {
+		if (inputIllustrationRef.value) {
+			const files = inputIllustrationRef.value.files;
+			if (files?.length) {
+				const currentFile = files[0];
+				selectedLocalImage.value = currentFile;
+				const reader = new FileReader();
+				reader.onload = () => {
+					previewUrl.value = reader.result as string;
+				};
+				reader.readAsDataURL(currentFile);
+			}
 		}
 	};
 
