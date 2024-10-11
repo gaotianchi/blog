@@ -1,7 +1,11 @@
 import { createApp } from 'vue';
 import AlertComponent from '@/component/AlertComponent.vue';
+import { AlertType } from '@/enum';
 
-const showMessage = (message: string, type: string) => {
+const showMessage = (message: string, type?: string) => {
+	if (!type) {
+		type = AlertType.INFO;
+	}
 	// 创建组件实例
 	const alertInstance = createApp(AlertComponent, {
 		message,

@@ -247,7 +247,7 @@
 							<button
 								type="button"
 								class="btn-close btn-close-white ms-1"
-								@click="handleBtnRemoveTag(tag)"
+								@click="removeTag(tag)"
 								aria-label="Remove"
 							></button>
 						</div>
@@ -257,7 +257,7 @@
 							type="text"
 							class="form-control"
 							v-model="newTagName"
-							@keyup.enter="handleKeyEnterAddTag"
+							@keyup.enter="addTag"
 							placeholder="输入标签并按回车键"
 						/>
 					</div>
@@ -360,9 +360,9 @@
 		initBodyEditor();
 
 		// 加载数据
-		loadArticleInfo();
+		loadArticleData();
 	});
-	const loadArticleInfo = async () => {
+	const loadArticleData = async () => {
 		// 加载 info
 		const articleInfoResponse: APIResponse<ArticleInfo> = await makeRequest(
 			RESOURCE_BASE_URL + '/articles/info/' + route.params.id
@@ -441,6 +441,10 @@
 		changed: false,
 	});
 
+	const contentChanged = computed(() => {
+		return body.changed || title.changed;
+	});
+
 	const initBodyEditor = () => {
 		bodyEditor.value = new Editor({
 			extensions: [
@@ -495,9 +499,18 @@
 		title.changed = false;
 	};
 
-	const contentChanged = computed(() => {
-		return body.changed || title.changed;
-	});
+	const getStatusColorClass = (status?: string) => {
+		switch (status?.toLowerCase()) {
+			case 'published':
+				return 'text-bg-success';
+			case 'draft':
+				return 'text-bg-secondary';
+			case 'trash':
+				return 'text-bg-dark';
+			default:
+				break;
+		}
+	};
 
 	watch(
 		() => title.value,
@@ -547,14 +560,59 @@
 	);
 	// tag 组件
 	const tags = ref<TagInfo[]>([]);
+	const newTagName = ref('');
 
+	const addTag = async () => {
+		if (!newTagName.value.trim()) {
+			return showMessage('请输入标签名');
+		}
+		if (tags.value.some(tag => tag.name == newTagName.value)) {
+			newTagName.value = '';
+			return showMessage('标签名已经添加');
+		}
+		const tagInfoResponse: APIResponse<TagInfo> = await makeRequest(
+			RESOURCE_BASE_URL + '/tags/new/' + newTagName.value,
+			{
+				method: 'POST',
+			}
+		);
+		if (tagInfoResponse.code !== 0) {
+			showMessage('标签创建失败', AlertType.ERROR);
+			return console.error(tagInfoResponse.message);
+		}
+		const addTagResponse: APIResponse<TagInfo> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/tag/' + route.params.id + '/' + tagInfoResponse.data.id,
+			{
+				method: 'POST',
+			}
+		);
+		if (addTagResponse.code !== 0) {
+			showMessage('标签添加失败', AlertType.ERROR);
+			return console.error(addTagResponse.message);
+		}
+		tags.value.push(tagInfoResponse.data);
+		newTagName.value = '';
+	};
+
+	const removeTag = async (tag: TagInfo) => {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/tag/' + route.params.id + '/' + tag.id,
+			{
+				method: 'DELETE',
+			}
+		);
+		if (response.code !== 0) {
+			showMessage('标签移除失败', AlertType.ERROR);
+			return console.error(response.message);
+		}
+		tags.value = tags.value.filter(t => t.id !== tag.id);
+	};
 	// slug 组件
 	const slug = ref('');
 
 	// 其他
 
 	const updateSlugModal = ref();
-	const newTagName = ref('');
 
 	const article = reactive({
 		title: '',
@@ -572,66 +630,6 @@
 
 	const articleInfo = ref<ArticleInfo | null>(null);
 
-	const handleKeyEnterAddTag = async () => {
-		console.log('enter');
-		if (!newTagName.value.trim()) {
-			return;
-		}
-		if (tags.value.some(tag => tag.name == newTagName.value)) {
-			newTagName.value = '';
-			return;
-		}
-
-		const tagInfoResponse: APIResponse<TagInfo> = await makeRequest(
-			RESOURCE_BASE_URL + '/tags/new/' + newTagName.value,
-			{
-				method: 'POST',
-			}
-		);
-		if (tagInfoResponse.code === 0) {
-			console.log(tagInfoResponse.data);
-			const addTagResponse: APIResponse<TagInfo> = await makeRequest(
-				RESOURCE_BASE_URL +
-					'/articles/tag/' +
-					route.params.id +
-					'/' +
-					tagInfoResponse.data.id,
-				{
-					method: 'POST',
-				}
-			);
-			if (addTagResponse.code === 0) {
-				tags.value.push(tagInfoResponse.data);
-				newTagName.value = '';
-			}
-		}
-	};
-
-	const handleBtnRemoveTag = async (tag: TagInfo) => {
-		const response: APIResponse<void> = await makeRequest(
-			RESOURCE_BASE_URL + '/articles/tag/' + route.params.id + '/' + tag.id,
-			{
-				method: 'DELETE',
-			}
-		);
-		if (response.code === 0) {
-			tags.value = tags.value.filter(t => t.id !== tag.id);
-			console.log(tags.value);
-		}
-	};
-
-	const getStatusColorClass = (status?: string) => {
-		switch (status?.toLowerCase()) {
-			case 'published':
-				return 'text-bg-success';
-			case 'draft':
-				return 'text-bg-secondary';
-			case 'trash':
-				return 'text-bg-dark';
-			default:
-				break;
-		}
-	};
 	const updateSlug = async () => {
 		const response: APIResponse<void> = await makeRequest(
 			RESOURCE_BASE_URL + '/articles/slug/' + route.params.id,
