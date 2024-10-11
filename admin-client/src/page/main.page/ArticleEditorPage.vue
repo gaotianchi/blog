@@ -28,8 +28,8 @@
 				placeholder="标题"
 				aria-label="文章标题"
 				:rows="titleRow"
-				ref="titleRef"
-				v-model="article.title"
+				ref="titleTextAreaRef"
+				v-model="title.value"
 			></textarea>
 
 			<div v-if="bodyEditor">
@@ -108,212 +108,209 @@
 
 		<!-- 右侧边栏 -->
 		<div class="col-12 col-md-4">
-			<div class="sticky-top">
-				<div class="d-grid tile gap-2 d-md-flex justify-content-md-center mb-3">
-					<!-- 操作按钮区域 -->
-					<button
-						v-if="articleInfo?.status === 'DRAFT'"
-						class="btn btn-warning"
-						type="button"
-						@click="resetArticleStatus('TRASH')"
-					>
-						<i class="bi bi-trash3-fill"></i>
-						移入垃圾桶
-					</button>
-					<button
-						v-if="articleInfo?.status === 'DRAFT'"
-						class="btn btn-success"
-						type="button"
-						@click="openPublishModal"
-					>
-						<i class="bi bi-send-fill"></i>
-						发布
-					</button>
-					<button
-						v-if="articleInfo?.status === 'PUBLISHED'"
-						class="btn btn-secondary"
-						type="button"
-						@click="resetArticleStatus('DRAFT')"
-					>
-						<i class="bi bi-file-earmark-arrow-down-fill"></i>
-						取消发布
-					</button>
-					<button
-						class="btn btn-warning me-md-2"
-						type="button"
-						:disabled="contentSync"
-						@click="updateArticleContent"
-					>
-						<i class="bi bi-arrow-repeat"></i>
-						更新
-					</button>
-				</div>
+			<!-- 操作按钮区域 -->
+			<div class="tile">
+				<!-- 更新按钮 -->
+				<button
+					v-if="remoteArticleInfo?.status !== 'TRASH'"
+					class="btn btn-primary me-md-2"
+					type="button"
+					:disabled="!contentChanged"
+					@click="updateArticleContent"
+				>
+					<i class="bi bi-arrow-repeat"></i>
+					更新
+				</button>
+				<!--DRAFT 转化为 PUBLISHED -->
+				<button
+					v-if="remoteArticleInfo?.status === 'DRAFT'"
+					class="btn btn-success me-md-2"
+					type="button"
+					@click="openPublishModal"
+				>
+					<i class="bi bi-send-fill"></i>
+					发布
+				</button>
+				<!-- PUBLISHED, TRASH 转化为草稿 -->
+				<button
+					v-if="remoteArticleInfo?.status !== 'DRAFT'"
+					class="btn btn-light me-md-2"
+					type="button"
+					@click="resetArticleStatus('DRAFT')"
+				>
+					<i class="bi bi-send-slash-fill"></i>
+					还原
+				</button>
+			</div>
 
-				<!-- 信息栏组件 -->
-				<div class="tile">
-					<div class="tile-title">信息</div>
-					<div class="tile-body">
-						<ul class="list-group list-group-flush">
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">发布状态</div>
-									<div class="col-8 p-0">
-										<span
-											class="badge"
-											:class="getStatusColorClass(articleInfo?.status)"
-										>
-											{{ articleInfo?.status }}
-										</span>
-									</div>
+			<!-- 信息栏组件 -->
+			<div class="tile">
+				<div class="tile-title">信息</div>
+				<div class="tile-body">
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-4 p-0">发布状态</div>
+								<div class="col-8 p-0">
+									<span
+										class="badge"
+										:class="getStatusColorClass(remoteArticleInfo?.status)"
+									>
+										{{ remoteArticleInfo?.status }}
+									</span>
 								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">字数</div>
-									<div class="col-8 p-0">20</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">作者</div>
-									<div class="col-8 p-0">{{ articleInfo?.penName }}</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">创建日期</div>
-									<div class="col-8 p-0">
-										{{ getFormarttedDate(articleInfo?.creationDatetime) }}
-									</div>
-								</div>
-							</li>
-							<li class="list-group-item">
-								<div class="row">
-									<div class="col-4 p-0">更新日期</div>
-									<div class="col-8 p-0">
-										{{ getFormarttedDate(articleInfo?.lastUpdatedDatetime) }}
-									</div>
-								</div>
-							</li>
-							<li class="list-group-item" v-if="articleInfo?.status === 'PUBLISHED'">
-								<div class="row">
-									<div class="col-4 p-0">发布日期</div>
-									<div class="col-8 p-0">
-										{{ getFormarttedDate(articleInfo?.publishDatetime) }}
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-
-				<div class="tile">
-					<div class="tile-title">摘要</div>
-					<div class="title-body">
-						<textarea
-							class="form-control"
-							aria-label="summary textarea"
-							name="summary-textarea"
-							id="summary-textarea"
-							rows="5"
-							v-model="article.summary"
-						></textarea>
-					</div>
-					<div class="tile-footer" v-if="changed.summary">
-						<div class="row justify-content-end">
-							<button
-								@click="article.summary = article ? article.summary : ''"
-								type="button"
-								class="btn btn-secondary w-auto me-2"
-							>
-								还原
-							</button>
-							<button
-								@click="updateSummary"
-								type="button"
-								class="btn btn-primary w-auto me-2"
-							>
-								保存
-							</button>
-						</div>
-					</div>
-				</div>
-				<div class="tile">
-					<div class="tile-title">标签</div>
-					<div class="title-body">
-						<div class="mb-3">
-							<div
-								v-for="(tag, index) in tags"
-								:key="index"
-								class="badge rounded-pill bg-secondary me-2 mb-2"
-							>
-								<span class="ms-1" style="padding-bottom: 5px">{{ tag.name }}</span>
-								<button
-									type="button"
-									class="btn-close btn-close-white ms-1"
-									@click="handleBtnRemoveTag(tag)"
-									aria-label="Remove"
-								></button>
 							</div>
-						</div>
-						<div>
-							<input
-								type="text"
-								class="form-control"
-								v-model="newTagName"
-								@keyup.enter="handleKeyEnterAddTag"
-								placeholder="输入标签并按回车键"
-							/>
-						</div>
+						</li>
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-4 p-0">作者</div>
+								<div class="col-8 p-0">{{ remoteArticleInfo?.penName }}</div>
+							</div>
+						</li>
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-4 p-0">创建日期</div>
+								<div class="col-8 p-0">
+									{{ getFormarttedDate(remoteArticleInfo?.creationDatetime) }}
+								</div>
+							</div>
+						</li>
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-4 p-0">更新日期</div>
+								<div class="col-8 p-0">
+									{{ getFormarttedDate(remoteArticleInfo?.lastUpdatedDatetime) }}
+								</div>
+							</div>
+						</li>
+						<li
+							class="list-group-item"
+							v-if="remoteArticleInfo?.status === 'PUBLISHED'"
+						>
+							<div class="row">
+								<div class="col-4 p-0">发布日期</div>
+								<div class="col-8 p-0">
+									{{ getFormarttedDate(remoteArticleInfo?.publishDatetime) }}
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- 摘要组件 -->
+			<div class="tile">
+				<div class="tile-title">摘要</div>
+				<div class="title-body">
+					<textarea
+						class="form-control"
+						aria-label="summary textarea"
+						name="summary-textarea"
+						id="summary-textarea"
+						rows="5"
+						v-model="article.summary"
+					></textarea>
+				</div>
+				<div class="tile-footer" v-if="changed.summary">
+					<div class="row justify-content-end">
+						<button
+							@click="article.summary = article ? article.summary : ''"
+							type="button"
+							class="btn btn-secondary w-auto me-2"
+						>
+							还原
+						</button>
+						<button
+							@click="updateSummary"
+							type="button"
+							class="btn btn-primary w-auto me-2"
+						>
+							保存
+						</button>
 					</div>
 				</div>
-				<div class="tile">
-					<div class="tile-title">系列</div>
-					<div class="title-body"></div>
-				</div>
-				<div class="tile">
-					<div class="tile-title">固定链接</div>
-					<div class="tile-body">
-						<div class="mb-3">
-							<input
-								aria-label="slug-input"
-								type="text"
-								class="form-control"
-								name="slug-input"
-								id="slug-input"
-								aria-describedby="helpId"
-								placeholder="Slug"
-								v-model="article.slug"
-							/>
+			</div>
+
+			<!-- 标签组件 -->
+			<div class="tile">
+				<div class="tile-title">标签</div>
+				<div class="title-body">
+					<div class="mb-3">
+						<div
+							v-for="(tag, index) in tags"
+							:key="index"
+							class="badge rounded-pill bg-secondary me-2 mb-2"
+						>
+							<span class="ms-1" style="padding-bottom: 5px">{{ tag.name }}</span>
+							<button
+								type="button"
+								class="btn-close btn-close-white ms-1"
+								@click="handleBtnRemoveTag(tag)"
+								aria-label="Remove"
+							></button>
 						</div>
 					</div>
-					<div class="tile-footer" v-if="changed.slug">
-						<div class="row justify-content-end">
-							<button
-								@click="article.slug = articleInfo ? articleInfo.slug : ''"
-								type="button"
-								class="btn btn-secondary w-auto me-2"
-							>
-								还原
-							</button>
-							<button
-								@click="openUpdateSlugModal"
-								type="button"
-								class="btn btn-primary w-auto me-2"
-							>
-								保存
-							</button>
-						</div>
+					<div>
+						<input
+							type="text"
+							class="form-control"
+							v-model="newTagName"
+							@keyup.enter="handleKeyEnterAddTag"
+							placeholder="输入标签并按回车键"
+						/>
+					</div>
+				</div>
+			</div>
+
+			<!-- 系列组件 -->
+			<div class="tile">
+				<div class="tile-title">系列</div>
+				<div class="title-body"></div>
+			</div>
+
+			<!-- SLUG 组件 -->
+			<div class="tile">
+				<div class="tile-title">固定链接</div>
+				<div class="tile-body">
+					<div class="mb-3">
+						<input
+							aria-label="slug-input"
+							type="text"
+							class="form-control"
+							name="slug-input"
+							id="slug-input"
+							aria-describedby="helpId"
+							placeholder="Slug"
+							v-model="article.slug"
+						/>
+					</div>
+				</div>
+				<div class="tile-footer" v-if="changed.slug">
+					<div class="row justify-content-end">
+						<button
+							@click="article.slug = articleInfo ? articleInfo.slug : ''"
+							type="button"
+							class="btn btn-secondary w-auto me-2"
+						>
+							还原
+						</button>
+						<button
+							@click="openUpdateSlugModal"
+							type="button"
+							class="btn btn-primary w-auto me-2"
+						>
+							保存
+						</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
+	<!-- 发布文章 modal -->
 	<ModalComponent
 		title="发布文章"
 		save-button-text="发布"
-		close-button-text="取消"
 		ref="publishModal"
 		@save-change="
 			() => {
@@ -323,7 +320,7 @@
 		"
 	>
 		<template #body>
-			<p>发布文章《{{ article.title }}》之后所有人都可以看到，确定要发布吗？</p>
+			<p>发布文章《{{ title.value }}》之后所有人都可以看到，确定要发布吗？</p>
 		</template>
 	</ModalComponent>
 
@@ -339,8 +336,6 @@
 	import { ref, onMounted, onBeforeUnmount, watch, reactive, computed } from 'vue';
 	import StarterKit from '@tiptap/starter-kit';
 	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
-	import { QuoteExtension } from '@/component/editor.component/extension/quote/QuoteExtension';
-	import { LinkExtension } from '@/component/editor.component/extension/link/LinkExtension';
 	import { Illustration } from '@/component/editor.component/extension/illustration/IllustrationExtension';
 	import Placeholder from '@tiptap/extension-placeholder';
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
@@ -354,14 +349,188 @@
 	import ModalComponent from '@/component/ModalComponent.vue';
 
 	const route = useRoute();
-	const bodyEditor = ref<Editor>();
-	const titleRef = ref<HTMLTextAreaElement>();
-	const titleRow = ref(1);
+
+	// 全局
+	onMounted(() => {
+		// 加载编辑器
+		initBodyEditor();
+
+		// 加载数据
+		loadArticleInfo();
+	});
+
 	const publishModal = ref();
+	const remoteArticleInfo = ref<ArticleInfo | null>(null);
+
+	const loadArticleInfo = async () => {
+		// 加载 info
+		const articleInfoResponse: APIResponse<ArticleInfo> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/info/' + route.params.id
+		);
+		if (articleInfoResponse.code !== 0) {
+			return console.error(articleInfoResponse.message);
+		}
+		remoteArticleInfo.value = articleInfoResponse.data;
+
+		// 加载 title, summary, slug
+		title.value = remoteArticleInfo.value.title;
+		summary.value = remoteArticleInfo.value.summary;
+		slug.value = remoteArticleInfo.value.slug;
+
+		// 加载 body
+		const bodyResponse: APIResponse<string> = await makeRequest(
+			remoteArticleInfo.value.bodyValueLocation
+		);
+		if (bodyResponse.code !== 0) {
+			return console.error(bodyResponse.message);
+		}
+		remoteBody.value = bodyResponse.data;
+		body.value = remoteBody.value;
+		bodyEditor.value?.commands.setContent(body.value);
+
+		// 加载 tags
+		const tagResponse: APIResponse<TagInfo[]> = await makeRequest(
+			remoteArticleInfo.value.tagInfoPageLocation
+		);
+		if (tagResponse.code !== 0) {
+			return console.error(tagResponse.message);
+		}
+		tags.value = tagResponse.data;
+	};
+	const resetArticleStatus = async (targetStatus: string) => {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/status/' + route.params.id + '/' + targetStatus,
+			{
+				method: 'PATCH',
+			}
+		);
+		if (response.code === 0) {
+			if (remoteArticleInfo.value) {
+				remoteArticleInfo.value.status = targetStatus.toUpperCase();
+			}
+			switch (targetStatus) {
+				case 'PUBLISHED':
+					showMessage('发布成功', AlertType.SUCCESS);
+					break;
+				case 'DRAFT':
+					showMessage('文章成功还原为草稿', AlertType.SUCCESS);
+				default:
+					break;
+			}
+		} else {
+			showMessage('状态更新失败', AlertType.ERROR);
+		}
+	};
+	const openPublishModal = () => {
+		if (publishModal.value) {
+			publishModal.value.show();
+		}
+	};
+
+	// 编辑器信息栏组件
+	const titleTextAreaRef = ref<HTMLTextAreaElement>();
+	const titleRow = ref(1);
+	const bodyEditor = ref<Editor>();
+	const remoteBody = ref('');
+	const body = reactive({
+		value: '',
+		changed: false,
+	});
+	const title = reactive({
+		value: '',
+		changed: false,
+	});
+
+	const initBodyEditor = () => {
+		bodyEditor.value = new Editor({
+			extensions: [
+				Illustration,
+				StarterKit.configure({
+					blockquote: {
+						HTMLAttributes: {
+							class: 'blockquote',
+						},
+					},
+				}),
+				Placeholder.configure({
+					placeholder: '正文 ...',
+				}),
+			],
+			content: '',
+			editorProps: {
+				attributes: {
+					class: 'border-0',
+				},
+			},
+		});
+		bodyEditor.value?.on('update', updateHtmlContent);
+		body.value = bodyEditor.value.getHTML();
+	};
+
+	const updateHtmlContent = () => {
+		if (bodyEditor.value) {
+			body.value = bodyEditor.value?.getHTML();
+		}
+	};
+
+	const updateArticleContent = async () => {
+		console.log(title.changed);
+		console.log(body.changed);
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/content/' + route.params.id,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					title: title.value,
+					body: body.value,
+				}),
+			}
+		);
+		if (response.code !== 0) {
+			showMessage('更新失败', AlertType.ERROR);
+			return console.error(response.message);
+		}
+		showMessage('更新成功', AlertType.SUCCESS);
+		body.changed = false;
+		title.changed = false;
+	};
+
+	const contentChanged = computed(() => {
+		return body.changed || title.changed;
+	});
+
+	watch(
+		() => title.value,
+		newValue => {
+			title.changed = newValue !== remoteArticleInfo.value?.title;
+			if (titleTextAreaRef.value) {
+				if (titleTextAreaRef.value.scrollHeight > titleTextAreaRef.value.clientHeight) {
+					titleRow.value += 1;
+				}
+			}
+		}
+	);
+
+	watch(
+		() => body.value,
+		newValue => {
+			body.changed = newValue !== remoteBody.value;
+		}
+	);
+	// summary 组件
+	const summary = ref('');
+
+	// tag 组件
+	const tags = ref<TagInfo[]>([]);
+
+	// slug 组件
+	const slug = ref('');
+
+	// 其他
+
 	const updateSlugModal = ref();
 	const newTagName = ref('');
 
-	// 当前数据
 	const article = reactive({
 		title: '',
 		body: '',
@@ -369,7 +538,6 @@
 		slug: '',
 	});
 
-	// 追踪数据的变动状态
 	const changed = reactive({
 		title: false,
 		body: false,
@@ -377,11 +545,8 @@
 		slug: false,
 	});
 
-	// 云端数据
 	const articleInfo = ref<ArticleInfo | null>(null);
 	const userInfo = ref<UserInfo | null>(null);
-	const articleBody = ref('');
-	const tags = ref<TagInfo[]>([]);
 
 	const handleKeyEnterAddTag = async () => {
 		console.log('enter');
@@ -447,27 +612,7 @@
 			console.log(tags.value);
 		}
 	};
-	const updateArticleContent = async () => {
-		const response: APIResponse<void> = await makeRequest(
-			RESOURCE_BASE_URL + '/articles/content/' + route.params.id,
-			{
-				method: 'PATCH',
-				body: JSON.stringify({
-					title: article.title,
-					body: article.body,
-				}),
-			}
-		);
-		if (response.code === 0) {
-			if (articleInfo.value) {
-				articleInfo.value.title = article.title;
-				articleBody.value = article.body;
-			}
-			showMessage('更新成功', AlertType.SUCCESS);
-		} else {
-			showMessage('更新失败', AlertType.ERROR);
-		}
-	};
+
 	const getStatusColorClass = (status?: string) => {
 		switch (status?.toLowerCase()) {
 			case 'published':
@@ -501,140 +646,19 @@
 		}
 		updateSlugModal.value.hide();
 	};
-
-	const openPublishModal = () => {
-		if (publishModal.value) {
-			publishModal.value.show();
-		}
-	};
-
 	const openUpdateSlugModal = () => {
 		if (updateSlugModal.value) {
 			updateSlugModal.value.show();
 		}
 	};
 
-	const resetArticleStatus = async (targetStatus: string) => {
-		const response: APIResponse<void> = await makeRequest(
-			RESOURCE_BASE_URL + '/articles/status/' + route.params.id + '/' + targetStatus,
-			{
-				method: 'PATCH',
-			}
-		);
-		if (response.code === 0) {
-			if (articleInfo.value) {
-				articleInfo.value.status = targetStatus.toUpperCase();
-			}
-			switch (targetStatus) {
-				case 'PUBLISHED':
-					showMessage('发布成功', AlertType.SUCCESS);
-					break;
-				case 'DRAFT':
-					showMessage('文章成功还原为草稿', AlertType.SUCCESS);
-				default:
-					break;
-			}
-		} else {
-			showMessage('状态更新失败', AlertType.ERROR);
-		}
-	};
-
-	const initArticleData = async () => {
-		const articleInfoResponse: APIResponse<ArticleInfo> = await makeRequest(
-			RESOURCE_BASE_URL + '/articles/info/' + route.params.id
-		);
-		articleInfo.value = articleInfoResponse.data;
-		const articleBodyResponse: APIResponse<string> = await makeRequest(
-			articleInfo.value.bodyValueLocation
-		);
-		bodyEditor.value?.commands.setContent(articleBodyResponse.data);
-		const userInfoResponse: APIResponse<UserInfo> = await makeRequest(
-			articleInfo.value.userInfoLocation
-		);
-		userInfo.value = userInfoResponse.data;
-		articleBody.value = articleBodyResponse.data;
-
-		article.body = articleBody.value;
-		article.title = articleInfo.value.title;
-		article.summary = articleInfo.value.summary;
-		article.slug = articleInfo.value.slug;
-
-		const tagInfoResponse: APIResponse<TagInfo[]> = await makeRequest(
-			articleInfo.value.tagInfoPageLocation
-		);
-		tags.value = tagInfoResponse.data;
-
-		console.log(articleInfo.value);
-	};
-
-	const initBodyEditor = () => {
-		bodyEditor.value = new Editor({
-			extensions: [
-				Illustration,
-				LinkExtension,
-				QuoteExtension,
-				StarterKit.configure({
-					blockquote: {
-						HTMLAttributes: {
-							class: 'blockquote',
-						},
-					},
-				}),
-				Placeholder.configure({
-					placeholder: '正文 ...',
-				}),
-			],
-			content: '',
-			editorProps: {
-				attributes: {
-					class: 'border-0',
-				},
-			},
-		});
-
-		bodyEditor.value.on('update', updateHtmlContent);
-		article.body = bodyEditor.value.getHTML();
-	};
-
 	onMounted(() => {
 		initBodyEditor();
-		initArticleData();
 	});
-
-	const updateHtmlContent = () => {
-		if (bodyEditor.value) {
-			article.body = bodyEditor.value?.getHTML();
-		}
-	};
 
 	const contentSync = computed(() => {
 		return !changed.body && !changed.title;
 	});
-
-	onBeforeUnmount(() => {
-		if (bodyEditor.value) {
-			bodyEditor.value.destroy();
-		}
-	});
-
-	watch(
-		() => article.title,
-		newValue => {
-			changed.title = newValue != articleInfo.value?.title;
-			if (titleRef.value) {
-				if (titleRef.value.scrollHeight > titleRef.value.clientHeight) {
-					titleRow.value += 1;
-				}
-			}
-		}
-	);
-
-	watch(
-		() => article.body,
-		newValue => {
-			changed.body = newValue != articleBody.value;
-		}
-	);
 
 	watch(
 		() => article.summary,
