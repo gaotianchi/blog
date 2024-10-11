@@ -11,6 +11,7 @@
 			}"
 			@click="openModal"
 		>
+			<!-- 插图 -->
 			<img
 				:src="
 					node.attrs.src ||
@@ -20,16 +21,16 @@
 				:title="node.attrs.title"
 				:alt="node.attrs.alt"
 			/>
-
+			<!-- 卡片文字信息 -->
 			<div class="card-img-overlay">
 				<h5 class="card-title">{{ node.attrs.title }}</h5>
 				<p class="card-text">
 					{{ node.attrs.alt }}
 				</p>
-				<p class="card-text"><small>Last updated 3 mins ago</small></p>
 			</div>
 		</div>
 
+		<!-- 图片信息编辑模态框 -->
 		<ModalComponent
 			@save-change="handleSaveChange"
 			title="编辑插图"
@@ -163,7 +164,22 @@
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 
+	// 全局
 	const props = defineProps(nodeViewProps);
+
+	onMounted(() => {
+		console.log(`插图 ${props.node.attrs.id} 被渲染`);
+	});
+	onBeforeUnmount(() => {
+		console.log(`插图 ${props.node.attrs.id} 即将被销毁`);
+	});
+
+	//
+
+	//
+	//
+	//
+	//
 	const modalId = uuidv4();
 	const route = useRoute();
 	const modalRef = ref();
