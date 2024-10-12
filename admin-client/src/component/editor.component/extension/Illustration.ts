@@ -1,3 +1,4 @@
+import type { IllustrationFloat } from '@/type/utlis';
 import { Node } from '@tiptap/core';
 
 export interface IllustrationOptions {}
@@ -6,6 +7,7 @@ declare module '@tiptap/core' {
 	interface Commands<ReturnType> {
 		illustration: {
 			setIllustration: (options: {
+				id: number;
 				src: string;
 				alt?: string;
 				title?: string;
@@ -19,20 +21,22 @@ export const Illustration = Node.create<IllustrationOptions>({
 	name: 'illustration',
 	inline: true,
 	group: 'inline',
-
 	addOptions() {
 		return {};
 	},
 	addAttributes() {
 		return {
+			id: {
+				default: 0,
+			},
 			src: {
-				default: null,
+				default: '',
 			},
 			alt: {
-				default: null,
+				default: '',
 			},
 			title: {
-				default: null,
+				default: '',
 			},
 			align: {
 				default: 'float-none',
@@ -41,31 +45,48 @@ export const Illustration = Node.create<IllustrationOptions>({
 	},
 	renderHTML({ HTMLAttributes }) {
 		return [
-			'div',
-			{ class: 'card illustration text-bg-dark' },
-			['img', { class: `${HTMLAttributes.align} card-img`, ...HTMLAttributes }],
+			'span',
+			{
+				class: `${HTMLAttributes.align} card illustration text-bg-dark me-3 ms-3 mb-1 mt-1 d-inline`,
+				style: `
+                cursor: pointer;
+                width: 25rem;`,
+			},
 			[
-				'div',
+				'img',
+				{
+					class: 'img-fluid card-img',
+					title: HTMLAttributes.title,
+					alt: HTMLAttributes.alt,
+					src: HTMLAttributes.src,
+					'data-id': HTMLAttributes.id,
+				},
+			],
+			[
+				'span',
 				{ class: 'card-img-overlay' },
-				['h5', { class: 'card-title' }, HTMLAttributes.title],
-				['p', { class: 'card-text' }, HTMLAttributes.alt],
+				['span', { class: 'card-title h5' }, HTMLAttributes.title],
+				['br'],
+				['span', { class: 'card-text' }, HTMLAttributes.alt],
 			],
 		];
 	},
 	parseHTML() {
 		return [
 			{
-				tag: 'div.card.illustration', // 匹配 <div> 标签，带有 `card` 和 `illustration` 类名
+				tag: 'span',
 				getAttrs: element => {
+					if (!element.classList.contains('illustration')) {
+						return false;
+					}
 					const img = element.querySelector('img');
 					if (!img) {
 						return false; // 如果没有找到 <img>，跳过这个节点
 					}
-
 					let align = 'float-none';
-					if (img.classList.contains('float-start')) {
+					if (element.classList.contains('float-start')) {
 						align = 'float-start';
-					} else if (img.classList.contains('float-end')) {
+					} else if (element.classList.contains('float-end')) {
 						align = 'float-end';
 					}
 
@@ -74,6 +95,7 @@ export const Illustration = Node.create<IllustrationOptions>({
 						src: img.getAttribute('src'),
 						title: img.getAttribute('title'),
 						alt: img.getAttribute('alt'),
+						id: img.getAttribute('data-id'),
 					};
 				},
 			},
@@ -83,11 +105,14 @@ export const Illustration = Node.create<IllustrationOptions>({
 		return {
 			setIllustration:
 				options =>
-				({ commands }) => {
-					return commands.insertContent({
-						type: this.name,
-						attrs: options,
-					});
+				({ chain }) => {
+					return chain()
+						.focus()
+						.insertContent({
+							type: this.name,
+							attrs: options,
+						})
+						.run();
 				},
 		};
 	},

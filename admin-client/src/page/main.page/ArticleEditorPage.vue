@@ -36,7 +36,7 @@
 				<!-- 段首工具栏 -->
 				<FloatingMenu
 					class="floating-menu"
-					:tippy-options="{ duration: 100 }"
+					:tippy-options="{ duration: 100, placement: 'auto-end' }"
 					:editor="bodyEditor"
 				>
 					<div
@@ -107,6 +107,11 @@
 					plugin-key="global"
 					:editor="bodyEditor"
 					:tippy-options="{ duration: 100 }"
+					:should-show="
+						p => {
+							return p.to - p.from > 0 && !p.editor.isActive('illustration');
+						}
+					"
 				>
 					<div
 						class="btn-group btn-group-sm bg-white"
@@ -216,24 +221,28 @@
 					:tippy-options="{ duration: 100 }"
 					:should-show="
 						p => {
+							loadCurrentIllustrationData();
 							return p.editor.isActive('illustration');
 						}
 					"
 				>
-					<div
-						class="btn-group btn-group-sm"
-						role="group"
-						aria-label="Small button group"
-					>
-						<button type="button" class="btn btn-outline-dark">Left</button>
-						<button type="button" class="btn btn-outline-dark">Middle</button>
-						<button type="button" class="btn btn-outline-dark">Right</button>
+					<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+						<div class="btn-group me-2 bg-white" role="group" aria-label="Second group">
+							<button
+								@click="openillustrationEditorModal"
+								type="button"
+								class="btn btn-outline-secondary"
+							>
+								<i class="bi bi-pencil-fill"></i>
+							</button>
+						</div>
 					</div>
 				</BubbleMenu>
 
 				<!-- 正文编辑器 -->
 				<EditorContent :editor="bodyEditor" />
 			</div>
+			<!-- <div v-html="body.value"></div> -->
 		</div>
 
 		<!-- 右侧边栏 -->
@@ -479,16 +488,17 @@
 	<ModalComponent
 		title="编辑插图"
 		ref="illustrationEditorModal"
-		@save-change=""
+		@save-change="updateIllustration"
 		modal-width="modal-xl"
 	>
 		<template #body>
 			<div class="row">
 				<div class="col-6">
 					<img
-						:src="previewUrl || 'https://placehold.co/800x400'"
+						:src="previewUrl || illustration.src || 'https://placehold.co/400x400'"
 						class="img-fluid card-img"
-						:alt="''"
+						:alt="illustration.alt"
+						:title="illustration.title"
 					/>
 				</div>
 				<div class="col-6">
@@ -512,29 +522,54 @@
 						<input
 							type="text"
 							class="form-control"
-							id="illustrationTitleInput"
+							id="illustration.titleInput"
 							placeholder="标题"
 							v-model="illustration.title"
-							:key="illustration.title"
 						/>
-						<label for="illustrationTitleInput">标题</label>
+						<label for="illustration.titleInput">标题</label>
 					</div>
 					<!-- alt 编辑器 -->
 					<div class="form-floating mb-3">
 						<textarea
 							type="text"
 							class="form-control"
-							id="illustrationAltInput"
+							id="illustration.altInput"
 							placeholder="描述"
 							style="min-height: 100px"
 							v-model="illustration.alt"
-							:key="illustration.alt"
 						></textarea>
-						<label for="illustrationAltInput">描述</label>
+						<label for="illustration.altInput">描述</label>
 					</div>
 					<!-- align 编辑器 -->
 					<div class="mb-3 text-center">
-						<FloatAlignComponent v-model="illustration.align" />
+						<div
+							class="btn-group bg-white"
+							role="group"
+							aria-label="Basic radio toggle button group"
+						>
+							<input
+								type="radio"
+								class="btn-check"
+								:id="id + 'btnradio1'"
+								autocomplete="off"
+								v-model="illustrationAlign"
+								value="float-start"
+							/>
+							<label class="btn btn-outline-secondary" :for="id + 'btnradio1'">
+								<i class="bi bi-text-left"></i>
+							</label>
+							<input
+								type="radio"
+								class="btn-check"
+								:id="id + 'btnradio3'"
+								autocomplete="off"
+								v-model="illustrationAlign"
+								value="float-end"
+							/>
+							<label class="btn btn-outline-secondary" :for="id + 'btnradio3'">
+								<i class="bi bi-text-right"></i>
+							</label>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -550,16 +585,18 @@
 	import { makeRequest } from '@/service/request.service';
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
 	import { useRoute } from 'vue-router';
-	import type { APIResponse, ArticleInfo, TagInfo } from '@/type/response.type';
+	import type { APIResponse, ArticleInfo, IllustrationInfo, TagInfo } from '@/type/response.type';
 	import { getArtcicleStatusClass, getFormarttedDate } from '@/utlis';
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
 	import ModalComponent from '@/component/ModalComponent.vue';
 	import Link from '@tiptap/extension-link';
 	import { Illustration } from '@/component/editor.component/extension/Illustration';
-	import FloatAlignComponent from '@/component/editor.component/FloatAlignComponent.vue';
+	import type { IllustrationFloat } from '@/type/utlis';
+	import { v4 as uuidv4 } from 'uuid';
 
 	// 全局
+	const id = uuidv4();
 	const route = useRoute();
 	const publishModal = ref();
 	const remoteArticleInfo = ref<ArticleInfo | null>(null);
@@ -686,8 +723,6 @@
 		}
 	};
 	const updateArticleContent = async () => {
-		console.log(title.changed);
-		console.log(body.changed);
 		const response: APIResponse<void> = await makeRequest(
 			RESOURCE_BASE_URL + '/articles/content/' + route.params.id,
 			{
@@ -773,15 +808,33 @@
 	const illustrationEditorModal = ref();
 	const inputIllustrationRef = ref();
 	const selectedLocalImage = ref<File | null>(null);
+	const illustrationAlign = ref<IllustrationFloat>('float-start');
 	const illustration = reactive({
-		title: '',
+		id: 0,
+		src: '',
 		alt: '',
-		align: 'float-none',
-		src: '#',
+		title: '',
 	});
+	const loadCurrentIllustrationData = () => {
+		const illustrationExtension = bodyEditor.value?.getAttributes('illustration');
+		illustration.title = illustrationExtension?.title;
+		illustrationAlign.value = illustrationExtension?.align;
+		illustration.alt = illustrationExtension?.alt;
+		illustration.src = illustrationExtension?.src;
+		illustration.id = illustrationExtension?.id;
+	};
+	const resetIllustrationValue = () => {
+		illustration.src = '';
+		illustration.alt = '';
+		illustration.title = '';
+	};
 	const openillustrationEditorModal = () => {
 		if (illustrationEditorModal.value) {
+			loadCurrentIllustrationData();
 			illustrationEditorModal.value.show();
+			if (!illustrationAlign.value) {
+				illustrationAlign.value = 'float-start';
+			}
 		}
 	};
 	const handleInputChange = () => {
@@ -797,6 +850,63 @@
 				reader.readAsDataURL(currentFile);
 			}
 		}
+	};
+	const updateIllustration = async () => {
+		// 检查是否更新了图片文件，如果是则更新插图图片
+		if (selectedLocalImage.value) {
+			const formData = new FormData();
+			formData.append('file', selectedLocalImage.value);
+			formData.append('title', illustration.title);
+			formData.append('alt', illustration.alt);
+			const newIllustrationResponse: APIResponse<IllustrationInfo> = await makeRequest(
+				RESOURCE_BASE_URL + '/illustrations/new',
+				{
+					method: 'POST',
+					body: formData,
+				}
+			);
+			if (newIllustrationResponse.code !== 0) {
+				showMessage('图片上传失败', AlertType.ERROR);
+				return console.error(newIllustrationResponse.message);
+			}
+			illustration.src = newIllustrationResponse.data.url;
+			illustration.id = newIllustrationResponse.data.id;
+			selectedLocalImage.value = null;
+		}
+		if (!illustration.src.trim()) {
+			illustrationEditorModal.value.hide();
+			return;
+		}
+		// 检查是否更新了标题和 alt
+		const extension = bodyEditor.value?.getAttributes('illustration');
+		if (extension) {
+			if (extension.title !== illustration.title || extension.alt !== illustration.alt) {
+				const updateIllustrationInfoResponse: APIResponse<void> = await makeRequest(
+					RESOURCE_BASE_URL + '/illustrations/info/' + extension.id,
+					{
+						method: 'PATCH',
+						body: JSON.stringify({
+							title: illustration.title,
+							alt: illustration.alt,
+						}),
+					}
+				);
+				if (updateIllustrationInfoResponse.code !== 0) {
+					return showMessage('插图信息更新失败', AlertType.ERROR);
+				}
+				showMessage('更新成功', AlertType.SUCCESS);
+			}
+		}
+		bodyEditor.value
+			?.chain()
+			.focus()
+			.setIllustration({
+				...illustration,
+				align: illustrationAlign.value,
+			})
+			.run();
+		illustrationEditorModal.value.hide();
+		resetIllustrationValue();
 	};
 
 	// summary 组件
