@@ -16,6 +16,7 @@ public class IllustrationInfo {
     private String url;
     private OffsetDateTime creationDatetime;
     private OffsetDateTime updateDatetime;
+    private Integer articleCount = 0;
 
     private String userInfoLocation;
     private String articleInfoPageLocation;

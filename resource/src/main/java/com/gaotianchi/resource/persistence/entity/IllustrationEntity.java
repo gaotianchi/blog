@@ -23,6 +23,7 @@ public class IllustrationEntity {
     private String url;
     private OffsetDateTime creationDatetime;
     private OffsetDateTime updateDatetime;
+    private Integer articleCount;
 
     // depth
     @ManyToOne
@@ -30,4 +31,13 @@ public class IllustrationEntity {
 
     @ManyToMany
     private Collection<ArticleEntity> articleList = new ArrayList<>();
+
+    public void increaseArticleCount() {
+        if (articleCount == null) articleCount = 0;
+        articleCount += 1;
+    }
+
+    public void decreaseArticleCount() {
+        articleCount -= 1;
+    }
 }

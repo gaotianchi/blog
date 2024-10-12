@@ -169,6 +169,7 @@ public class ArticleService implements ArticleServiceInterface {
         IllustrationEntity illustrationEntity = entityBelongService.illustrationBelongToUser(username, illustrationId);
         articleEntity.getIllustrationList().add(illustrationEntity);
         illustrationEntity.getArticleList().add(articleEntity);
+        illustrationEntity.increaseArticleCount();
         articleRepo.save(articleEntity);
         return new IllustrationInfo(illustrationEntity);
     }
@@ -179,6 +180,7 @@ public class ArticleService implements ArticleServiceInterface {
         IllustrationEntity illustrationEntity = entityBelongService.illustrationBelongToUser(username, illustrationId);
         articleEntity.getIllustrationList().remove(illustrationEntity);
         illustrationEntity.getArticleList().remove(articleEntity);
+        illustrationEntity.decreaseArticleCount();
         articleRepo.save(articleEntity);
     }
 
@@ -188,12 +190,14 @@ public class ArticleService implements ArticleServiceInterface {
         Collection<IllustrationEntity> currentIllustrations = articleEntity.getIllustrationList();
         for (IllustrationEntity illustration : currentIllustrations) {
             illustration.getArticleList().remove(articleEntity);
+            illustration.decreaseArticleCount();
         }
         articleEntity.getIllustrationList().clear();
         for (Long illustrationId : illustrationIds) {
             IllustrationEntity illustrationEntity = entityBelongService.illustrationBelongToUser(username, illustrationId);
             articleEntity.getIllustrationList().add(illustrationEntity);
             illustrationEntity.getArticleList().add(articleEntity);
+            illustrationEntity.increaseArticleCount();
         }
         articleRepo.save(articleEntity);
     }

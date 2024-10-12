@@ -204,16 +204,10 @@
 	import { onMounted, ref, watch } from 'vue';
 	import MainPageHeaderComponent from '@/component/MainPageHeaderComponent.vue';
 	import Segmentation from '@/component/icon/Segmentation.vue';
-	import type {
-		APIResponse,
-		ArticleInfo,
-		ArticleResponse,
-		PageInfo,
-		UserInfo,
-	} from '@/type/response.type';
+	import type { APIResponse, ArticleInfo, PageInfo, UserInfo } from '@/type/response.type';
 	import { AlertType } from '@/enum';
 	import { useRouter } from 'vue-router';
-	import PaginationComponent from '@/component/article.component/PaginationComponent.vue';
+	import PaginationComponent from '@/component/PaginationComponent.vue';
 	import { getFormarttedDate, getArtcicleStatusClass } from '@/utlis';
 	import showMessage from '@/service/alert.service';
 	import ModalComponent from '@/component/ModalComponent.vue';
@@ -267,7 +261,7 @@
 	// 操作区域组件
 	const filter = ref<'all' | 'published' | 'trash' | 'draft'>('all');
 	const handleNewArticleButton = async () => {
-		const response: APIResponse<ArticleResponse> = await makeRequest(
+		const response: APIResponse<ArticleInfo> = await makeRequest(
 			RESOURCE_BASE_URL + '/articles/new',
 			{
 				method: 'POST',
