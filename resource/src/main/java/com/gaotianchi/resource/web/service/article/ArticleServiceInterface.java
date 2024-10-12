@@ -6,6 +6,8 @@ import com.gaotianchi.resource.web.response.info.IllustrationInfo;
 import com.gaotianchi.resource.web.response.info.SeriesInfo;
 import com.gaotianchi.resource.web.response.info.TagInfo;
 
+import java.util.List;
+
 public interface ArticleServiceInterface {
 
     // 创建与删除资源
@@ -33,6 +35,8 @@ public interface ArticleServiceInterface {
     IllustrationInfo addIllustration(String username, Long id, Long illustrationId);
 
     void removeIllustration(String username, Long id, Long illustrationId);
+
+    void resetIllustrationList(String username, Long id, List<Long> illustrationIds);
 
     ArticleInfo getInfo(Long id);
 

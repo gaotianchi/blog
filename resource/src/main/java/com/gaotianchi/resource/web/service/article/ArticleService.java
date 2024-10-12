@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class ArticleService implements ArticleServiceInterface {
@@ -180,6 +181,23 @@ public class ArticleService implements ArticleServiceInterface {
         illustrationEntity.getArticleList().remove(articleEntity);
         articleRepo.save(articleEntity);
     }
+
+    @Override
+    public void resetIllustrationList(String username, Long id, List<Long> illustrationIds) {
+        ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
+        Collection<IllustrationEntity> currentIllustrations = articleEntity.getIllustrationList();
+        for (IllustrationEntity illustration : currentIllustrations) {
+            illustration.getArticleList().remove(articleEntity);
+        }
+        articleEntity.getIllustrationList().clear();
+        for (Long illustrationId : illustrationIds) {
+            IllustrationEntity illustrationEntity = entityBelongService.illustrationBelongToUser(username, illustrationId);
+            articleEntity.getIllustrationList().add(illustrationEntity);
+            illustrationEntity.getArticleList().add(articleEntity);
+        }
+        articleRepo.save(articleEntity);
+    }
+
 
     @Override
     public ArticleInfo getInfo(Long id) {

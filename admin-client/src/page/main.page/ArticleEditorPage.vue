@@ -642,6 +642,8 @@
 		}
 		tags.value = tagResponse.data;
 	};
+
+	// 操作区域
 	const resetArticleStatus = async (targetStatus: string) => {
 		const response: APIResponse<void> = await makeRequest(
 			RESOURCE_BASE_URL + '/articles/status/' + route.params.id + '/' + targetStatus,
@@ -671,8 +673,46 @@
 			publishModal.value.show();
 		}
 	};
+	const updateArticleContent = async () => {
+		const response: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL + '/articles/content/' + route.params.id,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					title: title.value,
+					body: body.value,
+				}),
+			}
+		);
+		if (response.code !== 0) {
+			showMessage('更新失败', AlertType.ERROR);
+			return console.error(response.message);
+		}
+		showMessage('更新成功', AlertType.SUCCESS);
+		body.changed = false;
+		title.changed = false;
+		// 更新与文章关联的插图
+		const illustrationIds = getAllIllustrationIds();
+		console.log(illustrationIds);
+		const params = new URLSearchParams();
+		illustrationIds.forEach(id => params.append('illustrationIds', id.toString()));
+		const resetArticleIllustration: APIResponse<void> = await makeRequest(
+			RESOURCE_BASE_URL +
+				'/articles/illustrations/' +
+				route.params.id +
+				'?' +
+				params.toString(),
+			{
+				method: 'POST',
+			}
+		);
+		if (resetArticleIllustration.code !== 0) {
+			return showMessage('插图更新失败', AlertType.ERROR);
+		}
+		
+	};
 
-	// 编辑器信息栏组件
+	// 编辑器
 	const titleTextAreaRef = ref<HTMLTextAreaElement>();
 	const titleRow = ref(1);
 	const bodyEditor = ref<Editor>();
@@ -722,25 +762,7 @@
 			body.value = bodyEditor.value?.getHTML();
 		}
 	};
-	const updateArticleContent = async () => {
-		const response: APIResponse<void> = await makeRequest(
-			RESOURCE_BASE_URL + '/articles/content/' + route.params.id,
-			{
-				method: 'PATCH',
-				body: JSON.stringify({
-					title: title.value,
-					body: body.value,
-				}),
-			}
-		);
-		if (response.code !== 0) {
-			showMessage('更新失败', AlertType.ERROR);
-			return console.error(response.message);
-		}
-		showMessage('更新成功', AlertType.SUCCESS);
-		body.changed = false;
-		title.changed = false;
-	};
+
 	watch(
 		() => title.value,
 		newValue => {
@@ -758,8 +780,8 @@
 			body.changed = newValue !== remoteBody.value;
 		}
 	);
-	// 拓展部分
-	// Heading 标题拓展
+	// 编辑器拓展部分
+	// Heading
 	const setHeading = (level: number) => {
 		if (bodyEditor.value) {
 			bodyEditor.value
@@ -769,7 +791,7 @@
 				.run();
 		}
 	};
-	// Link 链接拓展
+	// Link
 	const link = reactive({
 		href: '',
 		openInNewTab: false,
@@ -803,7 +825,7 @@
 		}
 	};
 
-	// Illustration 插图拓展
+	// Illustration
 	const previewUrl = ref<string | null>(null);
 	const illustrationEditorModal = ref();
 	const inputIllustrationRef = ref();
@@ -879,7 +901,7 @@
 		}
 		// 检查是否更新了标题和 alt
 		const extension = bodyEditor.value?.getAttributes('illustration');
-		if (extension) {
+		if (extension && extension.id) {
 			if (extension.title !== illustration.title || extension.alt !== illustration.alt) {
 				const updateIllustrationInfoResponse: APIResponse<void> = await makeRequest(
 					RESOURCE_BASE_URL + '/illustrations/info/' + extension.id,
@@ -908,6 +930,18 @@
 		illustrationEditorModal.value.hide();
 		resetIllustrationValue();
 	};
+	function getAllIllustrationIds(): number[] {
+		const illustrationImages: NodeListOf<HTMLImageElement> =
+			document.querySelectorAll('.illustration-img');
+		const ids: number[] = [];
+		illustrationImages.forEach(image => {
+			const id = image.getAttribute('data-id');
+			if (id) {
+				ids.push(Number(id));
+			}
+		});
+		return ids;
+	}
 
 	// summary 组件
 	const summary = reactive({

@@ -14,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class ArticleController {
 
@@ -92,6 +94,12 @@ public class ArticleController {
     @DeleteMapping("/articles/illustration/{id}/{newIllustrationId}")
     public APIResponse<Void> removeIllustration(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @PathVariable Long newIllustrationId) {
         articleService.removeIllustration(jwt.getSubject(), id, newIllustrationId);
+        return APIResponse.success();
+    }
+
+    @PostMapping("/articles/illustrations/{id}")
+    public APIResponse<Void> resetIllustrationList(@AuthenticationPrincipal Jwt jwt, @PathVariable Long id, @RequestParam List<Long> illustrationIds) {
+        articleService.resetIllustrationList(jwt.getSubject(), id, illustrationIds);
         return APIResponse.success();
     }
 

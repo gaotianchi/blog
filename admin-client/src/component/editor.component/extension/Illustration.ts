@@ -55,7 +55,7 @@ export const Illustration = Node.create<IllustrationOptions>({
 			[
 				'img',
 				{
-					class: 'img-fluid card-img',
+					class: 'img-fluid card-img illustration-img',
 					title: HTMLAttributes.title,
 					alt: HTMLAttributes.alt,
 					src: HTMLAttributes.src,
