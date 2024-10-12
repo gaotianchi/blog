@@ -709,7 +709,6 @@
 		if (resetArticleIllustration.code !== 0) {
 			return showMessage('插图更新失败', AlertType.ERROR);
 		}
-		
 	};
 
 	// 编辑器
@@ -899,9 +898,10 @@
 			illustrationEditorModal.value.hide();
 			return;
 		}
-		// 检查是否更新了标题和 alt
+
 		const extension = bodyEditor.value?.getAttributes('illustration');
 		if (extension && extension.id) {
+			// 检查是否更新了标题和 alt
 			if (extension.title !== illustration.title || extension.alt !== illustration.alt) {
 				const updateIllustrationInfoResponse: APIResponse<void> = await makeRequest(
 					RESOURCE_BASE_URL + '/illustrations/info/' + extension.id,
@@ -919,6 +919,7 @@
 				showMessage('更新成功', AlertType.SUCCESS);
 			}
 		}
+
 		bodyEditor.value
 			?.chain()
 			.focus()

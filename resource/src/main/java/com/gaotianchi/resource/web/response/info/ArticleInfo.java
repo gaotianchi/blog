@@ -1,6 +1,7 @@
 package com.gaotianchi.resource.web.response.info;
 
 import com.gaotianchi.resource.persistence.entity.ArticleEntity;
+import com.gaotianchi.resource.persistence.entity.IllustrationEntity;
 import com.gaotianchi.resource.persistence.entity.SeriesEntity;
 import com.gaotianchi.resource.persistence.entity.TagEntity;
 import lombok.Getter;
@@ -8,7 +9,9 @@ import lombok.Setter;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Setter
 @Getter
@@ -50,9 +53,11 @@ public class ArticleInfo {
         for (TagEntity tagEntity : articleEntity.getTagList()) {
             tagNames.add(tagEntity.getName());
         }
-        if (articleEntity.getIllustrationList().stream().findFirst().isPresent()) {
-            coverUrl = articleEntity.getIllustrationList().stream().findFirst().get().getUrl();
-        }
+        Optional<IllustrationEntity> latestIllustration = articleEntity.getIllustrationList()
+                .stream()
+                .max(Comparator.comparing(IllustrationEntity::getUpdateDatetime));
+
+        latestIllustration.ifPresent(illustrationEntity -> coverUrl = illustrationEntity.getUrl());
 
         bodyValueLocation = "http://localhost:8090/articles/body/" + id;
         userInfoLocation = "http://localhost:8090/users/info/" + articleEntity.getUser().getId();
