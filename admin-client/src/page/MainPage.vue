@@ -3,7 +3,7 @@
 		<!-- Navbar-->
 		<header class="app-header">
 			<!-- App header logo -->
-			<a class="app-header__logo" href="index.html">Vali</a>
+			<a class="app-header__logo" href="index.html">Blog</a>
 			<!-- Sidebar toggle button-->
 			<a
 				class="app-sidebar__toggle"

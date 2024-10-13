@@ -38,7 +38,7 @@
 									currentFocus === illustration.id &&
 									illustration.articleCount === 0
 								"
-								@click="deleteIllustration(illustration.id)"
+								@click.stop="deleteIllustration(illustration.id)"
 								type="button"
 								class="btn btn-outline-danger"
 							>
