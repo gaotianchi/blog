@@ -29,6 +29,7 @@ export const sidebarDataItems: SidebarItem[] = [
 			{
 				title: '标签',
 				bsIconName: 'bi-tag',
+				routeName: 'TAG',
 			},
 			{
 				title: '系列',

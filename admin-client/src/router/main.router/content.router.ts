@@ -1,6 +1,6 @@
-import ArticleEditorPage from '@/page/main.page/ArticleEditorPage.vue';
-import ArticlesPage from '@/page/main.page/ArticlesPage.vue';
-import PicturePage from '@/page/main.page/PicturePage.vue';
+import ArticleEditorPage from '@/page/main.page/content/ArticleEditorPage.vue';
+import ArticlesPage from '@/page/main.page/content/ArticlesPage.vue';
+import PicturePage from '@/page/main.page/content/PicturePage.vue';
 import type { RouteRecordRaw } from 'vue-router';
 
 const contentRouter: RouteRecordRaw[] = [
