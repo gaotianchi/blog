@@ -29,6 +29,7 @@ public class IllustrationInfo {
         url = illustrationEntity.getUrl();
         creationDatetime = illustrationEntity.getCreationDatetime();
         updateDatetime = illustrationEntity.getUpdateDatetime();
+        articleCount = illustrationEntity.getArticleCount();
 
         userInfoLocation = "http://localhost:8090/users/info/" + illustrationEntity.getUser().getId();
         articleInfoPageLocation = "http://localhost:8090/articles/illustration/" + id;

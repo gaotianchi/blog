@@ -61,7 +61,7 @@
 	import { makeRequest } from '@/service/request.service';
 	import showMessage from '@/service/alert.service';
 	import { AlertType } from '@/enum';
-	import type { APIResponse, AvatarInfo, ImageResponse } from '@/type/response.type';
+	import type { APIResponse, AvatarInfo } from '@/type/response.type';
 	import { RESOURCE_BASE_URL } from '@/config/global.config';
 	import { dataURLToBlob } from '@/utlis';
 	import ModalComponent from '../ModalComponent.vue';

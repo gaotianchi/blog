@@ -191,7 +191,7 @@
 
 	<!-- 分页组件 -->
 	<PaginationComponent
-		v-if="articleInfoList.length > 0"
+		v-if="totalPage > 1"
 		:key="filter"
 		:total-page="totalPage"
 		@page-changed="page => handlePageChanged(page)"

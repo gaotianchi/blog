@@ -187,8 +187,8 @@ public class ArticleService implements ArticleServiceInterface {
     @Override
     public void resetIllustrationList(String username, Long id, List<Long> illustrationIds) {
         ArticleEntity articleEntity = entityBelongService.articleBelongToUser(username, id);
-        Collection<IllustrationEntity> currentIllustrations = articleEntity.getIllustrationList();
-        for (IllustrationEntity illustration : currentIllustrations) {
+        Collection<IllustrationEntity> oldIllustrations = articleEntity.getIllustrationList();
+        for (IllustrationEntity illustration : oldIllustrations) {
             illustration.getArticleList().remove(articleEntity);
             illustration.decreaseArticleCount();
         }
