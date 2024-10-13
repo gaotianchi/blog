@@ -29,7 +29,12 @@
 					<button type="button" class="btn btn-secondary" @click="hide">
 						{{ closeButtonText }}
 					</button>
-					<button type="button" class="btn btn-primary" @click="onSave">
+					<button
+						v-show="showActionButton"
+						type="button"
+						class="btn btn-primary"
+						@click="onSave"
+					>
 						{{ saveButtonText }}
 					</button>
 				</div>
@@ -39,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted } from 'vue';
+	import { ref, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
 	import * as bootstrap from 'bootstrap';
 	import { v4 as uuidv4 } from 'uuid';
 
@@ -64,6 +69,10 @@
 			type: String,
 			required: false,
 		},
+		showActionButton: {
+			type: Boolean,
+			default: true,
+		},
 	});
 
 	const modalInstance = ref<bootstrap.Modal | null>(null);
@@ -82,6 +91,7 @@
 
 	const hide = () => {
 		if (modalInstance.value) {
+			console.log(modalInstance.value);
 			modalInstance.value.hide();
 		}
 	};
@@ -95,6 +105,15 @@
 		if (modalElement) {
 			modalInstance.value = new bootstrap.Modal(modalElement);
 		}
+	});
+	onBeforeUnmount(() => {
+		if (!modalInstance.value) {
+			const modalElement = document.getElementById(id);
+			if (modalElement) {
+				modalInstance.value = new bootstrap.Modal(modalElement);
+			}
+		}
+		modalInstance.value?.dispose();
 	});
 
 	defineExpose({

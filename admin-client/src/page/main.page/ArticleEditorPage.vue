@@ -18,7 +18,7 @@
 		]"
 	></MainPageHeaderComponent>
 
-	<div class="row col-lg-11 m-auto">
+	<div class="row col-lg-11 m-auto overflow-auto">
 		<!-- 编辑器主体 -->
 		<div class="col-md-8 tile overflow-y-auto" style="max-height: 150vh">
 			<textarea
@@ -577,7 +577,7 @@
 	</ModalComponent>
 </template>
 <script setup lang="ts">
-	import { ref, onMounted, watch, reactive, computed } from 'vue';
+	import { ref, onMounted, watch, reactive, computed, nextTick } from 'vue';
 	import StarterKit from '@tiptap/starter-kit';
 	import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3';
 	import Placeholder from '@tiptap/extension-placeholder';
@@ -600,12 +600,20 @@
 	const route = useRoute();
 	const publishModal = ref();
 	const remoteArticleInfo = ref<ArticleInfo | null>(null);
-	onMounted(() => {
+	onMounted(async () => {
 		// 加载编辑器
 		initBodyEditor();
 
 		// 加载数据
-		loadArticleData();
+		await loadArticleData();
+
+		nextTick(() => {
+			const tiptap = document.getElementsByClassName('tiptap')[0];
+			console.log(tiptap.scrollHeight);
+			console.log(document.body.scrollHeight);
+			window.scrollTo(0, document.body.scrollHeight);
+			window.dispatchEvent(new Event('resize'));
+		});
 	});
 	const loadArticleData = async () => {
 		// 加载 info
@@ -1062,6 +1070,9 @@
 </script>
 
 <style>
+	html {
+		overflow-y: scroll; /* 强制总是显示滚动条 */
+	}
 	.tiptap {
 		min-height: 100vh;
 	}
