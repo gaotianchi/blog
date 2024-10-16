@@ -52,7 +52,6 @@ public class TagService implements TagServiceInterface {
         for (ArticleEntity article : articles) {
             article.getTagList().remove(tagEntity);
         }
-        articleRepo.saveAll(articles);
         tagEntity.getArticleList().clear();
         tagRepo.delete(tagEntity);
     }
